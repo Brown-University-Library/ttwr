@@ -18,5 +18,5 @@ urlpatterns = patterns('',
   ( r'^search/$',  'rome_app.views.stub' ),
   ( r'^links/$',  'rome_app.views.stub' ),
   ( r'^about/$',  'rome_app.views.stub' ),
-  ( r'^$', 'rome_app.views.stub' ),
+  ( r'^$', 'rome_app.views.index' ),
   )
