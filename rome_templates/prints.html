@@ -1,0 +1,124 @@
+<head>
+<title>{{title}}</title>
+<script type="text/javascript">
+window.onload=load;
+var curr_page;
+function load()
+{
+    curr_page={{ curr_page }};
+    show_page(curr_page);
+}
+function expand_title(title,page_num,num_on_page)
+{
+    var spans=document.getElementsByTagName("span");
+    var i;
+    for(i=0;i<spans.length;i++)
+    {
+        if(spans[i].getAttribute("num")==page_num+"_"+num_on_page)
+        {
+            spans[i].innerHTML=title;
+            break;
+        }
+    }
+}
+
+function show_page(i)
+{
+    var old_page=document.getElementById("page_"+curr_page);
+    old_page.style.display="none";
+    
+    var new_page=document.getElementById("page_"+i);
+    new_page.style.display="block";
+    curr_page=i;
+}
+</script>
+</head>
+{% load static from staticfiles %}
+<link rel="stylesheet" href="{%static usr_style%}" type="text/css" media="screen" />
+
+<body>
+    <div id="page_head">
+        <h1>
+            <span class="repeatbg"><span class="leftcap"><a href="../">The Theater that was Rome</a></span></span>
+        </h1>
+        <div id="cookietrail">
+            <ol>
+                <li>Prints</li>
+                <li>
+                    {% for i in page_range %}
+                        <button onclick="show_page({{forloop.counter}})">{{i}}</button>
+                        <!-- <a href="?page={{i}}">{{i}}</a> -->
+                    {% endfor %}
+                    &nbsp showing {{prints_per_page}} prints per page, {{num_prints}} total
+                <li>
+            </ol>
+        </div>
+    </div>
+    <div id="page_body">
+        {% for page in page_list %}
+        <div id="page_{{forloop.counter}}" num="{{forloop.counter}}" style="display:none;">
+            <ul>
+                {% for print in page %}
+                <li>
+                    <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}">
+                        Author(s): <span class="dark">{{ print.authors }}</span><br />
+                        Date: <span class="dark">{{ print.date }}</span> <br />
+                        Title: <span class="dark">
+                        <span num="{{forloop.parentloop.counter}}_{{forloop.counter}}">{{ print.short_title }}
+                            {% if print.title_cut %}
+                            <span class="more_button"
+                                    onclick="expand_title('{{print.title}}',{{forloop.parentloop.counter}},{{forloop.counter}})">
+                                    [more]
+                            </span>
+                            {% endif %}
+                        </span></span><br />
+                        More info:
+                            <a href={{ print.studio_uri }} target="_blank">Click here</a><br />
+                        Viewers:
+                            <a href="{{ print.thumbnail_url_start }}_{{forloop.parentloop.counter}}_{{forloop.counter}}" target="_blank">
+                                Thumbnail Viewer
+                                </a>,
+                            <a href={{ print.det_img_viewer }} target="_blank">Detailed Image Viewer</a>
+                    </span>
+                    <br />
+                    <br />
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+        
+        
+        
+        <!-- <ul>
+                    {% for print in print_list %}
+                        <li>
+                            <span>
+                                Author(s): <span class="dark">{{ print.authors }}</span><br />
+                                Date: <span class="dark">{{ print.date }}</span> <br />
+                                Title: <span class="dark">
+                                <span num={{forloop.counter}}>{{ print.short_title }}
+                                    {% if print.title_cut %}
+                                    <span class="more_button"
+                                            onclick="expand_title('{{print.title}}',{{forloop.counter}})">
+                                            [more]
+                                    </span>
+                                    {% endif %}
+                                </span></span><br />
+                                More info:
+                                    <a href={{ print.studio_uri }} target="_blank">Click here</a><br />
+                                Viewers:
+                                    <a href={{ print.det_img_viewer }} target="_blank">Detailed Image Viewer</a>
+                            </span>
+                            <br />
+                            <br />
+                        </li>
+                    {% endfor %}
+                </ul> -->
+    </div>
+    <div id="footer">
+	    <span>&#169; {{cpydate}} Brown University</span>
+	    <a href="http://www.brown.edu"><img src="{%static brown_image%}" alt="Brown University" /></a>
+	    <a href="http://www.stg.brown.edu"><img src="{%static stg_image%}" alt="Scholarly Technology Group" /></a>
+	</div>
+</body>

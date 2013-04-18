@@ -1,0 +1,101 @@
+@import url(common.css);
+
+
+	
+/*
+  * BODY
+  */
+	
+#page_body {
+	clear: both;
+	}
+
+#page_body ul{
+	padding: 0 40px 0;
+	}
+
+#page_body li {
+	margin-bottom: 6px;
+	list-style-type: square;
+	color: #a89983;
+	}
+	
+#page_body li .dark {
+	color: #3e3a2e;
+	}
+	
+	
+	/*
+	 * SORT
+	 */
+	 
+ul#sort {
+	margin: -10px 10px 0;
+	padding: 0 0 55px;
+	font: 12px Verdana, Arial, Helvetica, sans-serif;
+	}
+
+#sort li {
+	list-style: none;
+	margin: 0;
+	}
+	
+#sort li#sorttitle {
+	float: right;
+	margin: 5px 7px;
+	font-style: italic;
+	}
+	
+#sort a {
+	display: block;
+	float: right;
+	width: 72px;
+	/*height: 37px;*/
+	margin: 0;
+	color: #302e27;
+	background: #c8c3b4 url(../images/sortlist-left.gif) no-repeat top left;
+	}
+	
+#sort a span {
+	display: block;
+	padding: 11px 6px;
+	/*height: 37px;*/
+	text-align:center;
+	background: url(../images/sortlist-right.gif) no-repeat top right;
+	}
+	
+#sort a:hover {
+	text-decoration: none;
+	background-color: #9e9782;
+	color: #000;
+	}
+	
+#sort a:active {
+	background-color: #857f6d;
+	}
+	
+	h3 {
+	padding-bottom: 7px;
+	}
+	
+	p {
+	margin: 0 40px 0px;
+	line-height: 18px;
+	padding-bottom: 5px;
+	}
+
+/* this is for the author name in a bio */
+   p.resp {
+    text-align:right;
+    font-style:italic;
+    }
+
+
+a.bookEssay {
+	color: black;
+}
+
+.more_button
+{
+	cursor:pointer;
+}

@@ -1,0 +1,138 @@
+a {
+	color: #805525;
+	text-decoration: none;
+}
+
+p a{
+	border-bottom: 1px dotted;
+	}
+
+a:hover {
+	color: #553512;
+	}
+
+p a:hover {
+	border-bottom-style: solid;
+	}
+
+body {
+	font: 13px Verdana, Arial, Helvetica, sans-serif;
+	background-color: #dfdbcf;
+	background-image: url(../images/background1.jpg);
+	color: #3e3a2e;
+	}
+	
+h2 {
+	font: 18px Georgia, "Times New Roman", Times, serif;
+	border-bottom: 1px solid #c2b99d;
+	margin: 15px 10px 10px;
+	padding-bottom: 2px;
+	}
+	
+h3 {
+	font: normal 14px Verdana, Arial, Helvetica, sans-serif;
+	/*text-transform: uppercase;*/
+	margin: 10px 26px -10px;
+	padding-bottom: 2px;
+	}
+	
+h4 {
+    margin-bottom: 5px;
+    }
+	
+p {
+	margin: 0 40px 0px;
+	line-height: 18px;
+	}
+
+
+/*
+  * HEADER
+  */
+
+h1 {
+	font: small-caps 21px medium Georgia, "Times New Roman", Times, serif;
+	background: url(../images/light-header-rightcap.gif) no-repeat right top;
+	height: 43px;
+	margin: 0 4px 0 4px;
+	padding: 0;
+}
+
+h1 span.leftcap {
+	background: url(../images/light-header-cap.gif) no-repeat 0 0;
+	padding: 6px 0 0 18px;
+	display: block;
+	height: 43px;
+	margin: 0;
+	}
+	
+h1 span.repeatbg {
+	background: url(../images/light-header-gradient.gif) repeat-x 0 0;
+	display: block;
+	margin-right: 10px;
+	}
+	
+h1 a, h1 a:hover {
+	text-decoration: none;
+	color: #f9f5e7;
+	margin: 0;
+	padding: 0;
+}
+
+
+/*
+  * COOKIE TRAIL
+  */
+
+#cookietrail {
+	margin: 2px 33px 10px;
+	padding: 0;
+	font-size: 13px;
+}
+
+#cookietrail, #cookietrail a, #cookietrail a:hover {
+	text-decoration: none;
+	color: #000;
+}
+
+#cookietrail ol {
+	margin: 0;
+	padding: 0;
+}
+
+#cookietrail ol li {
+	display: inline;
+	margin-right: 3px;
+} 
+	
+#cookietrail a {
+	border-bottom: 1px dotted #000;
+}
+
+#cookietrail a:hover {
+	border-bottom-style: solid;
+	}
+	
+	
+	/*
+  * FOOTER
+  */
+	
+#footer {
+	font: 10px Verdana, Arial, Helvetica, sans-serif;
+	border-top: 1px solid #3e3a2e;
+	clear: both;
+	margin: 25px 0 20px;
+	padding: 10px 30px 0;
+	text-align: right;
+}
+
+#footer a{
+	margin-left: 15px;
+	}
+
+#footer img {
+	vertical-align: middle;
+	border: 0;
+	margin-top: -1px;
+	}

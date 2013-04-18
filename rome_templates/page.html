@@ -1,0 +1,56 @@
+<head>
+<title>{{title}}</title>
+<script type="text/javascript">
+function expand_title(title,num)
+{
+    var spans=document.getElementsByTagName("span");
+    var i;
+    for(i=0;i<spans.length;i++)
+    {
+        if(spans[i].getAttribute("num")==num)
+        {
+            spans[i].innerHTML=title;
+            break;
+        }
+    }
+}
+</script>
+</head>
+{% load static from staticfiles %}
+<link rel="stylesheet" href="{%static usr_style%}" type="text/css" media="screen" />
+
+<body>
+    <div id="page_head">
+        <h1>
+            <span class="repeatbg"><span class="leftcap"><a href="../">The Theater that was Rome</a></span></span>
+        </h1>
+        <div id="cookietrail">
+            <ol>
+                {% if book_mode %}
+                    <li>Book {{ pid }}</li><br />
+                {% endif %}
+                {% if print_mode %}
+                    <li>Print {{ pid }}</li><br />
+                {% endif %}
+                <li>Title: {{ title }}</li><br />
+                <li>Author(s): {{ authors }}</li><br />
+                <li>Date: {{ date }}</li><br />
+                {% if book_mode %}
+                    <li><a href="{{back_to_thumbnail_href}}">return to thumbnail viewer</a></li><br />
+                    <li><a href="{{back_to_book_href}}">return to book list</a></li><br />
+                {% endif %}
+                {% if print_mode %}
+                    <li><a href="{{back_to_print_href}}">return to print list</a>
+                {% endif %}
+            </ol>
+        </div>
+    </div>
+    <div id="page_body">
+        <iframe src={{ det_img_view_src}} width="100%" height="800"></iframe>
+    </div>
+    <div id="footer">
+	    <span>&#169; {{cpydate}} Brown University</span>
+	    <a href="http://www.brown.edu"><img src="{%static brown_image%}" alt="Brown University" /></a>
+	    <a href="http://www.stg.brown.edu"><img src="{%static stg_image%}" alt="Scholarly Technology Group" /></a>
+	</div>
+</body>
