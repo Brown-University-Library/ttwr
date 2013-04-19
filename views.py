@@ -24,7 +24,7 @@ def std_context(style="css/prints.css",title="The Theater that was Rome |"):
 	return context
 
 def index(request):
-	template=loader.get_template('/opt/local/django_projects/projects/rome_app/rome_templates/index.html') #built-in from django.template
+	template=loader.get_template('rome_templates/index.html') #built-in from django.template
 	context=std_context(style="css/home.css")
 	c=RequestContext(request,context)
 	#raise 404 if a certain book does not exist
