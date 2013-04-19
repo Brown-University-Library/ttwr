@@ -55,12 +55,13 @@ def search(request):
 	return HttpResponse(template.render(c))
 
 def search_results(request, query):
-	logger.error("in search_results, query = "+query)
+	#logger.error("in search_results, query = "+query)
+	pass
 
 
 
 def books(request,page=1):
-	logger.error('in books!')
+	#logger.error('in books!')
 	template=loader.get_template('books.html')
 	context=std_context()
 	context['curr_page']=page
@@ -172,7 +173,7 @@ def thumbnail_viewer(request, book_pid, page_num, book_num_on_page):
 	context['pid']=book_pid
 	thumbnails=[]
 	json_uri='https://repository.library.brown.edu/api/pub/items/bdr:'+str(book_pid)+'/?q=*&fl=*'
-	logger.error('json_uri = '+json_uri)
+	#logger.error('json_uri = '+json_uri)
 	book_json=json.loads(urllib2.urlopen(json_uri).read())
 	context['short_title']=book_json['brief']['title']
 	context['title']=book_json['primary_title']
@@ -221,7 +222,7 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
 	context['pid']=book_pid
 	thumbnails=[]
 	json_uri='https://repository.library.brown.edu/api/pub/items/bdr:'+str(book_pid)+'/?q=*&fl=*'
-	logger.error('json_uri = '+json_uri)
+	#logger.error('json_uri = '+json_uri)
 	book_json=json.loads(urllib2.urlopen(json_uri).read())
 	context['short_title']=book_json['brief']['title']
 	context['title']=book_json['primary_title']
@@ -338,7 +339,7 @@ def specific_print(request, print_pid, page_num, print_num_on_page):
 	context['pid']=print_pid
 
 	json_uri='https://repository.library.brown.edu/api/pub/items/bdr:'+str(print_pid)+'/?q=*&fl=*'
-	logger.error('json_uri = '+json_uri)
+	#logger.error('json_uri = '+json_uri)
 	print_json=json.loads(urllib2.urlopen(json_uri).read())
 	context['short_title']=print_json['brief']['title']
 	context['title']=print_json['primary_title']

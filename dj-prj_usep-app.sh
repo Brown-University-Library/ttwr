@@ -4,8 +4,8 @@
 
 
 # setup
-APP_DIR_PATH='/opt/local/django_projects/projects/usep_app'
-GIT_URL='https://bitbucket.org/birkin/projects-usep_app.git'
+APP_DIR_PATH='/opt/local/django_projects/projects/rome_app'
+GIT_URL='https://bitbucket.org/ben_leveque/projects-rome_app.git'
 MANAGE_PY_PATH='/opt/local/django_projects/projects/manage.py'
 PYTHON_ENV_PATH='/opt/local/django_projects/projects/env/bin/python'
 STATIC_WEB_DIR_PATH='/var/www/html/django_media/projects_media'
