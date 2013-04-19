@@ -8,6 +8,8 @@ import json
 import logging
 logger = logging.getLogger(__name__)
 from operator import itemgetter
+# from rome_app import models
+# from models import AboutPage
 
 # git push https://ben_leveque@bitbucket.org/birkin/projects-rome_app.git
 
@@ -22,7 +24,7 @@ def std_context(style="css/prints.css",title="The Theater that was Rome |"):
 	return context
 
 def index(request):
-	template=loader.get_template('index.html') #built-in from django.template
+	template=loader.get_template('rome_app/index.html') #built-in from django.template
 	context=std_context(style="css/home.css")
 	c=RequestContext(request,context)
 	#raise 404 if a certain book does not exist
