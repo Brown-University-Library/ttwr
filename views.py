@@ -9,6 +9,7 @@ import logging
 logger = logging.getLogger(__name__)
 from operator import itemgetter
 
+# git push https://ben_leveque@bitbucket.org/birkin/projects-rome_app.git
 
 def std_context(style="css/prints.css",title="The Theater that was Rome"):
 	context={}
