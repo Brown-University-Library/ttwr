@@ -9,8 +9,6 @@ import logging
 logger = logging.getLogger(__name__)
 from operator import itemgetter
 
-def stub( request ):
-    return HttpResponse( u'under construction' )
 
 def std_context(style="css/prints.css",title="The Theater that was Rome"):
 	context={}
@@ -398,3 +396,6 @@ def specific_essay(request, essay_auth):
 	c=RequestContext(request,context)
 	#raise 404 if a certain book does not exist
 	return HttpResponse(template.render(c))
+
+def stub(request):
+    return HttpResponse( u'still under construction' )
