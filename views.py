@@ -4,4 +4,4 @@ from django.http import HttpResponse
 
 
 def stub( request ):
-    return HttpResponse( u'under construction' )
+    return HttpResponse( u'still under construction' )
