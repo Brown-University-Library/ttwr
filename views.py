@@ -32,7 +32,7 @@ def index(request):
 	return HttpResponse(template.render(c))
 
 def search(request):
-	template=loader.get_template('search.html')
+	template=loader.get_template('rome_templates/search.html')
 	context=std_context()
 
 	# if args and length(args)>0:
@@ -64,7 +64,7 @@ def search_results(request, query):
 
 def books(request,page=1):
 	#logger.error('in books!')
-	template=loader.get_template('books.html')
+	template=loader.get_template('rome_templates/books.html')
 	context=std_context()
 	context['curr_page']=page
 
@@ -167,7 +167,7 @@ def books(request,page=1):
 	return HttpResponse(template.render(c))
 
 def thumbnail_viewer(request, book_pid, page_num, book_num_on_page):
-	template=loader.get_template('thumbnail_viewer.html')
+	template=loader.get_template('rome_templates/thumbnail_viewer.html')
 	context=std_context()
 
 	context['back_to_book_href']="../books_"+str(page_num)+"#"+str(page_num)+"_"+str(book_num_on_page)
@@ -211,7 +211,7 @@ def thumbnail_viewer(request, book_pid, page_num, book_num_on_page):
 
 def page(request, book_pid, page_pid, page_num, book_num_on_page):
 	#note: page_pid does not include 'bdr:'
-	template=loader.get_template('page.html')
+	template=loader.get_template('rome_templates/page.html')
 	context=std_context()
 
 	context['book_mode']=1
@@ -253,7 +253,7 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
 
 
 def prints(request,page=1):
-	template=loader.get_template('prints.html')
+	template=loader.get_template('rome_templates/prints.html')
 	context=std_context(title="The Theater that was Rome - Prints")
 	context['curr_page']=page
 
@@ -329,7 +329,7 @@ def prints(request,page=1):
 	return HttpResponse(template.render(c))
 
 def specific_print(request, print_pid, page_num, print_num_on_page):
-	template=loader.get_template('page.html')
+	template=loader.get_template('rome_templates/page.html')
 	context=std_context()
 
 	context['book_mode']=0
@@ -368,7 +368,7 @@ def specific_print(request, print_pid, page_num, print_num_on_page):
 	return HttpResponse(template.render(c))
 
 def about(request):
-	template=loader.get_template('about.html')
+	template=loader.get_template('rome_templates/about.html')
 	context=std_context(style="css/links.css")
 
 	c=RequestContext(request,context)
@@ -376,7 +376,7 @@ def about(request):
 	return HttpResponse(template.render(c))	
 
 def links(request):
-	template=loader.get_template('links.html')
+	template=loader.get_template('rome_templates/links.html')
 	context=std_context(style="css/links.css")
 
 	c=RequestContext(request,context)
@@ -384,7 +384,7 @@ def links(request):
 	return HttpResponse(template.render(c))	
 
 def essays(request):
-	template=loader.get_template('essays.html')
+	template=loader.get_template('rome_templates/essays.html')
 	context=std_context(style="css/links.css")
 	c=RequestContext(request,context)
 	#raise 404 if a certain book does not exist
@@ -392,7 +392,7 @@ def essays(request):
 
 def specific_essay(request, essay_auth):
 	#a=urllib2.urlopen('./essays/book-essay-'+essay_auth+".html").read()
-	template=loader.get_template('./essays/book-essay-'+essay_auth+'.html')
+	template=loader.get_template('rome_templates/essays/book-essay-'+essay_auth+'.html')
 	context=std_context(style="css/links.css")
 	context['usr_essays_style']="css/essays.css"
 	context['txt_path']="essays/aldini.txt"
