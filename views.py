@@ -14,14 +14,14 @@ from operator import itemgetter
 # git push https://ben_leveque@bitbucket.org/birkin/projects-rome_app.git
 # update with efficiency fixes
 
-def std_context(style="css/prints.css",title="The Theater that was Rome |"):
+def std_context(style="static/css/prints.css",title="The Theater that was Rome"):
 	context={}
 	context['usr_style']=style
 	context['title']=title
 	context['cpydate']=2007
-	context['home_image']="images/home.gif"
-	context['brown_image']="images/brown-logo.gif"
-	context['stg_image']="imagse/stg-logo.gif"
+	context['home_image']="static/images/home.gif"
+	context['brown_image']="static/images/brown-logo.gif"
+	context['stg_image']="static/imagse/stg-logo.gif"
 	return context
 
 def index(request):
