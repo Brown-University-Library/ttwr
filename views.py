@@ -62,43 +62,42 @@ def search_results(request, query):
 
 
 
-def books(request,page=1):
-	#logger.error('in books!')
-	template=loader.get_template('rome_templates/books.html')
-	context=std_context()
-	context['curr_page']=page
+	def books(request,page=1):
+		template=loader.get_template('rome_templates/books.html')
+		context=std_context()
+		context['curr_page']=page
 
-	url1='https://repository.library.brown.edu/bdr_apis/pub/collections/621/?q=object_type:implicit-set&fl=*&fq=discover:BDR_PUBLIC'#'&rows=100'
-	num_books=json.loads(urllib2.urlopen(url1).read())['items']['numFound']
-	context['num_books']=num_books
-	url2=url1+'&rows='+str(num_books)
-	books_json=json.loads(urllib2.urlopen(url2).read())
-	#context['books_json']=books_json
-	books_set=books_json['items']['docs']
-	book_list=[]
-	pview_list=[]
-	bview_list=[]
-	quick_and_wrong=1
-	for i in range(len(books_set)): #create list of books to load
-		current_book={}#[] #title, contributors, date
-		book=books_set[i]
-		title="<br />".join(book['primary_title'].split("\n"))
-		pid=book['pid']
-		current_book['pid']=book['pid'].split(":")[1]
-		current_book['thumbnail_url_start']="../book_"+str(current_book['pid'])
-		current_book['studio_uri']=book['uri']
-		short_title=title
-		current_book['title_cut']=0
-		if len(title)>60:
-			short_title=title[0:57]+"..."
-			current_book['title_cut']=1
-		current_book['title']=title#.append(title)
-		current_book['short_title']=short_title#.append(backup_title)
-		if quick_and_wrong:
-			current_book['port_url']='https://repository.library.brown.edu/services/book_reader/portfolio/'+pid+'/highres_jp2/'
-			#current_book['port_url']="https://repository.library.brown.edu/services/book_reader/portfolio/"+pid+"/JP2/"
-			current_book['book_url']='https://repository.library.brown.edu/services/book_reader/set/'+pid+'/highres_jp2/'
-			#"https://repository.library.brown.edu/services/book_reader/set/"+pid+"/JP2/"
+		# load json for all books in the collection #
+		num_books_estimate=6000 #should be plenty
+		url1='https://repository.library.brown.edu/bdr_apis/pub/collections/621/?q=object_type:implicit-set&fl=*&fq=discover:BDR_PUBLIC&rows='+str(num_books_estimate)
+		books_json=json.loads(urllib2.urlopen(url1).read())
+		num_books=books_json['items']['numFound']
+		context['num_books']=num_books
+		if num_books>num_books_estimate: #only reload if we need to find more books
+			url2='https://repository.library.brown.edu/bdr_apis/pub/collections/621/?q=object_type:implicit-set&fl=*&fq=discover:BDR_PUBLIC&rows='+str(num_books)
+			books_json=json.loads(urllib2.urlopen(url2).read())
+		books_set=books_json['items']['docs']
+		book_list=[]
+
+		# create list of books with information to display for each #
+		for i in range(num_books):
+			current_book={}
+			book=books_set[i]
+			title="<br />".join(book['primary_title'].split("\n"))
+			pid=book['pid']
+			current_book['pid']=book['pid'].split(":")[1]
+			current_book['thumbnail_url_start']="../book_"+str(current_book['pid'])
+			current_book['studio_uri']=book['uri']
+			short_title=title
+			current_book['title_cut']=0
+			cutoff=80
+			if len(title)>cutoff:
+				short_title=title[0:cutoff-3]+"..."
+				current_book['title_cut']=1
+			current_book['title']=title
+			current_book['short_title']=short_title
+			current_book['port_url']='https://repository.library.brown.edu/services/book_reader/portfolio/'+pid
+			current_book['book_url']='https://repository.library.brown.edu/services/book_reader/set/'+pid
 			try:
 				current_book['date']=book['dateCreated'][0].split("T")[0]
 			except:
@@ -117,54 +116,25 @@ def books(request,page=1):
 				current_book['authors']=authors
 			except:
 				current_book['authors']="not available"
+			book_list.append(current_book)
+		book_list=sorted(book_list,key=itemgetter('authors')) # sort alphabetically
+		context['book_list']=book_list
 
-		else:
-			book_json=json.loads(urllib2.urlopen(book['json_uri']).read())
-			try:
-				current_book['port_url']=book_json['links']['views']['Portfolio View']
-			except:
-				current_book['port_url']=""
-			try:
-				current_book['book_url']=book_json['links']['views']['Book View']
-			except:
-				current_book['book_url']=""
-			try:
-				current_book['date']=book_json['dateIssued'][0].split("T")[0]
-			except:
-				try:
-					current_book['date']=book_json['dateCreated'][0].split("T")[0]
-				except:
-					current_book['date']="n.d."
-			try:
-				author_list=book_json['contributor_display']
-				authors=""
-				for i in range(len(author_list)):
-					if i==len(author_list)-1:
-						authors+=author_list[i]
-					else:
-						authors+=author_list[i]+"; "
-				current_book['authors']=authors
-			except:
-				current_book['authors']="not available"
-		book_list.append(current_book)
+		# pagination #
+		books_per_page=20
+		context['books_per_page']=books_per_page
+		PAGIN=Paginator(book_list,books_per_page);
+		context['num_pages']=PAGIN.num_pages
+		context['page_range']=PAGIN.page_range
+		context['PAGIN']=PAGIN
+		page_list=[]
+		for i in PAGIN.page_range:
+			page_list.append(PAGIN.page(i).object_list)
+		context['page_list']=page_list
 
-	book_list=sorted(book_list,key=itemgetter('authors'))
-	context['book_list']=book_list
-
-	books_per_page=20
-	context['books_per_page']=books_per_page
-	PAGIN=Paginator(book_list,books_per_page); #20 prints per page
-	context['num_pages']=PAGIN.num_pages
-	context['page_range']=PAGIN.page_range
-	context['PAGIN']=PAGIN
-	page_list=[]
-	for i in PAGIN.page_range:
-		page_list.append(PAGIN.page(i).object_list)
-	context['page_list']=page_list
-
-	c=RequestContext(request,context)
-	#raise 404 if a certain book does not exist
-	return HttpResponse(template.render(c))
+		# send to template #
+		c=RequestContext(request,context)
+		return HttpResponse(template.render(c))
 
 def thumbnail_viewer(request, book_pid, page_num, book_num_on_page):
 	template=loader.get_template('rome_templates/thumbnail_viewer.html')
