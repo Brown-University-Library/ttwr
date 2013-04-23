@@ -171,7 +171,6 @@ def thumbnail_viewer(request, book_pid, page_num, book_num_on_page):
 	context=std_context()
 
 	context['back_to_book_href']="../books_"+str(page_num)+"#"+str(page_num)+"_"+str(book_num_on_page)
-
 	context['pid']=book_pid
 	thumbnails=[]
 	json_uri='https://repository.library.brown.edu/api/pub/items/bdr:'+str(book_pid)+'/?q=*&fl=*'
