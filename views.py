@@ -14,19 +14,19 @@ from operator import itemgetter
 # git push https://ben_leveque@bitbucket.org/birkin/projects-rome_app.git
 # update with efficiency fixes
 
-def std_context(style="static/rome/css/prints.css",title="The Theater that was Rome"):
+def std_context(style="rome/css/prints.css",title="The Theater that was Rome"):
 	context={}
 	context['usr_style']=style
 	context['title']=title
 	context['cpydate']=2007
-	context['home_image']="static/rome/images/home.gif"
-	context['brown_image']="static/rome/images/brown-logo.gif"
-	context['stg_image']="static/rome/imagse/stg-logo.gif"
+	context['home_image']="rome/images/home.gif"
+	context['brown_image']="rome/images/brown-logo.gif"
+	context['stg_image']="rome/imagse/stg-logo.gif"
 	return context
 
 def index(request):
 	template=loader.get_template('rome_templates/index.html') #built-in from django.template
-	context=std_context(style="static/rome/css/home.css")
+	context=std_context(style="rome/css/home.css")
 	c=RequestContext(request,context)
 	#raise 404 if a certain book does not exist
 	return HttpResponse(template.render(c))
