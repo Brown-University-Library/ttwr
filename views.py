@@ -21,7 +21,7 @@ def std_context(style="rome/css/prints.css",title="The Theater that was Rome"):
 	context['cpydate']=2007
 	context['home_image']="rome/images/home.gif"
 	context['brown_image']="rome/images/brown-logo.gif"
-	context['stg_image']="rome/imagse/stg-logo.gif"
+	context['stg_image']="rome/images/stg-logo.gif"
 	return context
 
 def index(request):
@@ -369,7 +369,7 @@ def specific_print(request, print_pid, page_num, print_num_on_page):
 
 def about(request):
 	template=loader.get_template('rome_templates/about.html')
-	context=std_context(style="css/links.css")
+	context=std_context(style="rome/css/links.css")
 
 	c=RequestContext(request,context)
 	#raise 404 if a certain book does not exist
@@ -377,7 +377,7 @@ def about(request):
 
 def links(request):
 	template=loader.get_template('rome_templates/links.html')
-	context=std_context(style="css/links.css")
+	context=std_context(style="rome/css/links.css")
 
 	c=RequestContext(request,context)
 	#raise 404 if a certain book does not exist
@@ -385,7 +385,7 @@ def links(request):
 
 def essays(request):
 	template=loader.get_template('rome_templates/essays.html')
-	context=std_context(style="css/links.css")
+	context=std_context(style="rome/css/links.css")
 	c=RequestContext(request,context)
 	#raise 404 if a certain book does not exist
 	return HttpResponse(template.render(c))
@@ -393,9 +393,8 @@ def essays(request):
 def specific_essay(request, essay_auth):
 	#a=urllib2.urlopen('./essays/book-essay-'+essay_auth+".html").read()
 	template=loader.get_template('rome_templates/essays/book-essay-'+essay_auth+'.html')
-	context=std_context(style="css/links.css")
-	context['usr_essays_style']="css/essays.css"
-	context['txt_path']="essays/aldini.txt"
+	context=std_context(style="rome/css/links.css")
+	context['usr_essays_style']="rome/css/essays.css"
 	c=RequestContext(request,context)
 	#raise 404 if a certain book does not exist
 	return HttpResponse(template.render(c))
