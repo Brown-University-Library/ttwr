@@ -12,6 +12,7 @@ from operator import itemgetter
 # from models import AboutPage
 
 # git push https://ben_leveque@bitbucket.org/birkin/projects-rome_app.git
+# update with efficiency fixes
 
 def std_context(style="css/prints.css",title="The Theater that was Rome |"):
 	context={}
@@ -70,7 +71,7 @@ def books(request,page=1):
 	url1='https://repository.library.brown.edu/bdr_apis/pub/collections/621/?q=object_type:implicit-set&fl=*&fq=discover:BDR_PUBLIC'#'&rows=100'
 	num_books=json.loads(urllib2.urlopen(url1).read())['items']['numFound']
 	context['num_books']=num_books
-	url2='https://repository.library.brown.edu/bdr_apis/pub/collections/621/?q=object_type:implicit-set&fl=*&fq=discover:BDR_PUBLIC&rows='+str(num_books)
+	url2=url1+'&rows='+str(num_books)
 	books_json=json.loads(urllib2.urlopen(url2).read())
 	#context['books_json']=books_json
 	books_set=books_json['items']['docs']
