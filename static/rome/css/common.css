@@ -66,6 +66,15 @@ h1 span.leftcap {
 	margin: 0;
 	}
 	
+h1 span.right_cap {
+	background: url(../images/light-header-cap.gif) no-repeat 0 0;
+	float:right;
+	padding-right:20px;
+	display: block;
+	height: 43px;
+	margin: 0;
+	}
+	
 h1 span.repeatbg {
 	background: url(../images/light-header-gradient.gif) repeat-x 0 0;
 	display: block;
