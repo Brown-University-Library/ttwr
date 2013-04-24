@@ -57,7 +57,7 @@ function show_page(i)
     <div id="page_body">
         {% for page in page_list %}
         <div id="page_{{forloop.counter}}" num="{{forloop.counter}}" style="display:none;">
-            <ol>
+            <ol type="1">
                 {% for print in page %}
                 <li>
                     <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}">
