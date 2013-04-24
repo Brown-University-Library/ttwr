@@ -55,12 +55,11 @@ function show_page(i)
         </div>
     </div>
     <div id="page_body">
-        <ol>
-            {% for page in page_list %}
-            <div id="page_{{forloop.counter}}" num="{{forloop.counter}}" style="display:none;">
-            <!-- <ol> -->
+        {% for page in page_list %}
+        <div id="page_{{forloop.counter}}" num="{{forloop.counter}}" style="display:none;">
+            <ol>
                 {% for print in page %}
-                <li>
+                <li value={{print.number_in_list}}>
                     <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}">
                         Author(s): <span class="dark">{{ print.authors }}</span><br />
                         Date: <span class="dark">{{ print.date }}</span> <br />
@@ -85,11 +84,9 @@ function show_page(i)
                     <br />
                 </li>
                 {% endfor %}
-            <!-- </ol> -->
-            </div>
-            {% endfor %}
-        </ol>
-        
+            </ol>
+        </div>
+        {% endfor %}
         
         
         <!-- <ul>

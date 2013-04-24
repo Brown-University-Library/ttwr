@@ -273,6 +273,8 @@ def prints(request,page=1):
 		print_list.append(current_print)
 
 	print_list=sorted(print_list,key=itemgetter('authors'))
+	for i, Print in enumerate(print_list):
+		Print['number_in_list']=i+1
 	context['print_list']=print_list
 
 	prints_per_page=20
