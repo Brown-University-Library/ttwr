@@ -61,7 +61,7 @@ h1 {
 h1 span.leftcap {
 	background: url(../images/light-header-cap.gif) no-repeat 0 0;
 	padding: 6px 0 0 18px;
-	display: block;
+	display: inline;
 	height: 43px;
 	margin: 0;
 	}
