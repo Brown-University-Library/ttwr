@@ -284,18 +284,8 @@ def prints(request,page=1):
 	for i in PAGIN.page_range:
 		page_list.append(PAGIN.page(i).object_list)
 	context['page_list']=page_list
-	# I=request.GET.get('page')
-	# 	try:
-	# 		curr_page=PAGIN.page(I)
-	# 	except PageNotAnInteger:
-	# 		curr_page=PAGIN.page(1)
-	# 	except EmptyPage:
-	# 		curr_page=PAGIN.page(PAGIN.num_pages)
-	# 	context['curr_page']=curr_page	
-
 
 	c=RequestContext(request,context)
-	#raise 404 if a certain print does not exist
 	return HttpResponse(template.render(c))
 
 def specific_print(request, print_pid, page_num, print_num_on_page):

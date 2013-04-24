@@ -57,7 +57,7 @@ function show_page(i)
     <div id="page_body">
         {% for page in page_list %}
         <div id="page_{{forloop.counter}}" num="{{forloop.counter}}" style="display:none;">
-            <ul>
+            <ol>
                 {% for print in page %}
                 <li>
                     <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}">
@@ -73,18 +73,18 @@ function show_page(i)
                             {% endif %}
                         </span></span><br />
                         More info:
-                            <a href={{ print.studio_uri }} target="_blank">Click here</a><br />
+                            <a href={{ print.studio_uri }} target="_blank">Click here</a>, pid: {{ print.pid }}<br />
                         Viewers:
                             <a href="{{ print.thumbnail_url_start }}_{{forloop.parentloop.counter}}_{{forloop.counter}}" target="_blank">
-                                Thumbnail Viewer
-                                </a>,
-                            <a href={{ print.det_img_viewer }} target="_blank">Detailed Image Viewer</a>
+                                View Print
+                            </a>
+                            <!-- ,<a href={{ print.det_img_viewer }} target="_blank">Detailed Image Viewer</a> -->
                     </span>
                     <br />
                     <br />
                 </li>
                 {% endfor %}
-            </ul>
+            </ol>
         </div>
         {% endfor %}
         
