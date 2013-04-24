@@ -66,10 +66,10 @@ h1 span.leftcap {
 	margin: 0;
 	}
 	
-h1 span.back_home {
+.back_home {
 	position:absolute;
 	margin: 0 4px 0 4px;
-	padding: 6px 0 0 90%;
+	padding: 6px 40px 0 90%;
 }
 	
 h1 span.repeatbg {
