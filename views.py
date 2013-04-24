@@ -269,6 +269,7 @@ def prints(request,page=1):
 			else:
 				authors+=author_list[i]+"; "
 		current_print['authors']=authors
+		current_print['pid']=pid.split(":")[1]
 		print_list.append(current_print)
 
 	print_list=sorted(print_list,key=itemgetter('authors'))
