@@ -61,10 +61,16 @@ h1 {
 h1 span.leftcap {
 	background: url(../images/light-header-cap.gif) no-repeat 0 0;
 	padding: 6px 0 0 18px;
-	display: inline;
+	display: block;
 	height: 43px;
 	margin: 0;
 	}
+	
+h1 span.back_home {
+	position:absolute;
+	margin: 0 4px 0 4px;
+	padding: 6px 0 0 90%;
+}
 	
 h1 span.repeatbg {
 	background: url(../images/light-header-gradient.gif) repeat-x 0 0;
