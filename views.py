@@ -226,9 +226,9 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
 	#logger.error('json_uri = '+json_uri)
 	page_json=json.loads(urllib2.urlopen(page_json_uri).read())
 	annotations=page_json['relations']['hasAnnotation']
-	context['annotations']=""
-	if len(annotations):
-		context['annotations']=annotations['uri']
+	context['annotations']=[]
+	for i in range(len(annotations)):
+		context['annotations'].append(annotations[i]['uri'])
 	
 	c=RequestContext(request,context)
 	#raise 404 if a certain book does not exist

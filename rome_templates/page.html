@@ -49,7 +49,9 @@ function expand_title(title,num)
         <iframe src={{ det_img_view_src}} width="80%" height="800"></iframe>
     </div>
     <div id="metadata">
-        <a href={{ annotations }}>{{ annotations }}</a>
+        {% for annotation in annotations %}
+        <a href={{ annotation }}>{{ annotation }}</a>
+        {% endfor %}
     </div>
     <div id="footer">
 	    <span>&#169; {{cpydate}} Brown University</span>
