@@ -139,12 +139,10 @@ def books(request,page=1):
 def thumbnail_viewer(request, book_pid, page_num, book_num_on_page):
 	template=loader.get_template('rome_templates/thumbnail_viewer.html')
 	context=std_context()
-
 	context['back_to_book_href']="../books_"+str(page_num)+"#"+str(page_num)+"_"+str(book_num_on_page)
 	context['pid']=book_pid
 	thumbnails=[]
 	json_uri='https://repository.library.brown.edu/api/pub/items/bdr:'+str(book_pid)+'/?q=*&fl=*'
-	#logger.error('json_uri = '+json_uri)
 	book_json=json.loads(urllib2.urlopen(json_uri).read())
 	context['short_title']=book_json['brief']['title']
 	context['title']=book_json['primary_title']
