@@ -197,9 +197,9 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
 
 	context['pid']=book_pid
 	thumbnails=[]
-	json_uri='https://repository.library.brown.edu/api/pub/items/bdr:'+str(book_pid)+'/?q=*&fl=*'
+	book_json_uri='https://repository.library.brown.edu/api/pub/items/bdr:'+str(book_pid)+'/?q=*&fl=*'
 	#logger.error('json_uri = '+json_uri)
-	book_json=json.loads(urllib2.urlopen(json_uri).read())
+	book_json=json.loads(urllib2.urlopen(book_json_uri).read())
 	context['short_title']=book_json['brief']['title']
 	context['title']=book_json['primary_title']
 	try:
@@ -222,6 +222,14 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
 			context['date']="n.d."
 	context['det_img_view_src']="http://repository.library.brown.edu/viewer/highres_viewer.html?pid=bdr:"+str(page_pid)+"&ds=highres_jp2"
 
+	page_json_uri='https://repository.library.brown.edu/api/pub/items/bdr:'+str(page_pid)+'/?q=*&fl=*'
+	#logger.error('json_uri = '+json_uri)
+	page_json=json.loads(urllib2.urlopen(page_json_uri).read())
+	annotations=page_json['relations']['hasAnnotation']
+	context['annotations']=""
+	if len(annotations):
+		context['annotations']=annotations['uri']
+	
 	c=RequestContext(request,context)
 	#raise 404 if a certain book does not exist
 	return HttpResponse(template.render(c))
