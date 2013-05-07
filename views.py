@@ -171,7 +171,11 @@ def thumbnail_viewer(request, book_pid, page_num, book_num_on_page):
 		curr_thumb['det_img_view']="https://repository.library.brown.edu/viewer/highres_viewer.html?pid="+page['pid']+"&ds=highres_jp2"
 		page_url="https://repository.library.brown.edu/api/pub/items/"+page['pid']
 		page_json=json.loads(urllib2.urlopen(page_url).read())
-		curr_thumb['has_metadata']=len(page_json['relations']['hasAnnotation'])>0
+		annotations=page_json['relations']['hasAnnotation']
+		curr_thumb['has_metadata']=0
+		if len(annotations):
+			curr_thumb['has_metadata']=1
+		
 		curr_pid=page['pid'].split(":")[1]
 		curr_thumb['page_view']="../page_"+str(book_pid)+"_"+str(curr_pid)+"_"+str(page_num)+"_"+str(book_num_on_page)
 		thumbnails.append(curr_thumb)
