@@ -16,9 +16,13 @@ function expand_title(title,num)
 }
 </script>
 <style>
-.img_container:hover
+.img_container_0:hover
 {
     background:rgba(0,0,0,.1);
+}
+.img_container_1:hover
+{
+    background:rgba(0,255,0,.1);
 }
 </style>
 </head>
@@ -42,7 +46,7 @@ function expand_title(title,num)
     </div>
     <div id="page_body">
         {% for thumbnail in thumbnails %}
-        <div class="img_container" style="float:left;margin-bottom:5px;padding-bottom:5px;text-align:center">
+        <div class="img_container_{{thumbnail.has_metadata}}" style="float:left;margin-bottom:5px;padding-bottom:5px;text-align:center">
             <a href={{ thumbnail.page_view }} target="_blank">
                 <img src={{ thumbnail.src }} height="150px" style="margin:5px;padding-left:5px" />
             </a>
