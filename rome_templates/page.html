@@ -50,7 +50,8 @@ function expand_title(title,num)
     </div>
     <div id="metadata">
         {% for annotation in annotations %}
-        <a href={{ annotation }}>{{ annotation }}</a>
+        <br />
+        <a href={{ annotation }} target="_blank">{{ annotation }}</a>
         {% endfor %}
     </div>
     <div id="footer">
