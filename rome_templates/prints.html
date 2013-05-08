@@ -8,9 +8,8 @@ function load()
     curr_page={{ curr_page }};
     show_page(curr_page);
 }
-function expand_title(title,page_num,num_on_page)
+function expand_title(page_num,num_on_page)
 {
-    alert("title = "+title);
     var spans=document.getElementsByTagName("span");
     var i;
     for(i=0;i<spans.length;i++)
@@ -77,7 +76,7 @@ function show_page(i)
                             <span num="{{forloop.parentloop.counter}}_{{forloop.counter}}">{{ print.short_title }}
                                 {% if print.title_cut %}
                                 <span class="more_button"
-                                        onclick="expand_title('{{print.title}}',{{forloop.parentloop.counter}},{{forloop.counter}})">
+                                        onclick="expand_title('{{forloop.parentloop.counter}}','{{forloop.counter}}')">
                                         [more]
                                 </span>
                                 <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}_full" style="display:none;">
