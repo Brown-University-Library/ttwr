@@ -74,7 +74,7 @@ function show_page(i)
                         <span num="{{forloop.parentloop.counter}}_{{forloop.counter}}">{{ print.short_title }}
                             {% if print.title_cut %}
                             <span class="more_button"
-                                    onclick="expand_title('{{print.title}}',{{forloop.parentloop.counter}},{{forloop.counter}})">
+                                    onclick="expand_title({{print.title}},{{forloop.parentloop.counter}},{{forloop.counter}})">
                                     [more]
                             </span>
                             {% endif %}
