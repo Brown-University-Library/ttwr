@@ -72,7 +72,7 @@ function show_page(i)
                         Author(s): <span class="dark">{{ print.authors }}</span><br />
                         Date: <span class="dark">{{ print.date }}</span> <br />
                         Title: <span class="dark">
-                        <span num="{{forloop.parentloop.counter}}_{{forloop.counter}}">{{ print.short_title }}
+                        <span num="{{forloop.parentloop.counter}}_{{forloop.counter}}">{{ print.title }}
                             {% if print.title_cut %}
                             <span class="more_button"
                                     onclick="expand_title('{{print.title}}',{{forloop.parentloop.counter}},{{forloop.counter}})">
