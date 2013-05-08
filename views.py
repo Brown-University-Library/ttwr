@@ -201,7 +201,7 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
 	#logger.error('json_uri = '+json_uri)
 	book_json=json.loads(urllib2.urlopen(book_json_uri).read())
 	context['short_title']=book_json['brief']['title']
-	context['title']=book_json['primary_title']
+	context['title']=urllib.urlencode(book_json['primary_title'])
 	try:
 		author_list=book_json['contributor_display']
 		authors=""
