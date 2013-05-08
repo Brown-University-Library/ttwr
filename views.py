@@ -118,6 +118,8 @@ def books(request,page=1):
 			current_book['authors']="not available"
 		book_list.append(current_book)
 	book_list=sorted(book_list,key=itemgetter('authors')) # sort alphabetically
+	for i, book in enumerate(book_list):
+		book['number_in_list']=i+1
 	context['book_list']=book_list
 
 	# pagination #

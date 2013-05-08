@@ -8,7 +8,7 @@ function load()
     curr_page={{curr_page}};
     show_page(curr_page);
 }
-function expand_title(title,page_num,num_on_page)
+function expand_title(page_num,num_on_page)
 {
     var spans=document.getElementsByTagName("span");
     var i;
@@ -56,9 +56,9 @@ function show_page(i)
     <div id="page_body">
         {% for page in page_list %}
         <div id="page_{{forloop.counter}}" num="{{forloop.counter}}" style="display:none;">
-            <ul>
+            <ol>
                 {% for book in page %}
-                <li>
+                <li value={{book.number_in_list}}>
                     <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}">
                         Author(s): <span class="dark">{{ book.authors }}</span><br />
                         Date: <span class="dark">{{ book.date }}</span> <br />
@@ -68,7 +68,7 @@ function show_page(i)
                                 {{ book.short_title }}
                                 {% if book.title_cut %}
                                 <span class="more_button"
-                                        onclick="expand_title('{{book.title}}',{{forloop.parentloop.counter}},{{forloop.counter}})">
+                                        onclick="expand_title({{forloop.parentloop.counter}},{{forloop.counter}})">
                                         [more]
                                 </span>
                                 {% endif %}
@@ -91,7 +91,7 @@ function show_page(i)
                     <br />
                 </li>
                 {% endfor %}
-            </ul>
+            </ol>
         </div>
         {% endfor %}
     </div>
