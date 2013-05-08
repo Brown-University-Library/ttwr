@@ -79,10 +79,10 @@ function show_page(i)
                                         onclick="expand_title('{{forloop.parentloop.counter}}','{{forloop.counter}}')">
                                         [more]
                                 </span>
-                                <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}_full" style="display:none;">
-                                    {{ print.title }}
-                                </span>
                                 {% endif %}
+                            </span>
+                            <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}_full" style="display:none;">
+                                {{ print.title }}
                             </span>
                         </span>
                         <br />
