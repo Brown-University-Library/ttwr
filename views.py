@@ -83,7 +83,7 @@ def books(request,page=1):
 	for i in range(num_books):
 		current_book={}
 		book=books_set[i]
-		title="<br />".join(book['primary_title'].split("\n"))
+		title=book['primary_title'] #"<br />".join(book['primary_title'].split("\n"))
 		pid=book['pid']
 		current_book['pid']=book['pid'].split(":")[1]
 		current_book['thumbnail_url_start']="../book_"+str(current_book['pid'])
