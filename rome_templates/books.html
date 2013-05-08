@@ -16,10 +16,11 @@ function expand_title(title,page_num,num_on_page)
     {
         if(spans[i].getAttribute("num")==page_num+"_"+num_on_page)
         {
-            spans[i].innerHTML=title;
+            spans[i].style.display="none";
             break;
         }
     }
+    document.getElementById(page_num+"_"+num_on_page+"_full").style.display="inline";
 }
 function show_page(i)
 {
@@ -61,15 +62,22 @@ function show_page(i)
                     <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}">
                         Author(s): <span class="dark">{{ book.authors }}</span><br />
                         Date: <span class="dark">{{ book.date }}</span> <br />
-                        Title: <span class="dark">
-                        <span num="{{forloop.parentloop.counter}}_{{forloop.counter}}">{{ book.short_title }}
-                            {% if book.title_cut %}
-                            <span class="more_button"
-                                    onclick="expand_title('{{book.title}}',{{forloop.parentloop.counter}},{{forloop.counter}})">
-                                    [more]
+                        Title:
+                        <span class="dark">
+                            <span num="{{forloop.parentloop.counter}}_{{forloop.counter}}">
+                                {{ book.short_title }}
+                                {% if book.title_cut %}
+                                <span class="more_button"
+                                        onclick="expand_title('{{book.title}}',{{forloop.parentloop.counter}},{{forloop.counter}})">
+                                        [more]
+                                </span>
+                                {% endif %}
                             </span>
-                            {% endif %}
-                        </span></span><br />
+                            <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}_full" style="display:none;">
+                                {{ book.title }}
+                            </span>
+                        </span>
+                        <br />
                         More info:
                             <a href={{ book.studio_uri }} target="_blank">Click here</a><br />
                         Viewers:
