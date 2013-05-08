@@ -201,7 +201,7 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
 	#logger.error('json_uri = '+json_uri)
 	book_json=json.loads(urllib2.urlopen(book_json_uri).read())
 	context['short_title']=book_json['brief']['title']
-	context['title']=urllib.urlencode(book_json['primary_title'])
+	context['title']=book_json['primary_title']
 	try:
 		author_list=book_json['contributor_display']
 		authors=""
@@ -253,7 +253,7 @@ def prints(request,page=1):
 	for i in range(len(prints_set)): #create list of prints to load
 		current_print={}
 		Print=prints_set[i]
-		title="<br />".join(Print['primary_title'].split("\n"))
+		title=Print['primary_title'] #"<br />".join(Print['primary_title'].split("\n"))
 		pid=Print['pid']
 		current_print['studio_uri']=Print['uri']
 		short_title=title
