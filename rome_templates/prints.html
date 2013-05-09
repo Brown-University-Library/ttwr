@@ -61,7 +61,7 @@ function show_page(i)
                         <button onclick="show_page({{forloop.counter}})">{{i}}</button>
                         <!-- <a href="?page={{i}}">{{i}}</a> -->
                     {% endfor %}
-                    &nbsp showing {{prints_per_page}} prints per page, {{num_prints}} total
+                    &nbsp showing {{prints_per_page}} prints per page, {{num_prints}} total; on page {{ curr_page }}
                 <li>
             </ol>
         </div>
