@@ -299,8 +299,7 @@ def prints(request,page=1):
 		current_print={}
 		Print=prints_set[i]
 		title=Print['primary_title'] #"<br />".join(Print['primary_title'].split("\n"))
-		Print['in_chinea']=0
-		logger.error("title = "+title)
+		Print['in_chinea']=1
 		if re.search(r"chinea",title,re.IGNORECASE):
 			Print['in_chinea']=1
 		pid=Print['pid']
