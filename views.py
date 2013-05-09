@@ -270,7 +270,7 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
 	return HttpResponse(template.render(c))
 
 
-def prints(request,page=1):
+def prints(request,page=1, sort_by="authors"):
 	template=loader.get_template('rome_templates/prints.html')
 	context=std_context(title="The Theater that was Rome - Prints")
 	context['curr_page']=page
@@ -333,7 +333,8 @@ def prints(request,page=1):
 		current_print['pid']=pid.split(":")[1]
 		print_list.append(current_print)
 
-	print_list=sorted(print_list,key=itemgetter('authors'))
+	
+	print_list=sorted(print_list,key=itemgetter(sort_by))
 	for i, Print in enumerate(print_list):
 		Print['number_in_list']=i+1
 	context['print_list']=print_list
