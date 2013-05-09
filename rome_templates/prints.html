@@ -90,16 +90,14 @@ function show_page(i)
                             </span>
                         </span>
                         <br />
-                        More info:
-                            <a href={{ pprint.studio_uri }} target="_blank">Click here</a>, pid: {{ pprint.pid }}<br />
-                        Viewers:
-                            <a href="{{ pprint.thumbnail_url_start }}_{{forloop.parentloop.counter}}_{{forloop.counter}}" target="_blank">
-                                View Print
-                            </a>
-                            <!-- ,<a href={{ pprint.det_img_viewer }} target="_blank">Detailed Image Viewer</a> -->
+                        <a href={{ pprint.studio_uri }} target="_blank">More info</a>,
+                        <a href="{{ pprint.thumbnail_url_start }}_{{forloop.parentloop.counter}}_{{forloop.counter}}" target="_blank">
+                            View Print
+                        </a><br />
+                        Object ID: {{ pprint.pid }}
                         {% if pprint.in_chinea %}
                         <br />
-                        In the Chinea collection
+                        This print is in the Chinea collection.
                         {% endif %}
                     </span>
                     <br />

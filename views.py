@@ -64,7 +64,7 @@ def search_results(request, query):
 
 
 
-def books(request,page=1):
+def books(request,page=1,sort_by='authors'):
 	template=loader.get_template('rome_templates/books.html')
 	context=std_context()
 	context['curr_page']=page
@@ -119,7 +119,7 @@ def books(request,page=1):
 		except:
 			current_book['authors']="not available"
 		book_list.append(current_book)
-	book_list=sorted(book_list,key=itemgetter('authors')) # sort alphabetically
+	book_list=sorted(book_list,key=itemgetter(sort_by,'authors','title','date')) # sort alphabetically
 	for i, book in enumerate(book_list):
 		book['number_in_list']=i+1
 	context['book_list']=book_list
