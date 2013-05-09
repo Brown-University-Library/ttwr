@@ -300,7 +300,7 @@ def prints(request,page=1):
 		Print=prints_set[i]
 		title=Print['primary_title'] #"<br />".join(Print['primary_title'].split("\n"))
 		Print['in_chinea']=0
-		if re.search(r"chinea",title,re.IGNORECASE):
+		if re.search(r"chinea",title,re.IGNORECASE|re.M):
 			Print['in_chinea']=1
 		pid=Print['pid']
 		current_print['studio_uri']=Print['uri']
