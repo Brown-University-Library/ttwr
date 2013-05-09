@@ -231,6 +231,7 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
 	# annotations/metadata
 	page_json=json.loads(urllib2.urlopen(page_json_uri).read())
 	annotations=page_json['relations']['hasAnnotation']
+	context['has_annotations']=len(annotations)
 	context['annotation_uris']=[]
 	context['annotations']=[]
 	for i in range(len(annotations)):
@@ -255,11 +256,11 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
 			curr_annot['origin']=origin[0].text
 		curr_annot['notes']=[]
 		for note in root.getiterator('{http://www.loc.gov/mods/v3}note'):
-			curr_note=""
+			curr_note=[]
 			for att in note.attrib:
-				curr_note+=att+": "+note.attrib[att]+"\n"
+				curr_note.append(att+": "+note.attrib[att])
 			if note.text:
-				curr_note+="text: "+note.text
+				curr_note.append("text: "+note.text)
 			curr_annot['notes'].append(curr_note)
 		context['annotations'].append(curr_annot)
 		
