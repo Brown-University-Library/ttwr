@@ -247,14 +247,14 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
 				curr_annot['title']=title[0].text
 				break
 		curr_annot['names']=[]
-		for name in root.iter('{http://www.loc.gov/mods/v3}name'):
+		for name in root.getiterator('{http://www.loc.gov/mods/v3}name'):
 			curr_annot['names'].append({'name':curr_annottitle[0].text, 'role':title[1][0].text})
-		for abstract in root.iter('{http://www.loc.gov/mods/v3}abstract'):
+		for abstract in root.getiterator('{http://www.loc.gov/mods/v3}abstract'):
 			curr_annot['abstract']=abstract.text
-		for origin in root.iter('{http://www.loc.gov/mods/v3}originInfo'):
+		for origin in root.getiterator('{http://www.loc.gov/mods/v3}originInfo'):
 			curr_annot['origin']=origin[0].text
 		curr_annot['notes']
-		for note in tree.iter('{http://www.loc.gov/mods/v3}note'):
+		for note in tree.getiterator('{http://www.loc.gov/mods/v3}note'):
 			curr_note=""
 			for att in note.attrib:
 				curr_note+=att+": "+note.attrib[att]+"\n"
