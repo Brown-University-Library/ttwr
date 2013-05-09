@@ -30,6 +30,8 @@ function show_page(i)
     var new_page=document.getElementById("page_"+i);
     new_page.style.display="block";
     curr_page=i;
+    
+    document.getElementById("curr_page_span").innerHTML=i;
 }
 </script>
 </head>
@@ -52,7 +54,7 @@ function show_page(i)
                     {% for i in page_range %}
                         <button onclick="show_page({{forloop.counter}})">{{i}}</button>
                     {% endfor %}
-                    &nbsp showing {{books_per_page}} books per page, {{num_books}} total; on page {{ curr_page }}
+                    &nbsp showing {{books_per_page}} books per page, {{num_books}} total; on page <span id="curr_page_span">1</span>
                 <li>
             </ol>
         </div>
