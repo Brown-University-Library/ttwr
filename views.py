@@ -258,7 +258,8 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
 			curr_note=""
 			for att in note.attrib:
 				curr_note+=att+": "+note.attrib[att]+"\n"
-			curr_note+="text: "+note.text
+			if note.text:
+				curr_note+="text: "+note.text
 			curr_annot['notes'].append(curr_note)
 		context['annotations'].append(curr_annot)
 		
