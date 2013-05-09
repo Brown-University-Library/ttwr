@@ -42,7 +42,7 @@ function show_page(i)
         <h1>
             <span class="repeatbg">
                 <span class="leftcap">
-                    <a href="../">The Theater that was Rome: Prints</a>
+                    <a href="../">The Theater that was Rome - Prints</a>
                 </span>
             </span>
         </h1>
@@ -74,7 +74,6 @@ function show_page(i)
                 <li value={{print.number_in_list}}>
                     <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}">
                         Author(s): <span class="dark">{{ pprint.authors }}</span><br />
-                        Date: <span class="dark">{{ pprint.date }}</span> <br />
                         Title:
                         <span class="dark">
                             <span num="{{forloop.parentloop.counter}}_{{forloop.counter}}">{{ pprint.short_title }}
@@ -90,6 +89,7 @@ function show_page(i)
                             </span>
                         </span>
                         <br />
+                        Date: <span class="dark">{{ pprint.date }}</span> <br />
                         <a href={{ pprint.studio_uri }} target="_blank">More info</a>,
                         <a href="{{ pprint.thumbnail_url_start }}_{{forloop.parentloop.counter}}_{{forloop.counter}}" target="_blank">
                             View Print

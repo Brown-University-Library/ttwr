@@ -387,6 +387,43 @@ def specific_print(request, print_pid, page_num, print_num_on_page):
 			context['date']=print_json['dateCreated'][0].split("T")[0]
 		except:
 			context['date']="n.d."
+			
+	
+	# annotations/metadata
+	annotations=print_json['relations']['hasAnnotation']
+	context['has_annotations']=len(annotations)
+	context['annotation_uris']=[]
+	context['annotations']=[]
+	for i in range(len(annotations)):
+		annot_pid=annotations[i]['pid']
+		annot_studio_uri=annotations[i]['uri']
+		annot_xml_uri='https://repository.library.brown.edu/fedora/objects/'+annot_pid+'/datastreams/content/content'
+		context['annotation_uris'].append(annot_xml_uri)
+		curr_annot={}
+		curr_annot['xml_uri']=annot_xml_uri
+
+		root=ET.fromstring(urllib2.urlopen(annot_xml_uri).read()) #root of our xml tree
+		for title in root.getiterator('{http://www.loc.gov/mods/v3}titleInfo'):
+			if title.attrib['lang']=='en':
+				curr_annot['title']=title[0].text
+				break
+		curr_annot['names']=[]
+		for name in root.getiterator('{http://www.loc.gov/mods/v3}name'):
+			curr_annot['names'].append({'name':name[0].text, 'role':name[1][0].text})
+		for abstract in root.getiterator('{http://www.loc.gov/mods/v3}abstract'):
+			curr_annot['abstract']=abstract.text
+		for origin in root.getiterator('{http://www.loc.gov/mods/v3}originInfo'):
+			curr_annot['origin']=origin[0].text
+		curr_annot['notes']=[]
+		for note in root.getiterator('{http://www.loc.gov/mods/v3}note'):
+			curr_note=[]
+			for att in note.attrib:
+				curr_note.append(att+": "+note.attrib[att])
+			if note.text:
+				curr_note.append("text: "+note.text)
+			curr_annot['notes'].append(curr_note)
+		context['annotations'].append(curr_annot)
+	
 
 	c=RequestContext(request,context)
 	#raise 404 if a certain print does not exist
