@@ -334,7 +334,7 @@ def prints(request,page=1, sort_by="authors"):
 		print_list.append(current_print)
 
 	
-	print_list=sorted(print_list,key=itemgetter(sort_by,'authors','title','date').lower)
+	print_list=sorted(print_list,key=itemgetter(sort_by,'authors','title','date'))
 	for i, Print in enumerate(print_list):
 		Print['number_in_list']=i+1
 	context['print_list']=print_list
