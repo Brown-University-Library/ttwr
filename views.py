@@ -8,6 +8,7 @@ import json
 import logging
 logger = logging.getLogger(__name__)
 from operator import itemgetter
+import xml.etree.ElementTree as ET
 # from rome_app import models
 # from models import AboutPage
 
@@ -226,12 +227,37 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
 
 	page_json_uri='https://repository.library.brown.edu/api/pub/items/bdr:'+str(page_pid)+'/?q=*&fl=*'
 	#logger.error('json_uri = '+json_uri)
+	
+	# annotations/metadata
 	page_json=json.loads(urllib2.urlopen(page_json_uri).read())
 	annotations=page_json['relations']['hasAnnotation']
 	context['annotations']=[]
 	for i in range(len(annotations)):
-		context['annotations'].append(annotations[i]['uri'])
-	
+		annot_pid=annotations[i]['pid']
+		annot_studio_uri=annotations[i]['uri']
+		annot_xml_uri='https://repository.library.brown.edu/fedora/objects/'+annot_pid+'/datastreams/content/content'
+		context['annotations'].append(annot_uri)
+		curr_annot={}
+		root=ET.fromstring(urllib2.urlopen(annot_xml_uri).read()) #root of our xml tree
+		for title in root.iter('{http://www.loc.gov/mods/v3}titleInfo'):
+			if title.attrib['lang']=='en':
+				curr_annot['title']=title[0].text
+				break
+		curr_annot['names']=[]
+		for name in root.iter('{http://www.loc.gov/mods/v3}name'):
+			curr_annot['names'].append({'name':curr_annottitle[0].text, 'role':title[1][0].text})
+		for abstract in root.iter('{http://www.loc.gov/mods/v3}abstract'):
+			curr_annot['abstract']=abstract.text
+		for origin in root.iter('{http://www.loc.gov/mods/v3}originInfo'):
+			curr_annot['origin']=origin[0].text
+		curr_annot['notes']
+		for title in tree.iter('{http://www.loc.gov/mods/v3}note'):
+			curr_note=""
+			for att in title.attrib:
+				curr_note+=att+": "+title.attrib[att]+"\n"
+			curr_note+="text: "+title.text
+			curr_annot.append(curr_note)
+		
 	c=RequestContext(request,context)
 	#raise 404 if a certain book does not exist
 	return HttpResponse(template.render(c))
