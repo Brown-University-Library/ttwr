@@ -92,9 +92,9 @@ function show_page(i)
                         </span>
                         <br />
                         Date: <span class="dark">{{ pprint.date }}</span> <br />
-                        <a href={{ pprint.studio_uri }} target="_blank">More info</a>,
+                        <a href={{ pprint.studio_uri }} target="_blank">[More info]</a>,
                         <a href="{{ pprint.thumbnail_url_start }}_{{forloop.parentloop.counter}}_{{forloop.counter}}" target="_blank">
-                            View Print
+                            [View Print]
                         </a><br />
                         Object ID: {{ pprint.pid }}
                         {% if pprint.in_chinea %}
