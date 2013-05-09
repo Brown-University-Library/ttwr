@@ -66,15 +66,15 @@ function show_page(i)
         {% for page in page_list %}
         <div id="page_{{forloop.counter}}" num="{{forloop.counter}}" style="display:none;">
             <ol>
-                {% for print in page %}
+                {% for pprint in page %}
                 <li value={{print.number_in_list}}>
                     <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}">
-                        Author(s): <span class="dark">{{ print.authors }}</span><br />
-                        Date: <span class="dark">{{ print.date }}</span> <br />
+                        Author(s): <span class="dark">{{ pprint.authors }}</span><br />
+                        Date: <span class="dark">{{ pprint.date }}</span> <br />
                         Title:
                         <span class="dark">
-                            <span num="{{forloop.parentloop.counter}}_{{forloop.counter}}">{{ print.short_title }}
-                                {% if print.title_cut %}
+                            <span num="{{forloop.parentloop.counter}}_{{forloop.counter}}">{{ pprint.short_title }}
+                                {% if pprint.title_cut %}
                                 <span class="more_button"
                                         onclick="expand_title('{{forloop.parentloop.counter}}','{{forloop.counter}}')">
                                         [more]
@@ -82,18 +82,18 @@ function show_page(i)
                                 {% endif %}
                             </span>
                             <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}_full" style="display:none;">
-                                {{ print.title }}
+                                {{ pprint.title }}
                             </span>
                         </span>
                         <br />
                         More info:
-                            <a href={{ print.studio_uri }} target="_blank">Click here</a>, pid: {{ print.pid }}<br />
+                            <a href={{ pprint.studio_uri }} target="_blank">Click here</a>, pid: {{ pprint.pid }}<br />
                         Viewers:
-                            <a href="{{ print.thumbnail_url_start }}_{{forloop.parentloop.counter}}_{{forloop.counter}}" target="_blank">
+                            <a href="{{ pprint.thumbnail_url_start }}_{{forloop.parentloop.counter}}_{{forloop.counter}}" target="_blank">
                                 View Print
                             </a>
-                            <!-- ,<a href={{ print.det_img_viewer }} target="_blank">Detailed Image Viewer</a> -->
-                        {% if Print.in_chinea %}
+                            <!-- ,<a href={{ pprint.det_img_viewer }} target="_blank">Detailed Image Viewer</a> -->
+                        {% if pprint.in_chinea %}
                         In the Chinea collection
                         {% endif %}
                     </span>
