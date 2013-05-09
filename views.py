@@ -243,12 +243,22 @@ def prints(request,page=1):
 	context['curr_page']=page
 
 	# url1='https://repository.library.brown.edu/bdr_apis/pub/collections/621/?q=genre_aat:*prints*&fl=*'
-	url1='https://repository.library.brown.edu/bdr_apis/pub/collections/621/?q=genre_aat:*(prints)&fl=*&fq=discover:BDR_PUBLIC';
-	num_prints=json.loads(urllib2.urlopen(url1).read())['items']['numFound']
+	# url1='https://repository.library.brown.edu/bdr_apis/pub/collections/621/?q=genre_aat:*(prints)&fl=*&fq=discover:BDR_PUBLIC';
+	# num_prints=json.loads(urllib2.urlopen(url1).read())['items']['numFound']
+	# load json for all prints in the collection #
+	num_prints_estimate=6000
+	url1='https://repository.library.brown.edu/bdr_apis/pub/collections/621/?q=genre_aat:*prints*&fl=*&fq=discover:BDR_PUBLIC&rows='+str(num_prints_estimate)
+	prints_json=json.loads(urllib2.urlopen(url1).read())
+	num_prints=prints_json['items']['numFound']
 	context['num_prints']=num_prints
-	url2=url1+'&rows='+str(num_prints)
-
-	prints_json=json.loads(urllib2.urlopen(url2).read())
+	if num_prints>num_prints_estimate:
+		url2='https://repository.library.brown.edu/bdr_apis/pub/collections/621/?q=genre_aat:*prints*&fl=*&fq=discover:BDR_PUBLIC&rows='+str(num_prints)
+		prints_json=json.loads(urllib2.urlopen(url2).read())
+	
+	# context['num_prints']=num_prints
+	# 	url2=url1+'&rows='+str(num_prints)
+	# 
+	# 	prints_json=json.loads(urllib2.urlopen(url2).read())
 	prints_set=prints_json['items']['docs']
 
 	print_list=[]
