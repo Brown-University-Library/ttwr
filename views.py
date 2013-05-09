@@ -9,6 +9,7 @@ import logging
 logger = logging.getLogger(__name__)
 from operator import itemgetter
 import xml.etree.ElementTree as ET
+import re # regular expressions
 # from rome_app import models
 # from models import AboutPage
 
@@ -298,6 +299,7 @@ def prints(request,page=1):
 		current_print={}
 		Print=prints_set[i]
 		title=Print['primary_title'] #"<br />".join(Print['primary_title'].split("\n"))
+		Print['in_chinea']=re.search(('chinea'),title,re.IGNORECASE)
 		pid=Print['pid']
 		current_print['studio_uri']=Print['uri']
 		short_title=title
