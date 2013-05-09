@@ -299,7 +299,9 @@ def prints(request,page=1):
 		current_print={}
 		Print=prints_set[i]
 		title=Print['primary_title'] #"<br />".join(Print['primary_title'].split("\n"))
-		Print['in_chinea']=re.search(('chinea'),title,re.IGNORECASE)
+		Print['in_chinea']=0
+		if re.search(r"chinea",title,re.IGNORECASE):
+			Print['in_chinea']=1
 		pid=Print['pid']
 		current_print['studio_uri']=Print['uri']
 		short_title=title
