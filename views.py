@@ -231,13 +231,15 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
 	# annotations/metadata
 	page_json=json.loads(urllib2.urlopen(page_json_uri).read())
 	annotations=page_json['relations']['hasAnnotation']
+	context['annotation_uris']=[]
 	context['annotations']=[]
 	for i in range(len(annotations)):
 		annot_pid=annotations[i]['pid']
 		annot_studio_uri=annotations[i]['uri']
 		annot_xml_uri='https://repository.library.brown.edu/fedora/objects/'+annot_pid+'/datastreams/content/content'
-		context['annotations'].append(annot_uri)
+		context['annotation_uris'].append(annot_xml_uri)
 		curr_annot={}
+		curr_annot['xml_uri']=annot_xml_uri
 		root=ET.fromstring(urllib2.urlopen(annot_xml_uri).read()) #root of our xml tree
 		for title in root.iter('{http://www.loc.gov/mods/v3}titleInfo'):
 			if title.attrib['lang']=='en':
@@ -257,6 +259,7 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
 				curr_note+=att+": "+title.attrib[att]+"\n"
 			curr_note+="text: "+title.text
 			curr_annot.append(curr_note)
+		context['annotations'].append(curr_annot)
 		
 	c=RequestContext(request,context)
 	#raise 404 if a certain book does not exist

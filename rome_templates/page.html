@@ -49,10 +49,27 @@ function expand_title(title,num)
         <iframe src={{ det_img_view_src}} width="80%" height="800"></iframe>
     </div>
     <div id="metadata">
+        <ul>
         {% for annotation in annotations %}
-        <br />
-        <a href={{ annotation }} target="_blank">{{ annotation }}</a>
+            <li>
+            Title: {{ annotation.title }} <br />
+            Names:
+            {% for name in annotation.names %}
+                {{ name.name }} ({{ name.role }}) <br />
+            {% endfor %}
+            Abstract: {{ annotation.abstract }} <br />
+            Origin: {{ annotation.origin }} <br />
+            Notes:
+            <ul>
+            {% for note in annotation.notes %}
+                <li>{{note}}</li>
+            {% endfor %}
+            </ul>
+            XML: {{ annotation.xml_uri }}
+            </li>
+            <!-- <a href={{ annotation }} target="_blank">{{ annotation }}</a> -->
         {% endfor %}
+        </ul>
     </div>
     <div id="footer">
 	    <span>&#169; {{cpydate}} Brown University</span>
