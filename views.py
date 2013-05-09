@@ -253,13 +253,13 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
 			curr_annot['abstract']=abstract.text
 		for origin in root.getiterator('{http://www.loc.gov/mods/v3}originInfo'):
 			curr_annot['origin']=origin[0].text
-		curr_annot['notes']
+		curr_annot['notes']=[]
 		for note in tree.getiterator('{http://www.loc.gov/mods/v3}note'):
 			curr_note=""
 			for att in note.attrib:
 				curr_note+=att+": "+note.attrib[att]+"\n"
 			curr_note+="text: "+note.text
-			curr_annot.append(curr_note)
+			curr_annot['notes'].append(curr_note)
 		context['annotations'].append(curr_annot)
 		
 	c=RequestContext(request,context)
