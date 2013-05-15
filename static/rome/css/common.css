@@ -44,6 +44,27 @@ p {
 	margin: 0 40px 0px;
 	line-height: 18px;
 	}
+	
+/*
+ * Buttons
+ */
+
+.page_button
+{
+	background:#aaaaaa;
+	width:25px;
+	height:15px;
+	color:black;
+}
+.page_button:hover
+{
+	background:#cccccc;
+}
+.page_button_selected
+{
+	background:#222222;
+	color:white;
+}
 
 
 /*
