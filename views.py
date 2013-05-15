@@ -224,7 +224,7 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
 			context['date']=book_json['dateCreated'][0].split("T")[0]
 		except:
 			context['date']="n.d."
-	context['thumbnail_url']="https://repository.library.brown.edu/fedora/objects/bdr:"+str(page_pid)+"/datastreams/thumbnail/content"
+	context['lowres_url']="https://repository.library.brown.edu/fedora/objects/bdr:"+str(page_pid)+"/datastreams/lowres/content"
 	context['det_img_view_src']="http://repository.library.brown.edu/viewer/highres_viewer.html?pid=bdr:"+str(page_pid)+"&ds=highres_jp2"
 
 	page_json_uri='https://repository.library.brown.edu/api/pub/items/bdr:'+str(page_pid)+'/?q=*&fl=*'
