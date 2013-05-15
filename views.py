@@ -260,6 +260,7 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
 		curr_annot['inscriptions']=[]
 		curr_annot['annotations']=[]
 		curr_annot['annotator']=""
+		curr_annot['has_elements']={'inscriptions':0, 'annotations':0, 'annotator':0}
 		for note in root.getiterator('{http://www.loc.gov/mods/v3}note'):
 			curr_note={}
 			for att in note.attrib:
@@ -268,10 +269,13 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
 				curr_note['text']=note.text
 			if curr_note['type'].lower()=='inscription' and note.text:
 				curr_annot['inscriptions'].append(curr_note['displayLabel']+": "+curr_note['text'])
+				curr_annot['has_elements']['inscriptions']=1
 			elif curr_note['type'].lower()=='annotation' and note.text:
 				curr_annot['annotations'].append(curr_note['displayLabel']+": "+curr_note['text'])
+				curr_annot['has_elements']['annotations']=1
 			elif curr_note['type'].lower()=='resp' and note.text:
 				curr_annot['annotator']=note.text
+				curr_annot['has_elements']['annotator']=1
 			#curr_annot['notes'].append(curr_note)
 		context['annotations'].append(curr_annot)
 		
