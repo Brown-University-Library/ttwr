@@ -43,21 +43,17 @@ function show_page(i)
         <h1>
             <span class="repeatbg"><span class="leftcap"><a href="../">The Theater that was Rome - Books</a></span></span>
         </h1>
-        <span style="font-size:16px">
+        <span style="font-size:14px">
         Sort options
         <a href="../books_authors">Author</a>
         <a href="../books_title">Title</a>
-        <a href="../books_date">Date</a>
+        <a href="../books_date">Date</a> <br />
         <div>
-            <ol>
-                <li>Books</li>
-                <li>
-                    {% for i in page_range %}
-                        <button onclick="show_page({{forloop.counter}})">{{i}}</button>
-                    {% endfor %}
-                    &nbsp showing {{books_per_page}} books per page, {{num_books}} total; on page <span id="curr_page_span">1</span>
-                <li>
-            </ol>
+            Books:
+            {% for i in page_range %}
+                <button onclick="show_page({{forloop.counter}})">{{i}}</button>
+            {% endfor %}
+            &nbsp showing {{books_per_page}} books per page, {{num_books}} total; on page <span id="curr_page_span">1</span>
         </div>
         </span>
     </div>
