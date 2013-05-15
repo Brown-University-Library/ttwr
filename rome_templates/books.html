@@ -48,13 +48,11 @@ function show_page(i)
         <a href="../books_authors">Author</a>
         <a href="../books_title">Title</a>
         <a href="../books_date">Date</a> <br />
-        <div>
             Books:
             {% for i in page_range %}
                 <button onclick="show_page({{forloop.counter}})">{{i}}</button>
             {% endfor %}
             &nbsp showing {{books_per_page}} books per page, {{num_books}} total; on page <span id="curr_page_span">1</span>
-        </div>
         </span>
     </div>
     <div id="page_body">
