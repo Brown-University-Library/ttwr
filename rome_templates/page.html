@@ -49,7 +49,7 @@ function expand_title(title,num)
     {% if book_mode %}
     <div>
         <span id="image_span" style="float:left;padding-left:20px;padding-right:20px;width:60%">
-        <img src={{ lowres_url }} width="100%"/>
+        <a href="{{det_img_view_src}}"><img src={{ lowres_url }} width="100%"/></a>
         </span>
         <span id="metadata" style="float:left;width:36%">
             <ul style="list-style:none">
@@ -57,23 +57,23 @@ function expand_title(title,num)
                 <li>
                     
                 {% if annotation.has_elements.title %}
-                <p style="line-height:110%"><b>Title:</b> {{ annotation.title }}</p>
+                <div style="line-height:110%"><b>Title:</b> {{ annotation.title }}</div>
                 {% endif %}
                 
                 {% for name in annotation.names %}
-                <p style="line-height:110%"><b>{{ name.role }}:</b> {{ name.name }}</p>
+                <div style="line-height:110%"><b>{{ name.role }}:</b> {{ name.name }}</div>
                 {% endfor %}
                 
                 {% if annotation.has_elements.abstract %}
-                <p style="line-height:110%"><b>Abstract:</b> {{ annotation.abstract }} </p>
+                <div style="line-height:110%"><b>Abstract:</b> {{ annotation.abstract }} </div>
                 {% endif %}
                 
                 {% if annotation.has_elements.origin %}
-                <p style="line-height:110%"><b>Origin:</b> {{ annotation.origin }} </p>
+                <div style="line-height:110%"><b>Origin:</b> {{ annotation.origin }} </div>
                 {% endif %}
                 
                 {% if annotation.has_elements.annotations %}
-                <p style="line-height:110%"><b>Annotations:</b></p>
+                <div style="line-height:110%"><b>Annotations:</b></div>
                 <ul>
                 {% for annot in annotation.annotations %}
                 <li style="line-height:110%">{{ annot }}</li>
@@ -82,7 +82,7 @@ function expand_title(title,num)
                 {% endif %}
                 
                 {% if annotation.has_elements.inscriptions %}
-                <p style="line-height:110%"><b>Inscriptions:</b></p>
+                <div style="line-height:110%"><b>Inscriptions:</b></div>
                 <ul>
                 {% for insc in annotation.inscriptions %}
                 <li style="line-height:110%">{{ insc }}</li>
@@ -90,10 +90,10 @@ function expand_title(title,num)
                 </ul>
                 {% endif %}
                 
-                <p style="line-height:110%"><b><a href={{ annotation.xml_uri }} target="_blank">[View XML]</a></b></p>
+                <div style="line-height:110%"><a href={{ annotation.xml_uri }} target="_blank">[View XML]</a></div>
                 
                 {% if annotation.has_elements.annotator %}
-                <p style="line-height:110%"><i>[{{ annotation.annotator }}]</i></p>
+                <div style="line-height:110%"><i>[{{ annotation.annotator }}]</i></div>
                 {% endif %}
                 </li>
             {% endfor %}
