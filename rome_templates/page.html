@@ -61,18 +61,29 @@ function expand_title(title,num)
                 <b>Abstract:</b> {{ annotation.abstract }} <br />
                 <b>Origin:</b> {{ annotation.origin }} <br />
                 <b>Notes:</b>
+                <b>Annotations:</b>
                 <ul>
-                {% for note in annotation.notes %}
-                    <li>
-                        <ul>
-                            {% for attr in note %}
-                            <li>{{ attr }}</li>
-                            {% endfor %}
-                        </ul>
-                    </li>
+                {% for annot in annotation.annotations %}
+                <li>{{ annot }}</li>
+                {% endfor %}
+                <!-- {% for note in annotation.notes %}
+                                    <li>
+                                        <ul>
+                                            {% for attr in note %}
+                                            <li>{{ attr }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </li>
+                                {% endfor %} -->
+                </ul>
+                <b>Inscriptions:</b>
+                <ul>
+                {% for insc in annotation.inscriptions %}
+                <li>{{ insc }}</li>
                 {% endfor %}
                 </ul>
-                <b><a href={{ annotation.xml_uri }} target="_blank">[View XML]</a></b>
+                <b><a href={{ annotation.xml_uri }} target="_blank">[View XML]</a></b><br />
+                <i>[{{ annotation.annotator }}]</i>
                 </li>
             {% endfor %}
             </ul>

@@ -257,13 +257,22 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
 		for origin in root.getiterator('{http://www.loc.gov/mods/v3}originInfo'):
 			curr_annot['origin']=origin[0].text
 		curr_annot['notes']=[]
+		curr_annot['inscriptions']=[]
+		curr_annot['annotations']=[]
+		curr_annot['annotator']=""
 		for note in root.getiterator('{http://www.loc.gov/mods/v3}note'):
-			curr_note=[]
+			curr_note={}
 			for att in note.attrib:
-				curr_note.append(att+": "+note.attrib[att])
+				curr_note[att]=note.attrib[att]
 			if note.text:
-				curr_note.append("text: "+note.text)
-			curr_annot['notes'].append(curr_note)
+				curr_note['text']=note.text
+			if curr_note['type'].lower()=='inscription' and note.text:
+				curr_annot['inscriptions'].append(curr_note['displayLabel']+": "+curr_note['text'])
+			elif curr_note['type'].lower()=='annotation' and note.text:
+				curr_annot['annotations'].append(curr_note['displayLabel']+": "+curr_note['text'])
+			elif curr_note['type'].lower()=='resp' and note.text:
+				curr_annot['annotator']=note.text
+			#curr_annot['notes'].append(curr_note)
 		context['annotations'].append(curr_annot)
 		
 	c=RequestContext(request,context)
