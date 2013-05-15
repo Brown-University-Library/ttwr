@@ -46,13 +46,10 @@ function expand_title(title,num)
         </div>
     </div>
     <div>
-        <span id="image_span" style="float:left;margin-left:20px;margin-right:20px;width:30%">
+        <span id="image_span" style="float:left;padding-left:20px;padding-right:20px;width:60%">
         <img src={{ lowres_url }} width="100%"/>
         </span>
-        <span id="metadata" style="float:left;width:30%">
-            {% if has_annotations %}
-                <h2>Metadata</h2>
-            {% endif %}
+        <span id="metadata" style="float:left;width:36%">
             <ul>
             {% for annotation in annotations %}
                 <li>
