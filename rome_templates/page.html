@@ -45,6 +45,7 @@ function expand_title(title,num)
             </ol>
         </div>
     </div>
+    {% if book_mode %}
     <div>
         <span id="image_span" style="float:left;padding-left:20px;padding-right:20px;width:60%">
         <img src={{ lowres_url }} width="100%"/>
@@ -78,6 +79,13 @@ function expand_title(title,num)
         </span>
         <!-- <iframe src={{ det_img_view_src}} width="80%" height="800"></iframe> -->
     </div>
+    {% endif %}
+    {% if print_mode %}
+    <div id="page_body">
+        <iframe src={{ det_img_view_src}} width="80%" height="800"></iframe>
+    </div>
+    {% endif %}
+    
     <div id="footer">
 	    <span>&#169; {{cpydate}} Brown University</span>
 	    <a href="http://www.brown.edu"><img src="{%static brown_image%}" alt="Brown University" /></a>

@@ -251,7 +251,7 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
 				break
 		curr_annot['names']=[]
 		for name in root.getiterator('{http://www.loc.gov/mods/v3}name'):
-			curr_annot['names'].append({'name':name[0].text, 'role':name[1][0].text})
+			curr_annot['names'].append({'name':name[0].text.capitalize(), 'role':name[1][0].text.capitalize()})
 		for abstract in root.getiterator('{http://www.loc.gov/mods/v3}abstract'):
 			curr_annot['abstract']=abstract.text
 		for origin in root.getiterator('{http://www.loc.gov/mods/v3}originInfo'):
