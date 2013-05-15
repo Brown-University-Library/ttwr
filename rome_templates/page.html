@@ -54,12 +54,22 @@ function expand_title(title,num)
             <ul>
             {% for annotation in annotations %}
                 <li>
+                    
+                {% if annotation.has_elements.title %}
                 <b>Title:</b> {{ annotation.title }} <br />
+                {% endif %}
+                
                 {% for name in annotation.names %}
                     <b>{{ name.role }}:</b> {{ name.name }}<br />
                 {% endfor %}
+                
+                {% if annotation.has_elements.abstract %}
                 <b>Abstract:</b> {{ annotation.abstract }} <br />
+                {% endif %}
+                
+                {% if annotation.has_elements.origin %}
                 <b>Origin:</b> {{ annotation.origin }} <br />
+                {% endif %}
                 
                 {% if annotation.has_elements.annotations %}
                 <b>Annotations:</b>

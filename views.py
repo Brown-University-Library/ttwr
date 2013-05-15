@@ -243,24 +243,27 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
 		context['annotation_uris'].append(annot_xml_uri)
 		curr_annot={}
 		curr_annot['xml_uri']=annot_xml_uri
+		curr_annot['has_elements']={'inscriptions':0, 'annotations':0, 'annotator':0, 'origin':0, 'title':0, 'abstract':0}
 
 		root=ET.fromstring(urllib2.urlopen(annot_xml_uri).read()) #root of our xml tree
 		for title in root.getiterator('{http://www.loc.gov/mods/v3}titleInfo'):
 			if title.attrib['lang']=='en':
 				curr_annot['title']=title[0].text
+				curr_annot['has_elements']['title']=1
 				break
 		curr_annot['names']=[]
 		for name in root.getiterator('{http://www.loc.gov/mods/v3}name'):
 			curr_annot['names'].append({'name':name[0].text.capitalize(), 'role':name[1][0].text.capitalize()})
 		for abstract in root.getiterator('{http://www.loc.gov/mods/v3}abstract'):
 			curr_annot['abstract']=abstract.text
+			curr_annot['has_elements']['abstract']=1
 		for origin in root.getiterator('{http://www.loc.gov/mods/v3}originInfo'):
 			curr_annot['origin']=origin[0].text
+			curr_annot['has_elements']['origin']=1
 		curr_annot['notes']=[]
 		curr_annot['inscriptions']=[]
 		curr_annot['annotations']=[]
 		curr_annot['annotator']=""
-		curr_annot['has_elements']={'inscriptions':0, 'annotations':0, 'annotator':0}
 		for note in root.getiterator('{http://www.loc.gov/mods/v3}note'):
 			curr_note={}
 			for att in note.attrib:
