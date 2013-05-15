@@ -39,15 +39,16 @@ function show_page(i)
 <link rel="stylesheet" href="{%static usr_style%}" type="text/css" media="screen" />
 
 <body>
-    <div id="page_head" style="font-size:20px">
+    <div id="page_head">
         <h1>
             <span class="repeatbg"><span class="leftcap"><a href="../">The Theater that was Rome - Books</a></span></span>
         </h1>
+        <span style="font-size:16px">
         Sort options
         <a href="../books_authors">Author</a>
         <a href="../books_title">Title</a>
         <a href="../books_date">Date</a>
-        <div id="cookietrail">
+        <div>
             <ol>
                 <li>Books</li>
                 <li>
@@ -58,6 +59,7 @@ function show_page(i)
                 <li>
             </ol>
         </div>
+        </span>
     </div>
     <div id="page_body">
         {% for page in page_list %}
