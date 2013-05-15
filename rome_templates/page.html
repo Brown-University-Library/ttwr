@@ -57,12 +57,9 @@ function expand_title(title,num)
         {% for annotation in annotations %}
             <li>
             <b>Title:</b> {{ annotation.title }} <br />
-            <b>Names:</b>
-            <ul>
             {% for name in annotation.names %}
-                <li>{{ name.name }} ({{ name.role }})</li>
+                <b>{{ name.role }}:</b> {{ name.name }}<br />
             {% endfor %}
-            </ul>
             <b>Abstract:</b> {{ annotation.abstract }} <br />
             <b>Origin:</b> {{ annotation.origin }} <br />
             <b>Notes:</b>
