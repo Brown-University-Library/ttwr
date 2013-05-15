@@ -45,39 +45,41 @@ function expand_title(title,num)
             </ol>
         </div>
     </div>
-    <div id="page_body" style="margin-left:20px;margin-right:20px;width:30%">
+    <div id="page_body">
+        <span id="image_span" style="float:left;margin-left:20px;margin-right:20px;width:30%">
         <img src={{ lowres_url }} width="100%"/>
-        <!-- <iframe src={{ det_img_view_src}} width="80%" height="800"></iframe> -->
-    </div>
-    <div id="metadata" style="float:left;width:30%">
-        {% if has_annotations %}
-            <h2>Metadata</h2>
-        {% endif %}
-        <ul>
-        {% for annotation in annotations %}
-            <li>
-            <b>Title:</b> {{ annotation.title }} <br />
-            {% for name in annotation.names %}
-                <b>{{ name.role }}:</b> {{ name.name }}<br />
-            {% endfor %}
-            <b>Abstract:</b> {{ annotation.abstract }} <br />
-            <b>Origin:</b> {{ annotation.origin }} <br />
-            <b>Notes:</b>
+        </span>
+        <span id="metadata" style="float:left;width:30%">
+            {% if has_annotations %}
+                <h2>Metadata</h2>
+            {% endif %}
             <ul>
-            {% for note in annotation.notes %}
+            {% for annotation in annotations %}
                 <li>
-                    <ul>
-                        {% for attr in note %}
-                        <li>{{ attr }}</li>
-                        {% endfor %}
-                    </ul>
+                <b>Title:</b> {{ annotation.title }} <br />
+                {% for name in annotation.names %}
+                    <b>{{ name.role }}:</b> {{ name.name }}<br />
+                {% endfor %}
+                <b>Abstract:</b> {{ annotation.abstract }} <br />
+                <b>Origin:</b> {{ annotation.origin }} <br />
+                <b>Notes:</b>
+                <ul>
+                {% for note in annotation.notes %}
+                    <li>
+                        <ul>
+                            {% for attr in note %}
+                            <li>{{ attr }}</li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                {% endfor %}
+                </ul>
+                <b><a href={{ annotation.xml_uri }} target="_blank">[View XML]</a></b>
                 </li>
             {% endfor %}
             </ul>
-            <b><a href={{ annotation.xml_uri }} target="_blank">[View XML]</a></b>
-            </li>
-        {% endfor %}
-        </ul>
+        </span>
+        <!-- <iframe src={{ det_img_view_src}} width="80%" height="800"></iframe> -->
     </div>
     <div id="footer">
 	    <span>&#169; {{cpydate}} Brown University</span>
