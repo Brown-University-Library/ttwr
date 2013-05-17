@@ -60,17 +60,6 @@ p {
 {
 	background:#cccccc;
 }
-.page_button_selected
-{
-	background:#888888;
-	width:30px;
-	height:25px;
-	color:black;
-}
-.page_button_selected:hover
-{
-	background:#cccccc;
-}
 
 
 /*
