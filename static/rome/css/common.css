@@ -65,6 +65,10 @@ p {
 	background:#222222;
 	color:white;
 }
+.page_button_selected:hover
+{
+	background:#444444;
+}
 
 
 /*
