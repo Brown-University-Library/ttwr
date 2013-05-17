@@ -32,6 +32,11 @@ function show_page(i)
     new_page.style.display="block";
     curr_page=i;
     
+    var buttons=document.getElementsByClassName("page_button");
+    for(var j=0;j<buttons.length;j++)
+        buttons[j].style.background="#aaaaaa"
+    buttons[parseInt(i)-1].style.background='#888888';
+    
     document.getElementById("curr_page_span").innerHTML=i;
 }
 </script>
@@ -42,30 +47,37 @@ function show_page(i)
 <body>
     <div id="page_head">
         <h1>
-            <span class="repeatbg">
-                <span class="leftcap">
-                    <a href="../">The Theater that was Rome - Prints</a>
-                </span>
-            </span>
+            <span class="repeatbg"><span class="leftcap"><a href="../">The Theater that was Rome - Prints</a></span></span>
         </h1>
         <!-- <div class="back_home">
                     <a href="../">Home</a>
                 </div> -->
-        Sort options
-        <a href="../prints_authors">Author</a>
-        <a href="../prints_title">Title</a>
-        <a href="../prints_date">Date</a>
-        <div id="cookietrail">
-            <ol>
-                <li>Prints</li>
-                <li>
-                    {% for i in page_range %}
-                        <button onclick="show_page({{forloop.counter}})">{{i}}</button>
-                        <!-- <a href="?page={{i}}">{{i}}</a> -->
-                    {% endfor %}
-                    &nbsp showing {{prints_per_page}} prints per page, {{num_prints}} total; on page <span id="curr_page_span">1</span>
-                <li>
-            </ol>
+                <!-- Sort by:&nbsp
+                        <a href="../prints_authors">Author</a>
+                        <a href="../prints_title">Title</a>
+                        <a href="../prints_date">Date</a>
+                <div id="cookietrail">
+                    <ol>
+                        <li>Prints</li>
+                        <li>
+                            {% for i in page_range %}
+                                <button onclick="show_page({{forloop.counter}})">{{i}}</button>
+                            {% endfor %}
+                            &nbsp showing {{prints_per_page}} prints per page, {{num_prints}} total; on page <span id="curr_page_span">1</span>
+                        <li>
+                    </ol>
+                </div> -->
+        <div style="font-size:15px; margin-left:20px; padding-top:15px; padding-bottom:10px">
+            Prints:
+            {% for i in page_range %}
+                <button id="page_button_{{i}}" class="page_button" onclick="show_page({{i}})">{{i}}</button>
+            {% endfor %}
+            &nbsp showing {{books_per_page}} books per page, {{num_books}} total; on page <span id="curr_page_span">1</span>
+            &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+            Sort by:&nbsp
+            <a href="../books_authors">Author</a>
+            <a href="../books_title">Title</a>
+            <a href="../books_date">Date</a>
         </div>
     </div>
     <div id="page_body">
