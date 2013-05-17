@@ -31,6 +31,11 @@ function show_page(i)
     new_page.style.display="block";
     curr_page=i;
     
+    $(".page_button").css('background','#aaaaaa');
+    
+    var button=document.getElementById("page_button_"+i);
+    button.style.background="#999999";
+    
     document.getElementById("curr_page_span").innerHTML=i;
 }
 </script>
@@ -51,11 +56,7 @@ function show_page(i)
             <br />
             Books:
             {% for i in page_range %}
-                {% if curr_page == i %}
-                    <button class="page_button_selected" onclick="">{{i}}</button>
-                {% else %}
-                    <button class="page_button" onclick="show_page({{forloop.counter}})">{{i}}</button>
-                {% endif %}
+                <button id="page_button_{{i}}" class="page_button" onclick="show_page({{i}})">{{i}}</button>
             {% endfor %}
             &nbsp showing {{books_per_page}} books per page, {{num_books}} total; on page <span id="curr_page_span">1</span>
         </div>
