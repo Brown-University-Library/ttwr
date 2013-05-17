@@ -34,7 +34,7 @@ function show_page(i)
     var buttons=document.getElementsByClassName("page_button");
     for(var j=0;j<buttons.length;j++)
         buttons[j].style.background="#aaaaaa"
-    buttons[i].style.background='#888888';
+    buttons[parseInt(i)].style.background='#888888';
     
     document.getElementById("curr_page_span").innerHTML=i;
 }
