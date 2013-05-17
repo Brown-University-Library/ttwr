@@ -62,12 +62,14 @@ p {
 }
 .page_button_selected
 {
-	background:#222222;
-	color:white;
+	background:#888888;
+	width:30px;
+	height:25px;
+	color:black;
 }
 .page_button_selected:hover
 {
-	background:#444444;
+	background:#cccccc;
 }
 
 
