@@ -32,9 +32,7 @@ function show_page(i)
     curr_page=i;
     
     $(".page_button").css('background','#aaaaaa');
-    
-    var button=document.getElementById("page_button_"+i);
-    button.style.background="#999999";
+    $("#page_button_"+i).css('background','#888888');
     
     document.getElementById("curr_page_span").innerHTML=i;
 }
@@ -48,17 +46,17 @@ function show_page(i)
         <h1>
             <span class="repeatbg"><span class="leftcap"><a href="../">The Theater that was Rome - Books</a></span></span>
         </h1>
-        <div style="font-size:14px; margin-left:20px">
-            Sort options
-            <a href="../books_authors">Author</a>
-            <a href="../books_title">Title</a>
-            <a href="../books_date">Date</a>
-            <br />
+        <div style="font-size:15px; margin-left:20px">
             Books:
             {% for i in page_range %}
                 <button id="page_button_{{i}}" class="page_button" onclick="show_page({{i}})">{{i}}</button>
             {% endfor %}
             &nbsp showing {{books_per_page}} books per page, {{num_books}} total; on page <span id="curr_page_span">1</span>
+            <span style="width:200px"></span>
+            Sort options
+            <a href="../books_authors">Author</a>
+            <a href="../books_title">Title</a>
+            <a href="../books_date">Date</a>
         </div>
     </div>
     <div id="page_body">
