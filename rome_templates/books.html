@@ -31,8 +31,10 @@ function show_page(i)
     new_page.style.display="block";
     curr_page=i;
     
-    $(".page_button").css('background','#aaaaaa');
-    $("#page_button_"+i).css('background','#888888');
+    var buttons=document.getElementsByClassName("page_button");
+    for(var j=0;j<buttons.length;j++)
+        buttons[j].style.background="#aaaaaa"
+    buttons[j].style.background='#888888';
     
     document.getElementById("curr_page_span").innerHTML=i;
 }
