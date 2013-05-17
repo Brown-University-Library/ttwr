@@ -44,11 +44,11 @@ function show_page(i)
 <link rel="stylesheet" href="{%static usr_style%}" type="text/css" media="screen" />
 
 <body>
-    <div id="page_head" style="padding-top:15px;">
+    <div id="page_head">
         <h1>
             <span class="repeatbg"><span class="leftcap"><a href="../">The Theater that was Rome - Books</a></span></span>
         </h1>
-        <div style="font-size:15px; margin-left:20px">
+        <div style="font-size:15px; margin-left:20px; padding-top:15px">
             Books:
             {% for i in page_range %}
                 <button id="page_button_{{i}}" class="page_button" onclick="show_page({{i}})">{{i}}</button>
