@@ -48,14 +48,14 @@ function show_page(i)
         <h1>
             <span class="repeatbg"><span class="leftcap"><a href="../">The Theater that was Rome - Books</a></span></span>
         </h1>
-        <div style="font-size:15px; margin-left:20px; padding-top:15px">
+        <div style="font-size:15px; margin-left:20px; padding-top:15px; padding-bottom:10px">
             Books:
             {% for i in page_range %}
                 <button id="page_button_{{i}}" class="page_button" onclick="show_page({{i}})">{{i}}</button>
             {% endfor %}
             &nbsp showing {{books_per_page}} books per page, {{num_books}} total; on page <span id="curr_page_span">1</span>
             &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-            Sort options
+            Sort by
             <a href="../books_authors">Author</a>
             <a href="../books_title">Title</a>
             <a href="../books_date">Date</a>
