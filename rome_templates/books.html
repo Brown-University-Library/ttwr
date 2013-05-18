@@ -56,8 +56,8 @@ function show_page(i)
             &nbsp showing {{books_per_page}} books per page, {{num_books}} total; on page <span id="curr_page_span">1</span>
             &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
             Sort by:&nbsp
-            <a href="../books_authors">Author</a>
-            <a href="../books_title">Title</a>
+            <a href="../books_authors">Author</a> |
+            <a href="../books_title">Title</a> |
             <a href="../books_date">Date</a>
         </div>
     </div>
@@ -72,7 +72,6 @@ function show_page(i)
                                 [View]&nbsp
                         </a>
                         <span class="dark">{{ book.authors }}</span><br />
-                        Title:
                         <span class="dark">
                             <span num="{{forloop.parentloop.counter}}_{{forloop.counter}}">
                                 {{ book.short_title }}
