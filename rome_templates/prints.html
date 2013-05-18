@@ -37,6 +37,8 @@ function show_page(i)
         buttons[j].style.background="#aaaaaa"
     buttons[parseInt(i)-1].style.background='#888888';
     
+    var spn=document.getElementById("prints_shown").innerHTML=((parseInt(i)-1)*20+1)+"-"+(parseInt(i)*20+1);
+    
     document.getElementById("curr_page_span").innerHTML=i;
 }
 </script>
@@ -54,7 +56,7 @@ function show_page(i)
             {% for i in page_range %}
                 <button id="page_button_{{i}}" class="page_button" onclick="show_page({{i}})">{{i}}</button>
             {% endfor %}
-            &nbsp showing {{books_per_page}} books per page, {{num_books}} total; on page <span id="curr_page_span">1</span>
+            &nbsp showing <span id="prints_shown"></span> of {{num_prints}} prints; on page <span id="curr_page_span">1</span>
             &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
             Sort by:&nbsp
             <a href="../books_authors">Author</a> |
