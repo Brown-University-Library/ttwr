@@ -37,7 +37,7 @@ function show_page(i)
         buttons[j].style.background="#aaaaaa"
     buttons[parseInt(i)-1].style.background='#888888';
     
-    var spn=document.getElementById("prints_shown").innerHTML=((parseInt(i)-1)*20+1)+"-"+(parseInt(i)*20+1);
+    var spn=document.getElementById("prints_shown").innerHTML=((parseInt(i)-1)*{{ prints_per_page }}+1)+"-"+(parseInt(i)*{{ prints_per_page }}+1);
     
     document.getElementById("curr_page_span").innerHTML=i;
 }
