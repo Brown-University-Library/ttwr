@@ -68,7 +68,9 @@ def books(request,page=1,sort_by='authors'):
 	template=loader.get_template('rome_templates/books.html')
 	context=std_context()
 	context['curr_page']=page
-
+	context['sorting']='authors'
+	if sort_by!='authors':
+		context['sorting']=sort_by
 	# load json for all books in the collection #
 	num_books_estimate=6000 #should be plenty
 	url1='https://repository.library.brown.edu/bdr_apis/pub/collections/621/?q=object_type:implicit-set&fl=*&fq=discover:BDR_PUBLIC&rows='+str(num_books_estimate)
@@ -184,6 +186,7 @@ def thumbnail_viewer(request, book_pid, page_num, book_num_on_page):
 		curr_thumb['page_view']="../page_"+str(book_pid)+"_"+str(curr_pid)+"_"+str(page_num)+"_"+str(book_num_on_page)
 		thumbnails.append(curr_thumb)
 	context['thumbnails']=thumbnails
+	
 	c=RequestContext(request,context)
 	#raise 404 if a certain book does not exist
 	return HttpResponse(template.render(c))
@@ -291,7 +294,9 @@ def prints(request,page=1, sort_by="authors"):
 	template=loader.get_template('rome_templates/prints.html')
 	context=std_context(title="The Theater that was Rome - Prints")
 	context['curr_page']=page
-
+	context['sorting']='authors'
+	if sort_by!='authors':
+		context['sorting']=sort_by
 	# url1='https://repository.library.brown.edu/bdr_apis/pub/collections/621/?q=genre_aat:*prints*&fl=*'
 	# url1='https://repository.library.brown.edu/bdr_apis/pub/collections/621/?q=genre_aat:*(prints)&fl=*&fq=discover:BDR_PUBLIC';
 	# num_prints=json.loads(urllib2.urlopen(url1).read())['items']['numFound']

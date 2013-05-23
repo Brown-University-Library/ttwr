@@ -7,6 +7,7 @@ function load()
 {
     curr_page={{curr_page}};
     show_page(curr_page);
+    show_sorting({{ sorting }});
 }
 function expand_title(page_num,num_on_page)
 {
@@ -40,6 +41,13 @@ function show_page(i)
     
     document.getElementById("curr_page_span").innerHTML=i;
 }
+function show_sorting(sorting)
+{
+    var links=document.getElementsByClassName("sort_link");
+    for(var i=0;i<links.length;i++)
+        links[i].style.textDecoration="none";
+    document.getElementById("sort_"+sorting).style.textDecoration="underline";
+}
 </script>
 </head>
 {% load static from staticfiles %}
@@ -58,9 +66,9 @@ function show_page(i)
             &nbsp showing <span id="books_shown"></span> of {{num_books}} books; on page <span id="curr_page_span">1</span>
             &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
             Sort by:&nbsp
-            <a href="../books_authors">Author</a> |
-            <a href="../books_title">Title</a> |
-            <a href="../books_date">Date</a>
+            <a id="sort_authors" class="sort_link" href="../books_authors">Author</a> |
+            <a id="sort_title"   class="sort_link" href="../books_title">Title</a> |
+            <a id="sort_date"    class="sort_link" href="../books_date">Date</a>
         </div>
     </div>
     <div id="page_body">
