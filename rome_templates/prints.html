@@ -71,6 +71,9 @@ function show_page(i)
                 {% for pprint in page %}
                 <li value={{print.number_in_list}}>
                     <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}">
+                        <a href="{{ pprint.thumbnail_url_start }}_{{forloop.parentloop.counter}}_{{forloop.counter}}" target="_blank">
+                            [View]
+                        </a>&nbsp
                         Author(s): <span class="dark">{{ pprint.authors }}</span><br />
                         Title:
                         <span class="dark">
@@ -89,9 +92,7 @@ function show_page(i)
                         <br />
                         Date: <span class="dark">{{ pprint.date }}</span> <br />
                         <a href={{ pprint.studio_uri }} target="_blank">[More info]</a>,
-                        <a href="{{ pprint.thumbnail_url_start }}_{{forloop.parentloop.counter}}_{{forloop.counter}}" target="_blank">
-                            [View Print]
-                        </a><br />
+                        <br />
                         Object ID: {{ pprint.pid }}
                         {% if pprint.in_chinea %}
                         <br />
