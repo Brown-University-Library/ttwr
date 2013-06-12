@@ -94,7 +94,7 @@ def books(request,page=1,sort_by='authors'):
 		current_book['studio_uri']=book['uri']
 		short_title=title
 		current_book['title_cut']=0
-		cutoff=80
+		cutoff=8
 		if len(title)>cutoff:
 			short_title=title[0:cutoff-3]+"..."
 			current_book['title_cut']=1
