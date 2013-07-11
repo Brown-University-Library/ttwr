@@ -13,3 +13,10 @@ from django.utils.encoding import smart_unicode
 # 	class Meta:
 # 		verbose_name = u'About page fields'
 		
+class About(models.Model):
+  description = models.CharField( blank=True, max_length=10000, help_text=u'description' )
+
+  def __unicode__(self):
+    return smart_unicode( self.description, u'utf-8', u'replace' )
+
+  # end class About()
