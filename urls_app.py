@@ -6,6 +6,10 @@ from rome_app import views
 '''
 
 urlpatterns = patterns('',
+    (r'^admin/', include(admin.site.urls)),
+)
+
+urlpatterns += patterns('rome_app.views',
 	#index and static
 	
 	url(r'^about/', views.about, name='about'),
