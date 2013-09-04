@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 from operator import itemgetter
 import xml.etree.ElementTree as ET
 import re # regular expressions
-from rome_app import settings_app
+# from rome_app import settings_app
 from models import About
 
 # from rome_app import models
@@ -457,7 +457,7 @@ def specific_print(request, print_pid, page_num, print_num_on_page):
 def about(request):
 	template=loader.get_template('rome_templates/about.html')
 	context=std_context(style="rome/css/links.css")
-	page_data = About.objects.using(settings_app.DB).get(head_title="Abouts")
+	# page_data = About.objects.using(settings_app.DB).get(head_title="Abouts")
 	context.page_data = page_data
 	c=RequestContext(request,context)
 	#raise 404 if a certain book does not exist
