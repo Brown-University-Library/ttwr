@@ -1,0 +1,32 @@
+<head>
+<title>{{title}}</title>
+</head>
+{% load static from staticfiles %}
+<link rel="stylesheet" href="{%static usr_style%}" type="text/css" media="screen" />
+
+<body>
+    <div id="page_head">
+        <h1>
+            <span class="repeatbg"><span class="leftcap"><a href="../">The Theater that was Rome</a></span></span>
+        </h1>
+        <div id="cookietrail">
+            <ol>
+                <li>Links</li>
+            </ol>
+        </div>
+    </div>
+    <div id="page_body">
+        <ul>
+    		<li> <span><a target="_blank" href="http://formaurbis.stanford.edu">Stanford Digital Forma Urbis Romae Project</a></span></li>
+    		<li><span><a target="_blank" href="http://speculum.lib.uchicago.edu/index.html">Speculum Romanae Magnificentiae</a></span></li>
+    		<li><span><a target="_blank" href="http://www.iath.virginia.edu/rome/">Aquae Urbis Romae</a>The Waters of the City  of Rome</span></li>
+    		<li><span><a target="_blank" href="http://nolli.uoregon.edu">Interactive Nolli Map</a></span></li>
+    		<li><span><a href="http://vasi.uoregon.edu/index.htm" target="_blank">Imago Urbis: Giuseppe Vasi's Grand Tour of Rome</a></span></li>
+    	</ul>
+    </div>
+    <div id="footer">
+	    <span>&#169; {{cpydate}} Brown University</span>
+	    <a href="http://www.brown.edu"><img src="{%static brown_image%}" alt="Brown University" /></a>
+	    <a href="http://www.stg.brown.edu"><img src="{%static stg_image%}" alt="Scholarly Technology Group" /></a>
+	</div>
+</body>

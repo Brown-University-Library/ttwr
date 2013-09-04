@@ -1,0 +1,29 @@
+<head>
+<title>{{title}}</title>
+</head>
+{% load static from staticfiles %}
+<link rel="stylesheet" href="{%static usr_style%}" type="text/css" media="screen" />
+<body>
+<h1>{{title}}</h1>
+<div id="content">
+	<div id="sitenav">
+		<ul>
+			<li><a href="books">Books</a></li>
+			<li><a href="prints">Prints</a></li>
+			<li class="inactive"><!--<a href="people">-->People<!--</a>--></li>
+			<li class="inactive"><!--<a href="shop_inventories">-->Printshop Inventories<!--</a>--></li>
+			<li class="inactive">Network of Printers, Publishers, and Artists</li>
+			<li><a href="essays">Essays</a></li>
+			<li class="inactive"><!-- <a href="search">Search</a></li> -->Search</li>
+			<li><a href="links">Links</a></li>
+			<li><a href="about">About</a></li>
+            <!-- <li>{{ cin }}</li> -->
+		</ul>
+	</div>
+	<img src="{%static home_image%}" alt="Le Antichità Romane: Tomo Secondo" name="engraving" width="359" height="321" id="engraving" /></div>
+    <div id="footer">
+	    <span>&#169; {{cpydate}} Brown University</span>
+	    <a href="http://www.brown.edu"><img src="{%static brown_image%}" alt="Brown University" /></a>
+	    <a href="http://www.stg.brown.edu"><img src="{%static stg_image%}" alt="Scholarly Technology Group" /></a>
+	</div>
+</body>

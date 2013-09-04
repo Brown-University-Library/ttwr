@@ -1,0 +1,20 @@
+<!-- {% block page_css %} -->
+{% load static from staticfiles %}
+<link rel="stylesheet" href="{%static usr_style%}" type="text/css" media="screen" />
+<!-- <style>
+body
+{
+    background:#123456;
+}
+</style> -->
+<!-- {% endblock %} -->
+{% if booleanval %}
+    <ul>
+    {% for elt in lis %}
+        <li>{{ text }}, {{elt}}</li>
+    {% endfor %}
+    </ul>
+    <h1>{{STATIC_URL}}</h1>
+{% else %}
+    <p>The boolean is False.</p>
+{% endif %}

@@ -1,0 +1,6 @@
+[remote "origin"]
+	fetch = +refs/heads/*:refs/remotes/origin/*
+	url = https://bitbucket.org/ben_leveque/projects-rome_app.git
+[branch "master"]
+	remote = origin
+	merge = refs/heads/master
