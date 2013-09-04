@@ -106,10 +106,10 @@ def books(request,page=1,sort_by='authors'):
 		current_book['port_url']='https://repository.library.brown.edu/services/book_reader/portfolio/'+pid
 		current_book['book_url']='https://repository.library.brown.edu/services/book_reader/set/'+pid
 		try:
-			current_book['date']=book['dateCreated'][0].split("T")[0]
+			current_book['date']=book['dateCreated'].split("T")[0]
 		except:
 			try:
-				current_book['date']=book['dateIssued'][0].split("T")[0]
+				current_book['date']=book['dateIssued'].split("T")[0]
 			except:
 				current_book['date']="n.d."
 		try:
@@ -341,10 +341,10 @@ def prints(request,page=1, sort_by="authors"):
 		current_print['det_img_viewer']='https://repository.library.brown.edu/viewer/highres_viewer.html?pid='+str(pid)+'&ds=highres_jp2'
 		#print_json['links']['views']['Detailed Image Viewer']
 		try:
-			current_print['date']=Print['dateCreated'][0].split("T")[0]
+			current_print['date']=Print['dateCreated'].split("T")[0]
 		except:
 			try:
-				current_print['date']=Print['dateIssued'][0].split("T")[0]
+				current_print['date']=Print['dateIssued'].split("T")[0]
 			except:
 				current_print['date']="n.d."
 		author_list=Print['contributor_display']
