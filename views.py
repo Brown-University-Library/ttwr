@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 from operator import itemgetter
 import xml.etree.ElementTree as ET
 import re # regular expressions
+from rome_app import settings_app
 from models import About
 
 # from rome_app import models
