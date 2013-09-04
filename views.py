@@ -458,7 +458,7 @@ def about(request):
 	template=loader.get_template('rome_templates/about.html')
 	context=std_context(style="rome/css/links.css")
 	# page_data = About.objects.using(settings_app.DB).get(head_title="Abouts")
-	context.page_data = page_data
+	# context.page_data = page_data
 	c=RequestContext(request,context)
 	#raise 404 if a certain book does not exist
 	return HttpResponse(template.render(c))	
