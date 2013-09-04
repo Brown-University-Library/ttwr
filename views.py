@@ -10,10 +10,8 @@ logger = logging.getLogger(__name__)
 from operator import itemgetter
 import xml.etree.ElementTree as ET
 import re # regular expressions
-<<<<<<< HEAD
-=======
 from models import About
->>>>>>> a3e498e1bbd669a8ebf5e6568fe78e6a87bd8aed
+
 # from rome_app import models
 # from models import AboutPage
 
