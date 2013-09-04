@@ -35,7 +35,11 @@ function show_page(i)
     var buttons=document.getElementsByClassName("page_button");
     for(var j=0;j<buttons.length;j++)
         buttons[j].style.background="#aaaaaa"
+<<<<<<< HEAD
     buttons[parseInt(i)-1].style.background='#888888';
+=======
+    buttons[parseInt(i)-1].style.background='#999999';
+>>>>>>> a3e498e1bbd669a8ebf5e6568fe78e6a87bd8aed
     
     document.getElementById("books_shown").innerHTML=((parseInt(i)-1)*{{ books_per_page }}+1)+"-"+(parseInt(i)*{{ books_per_page }}+1);
     
