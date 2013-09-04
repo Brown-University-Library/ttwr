@@ -456,12 +456,8 @@ def specific_print(request, print_pid, page_num, print_num_on_page):
 def about(request):
 	template=loader.get_template('rome_templates/about.html')
 	context=std_context(style="rome/css/links.css")
-<<<<<<< HEAD
-
-=======
 	page_data = About.objects.using(settings_app.DB).get(head_title="Abouts")
 	context.page_data = page_data
->>>>>>> a3e498e1bbd669a8ebf5e6568fe78e6a87bd8aed
 	c=RequestContext(request,context)
 	#raise 404 if a certain book does not exist
 	return HttpResponse(template.render(c))	
