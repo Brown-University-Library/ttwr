@@ -106,10 +106,10 @@ def books(request,page=1,sort_by='authors'):
 		current_book['port_url']='https://repository.library.brown.edu/services/book_reader/portfolio/'+pid
 		current_book['book_url']='https://repository.library.brown.edu/services/book_reader/set/'+pid
 		try:
-			current_book['date']=book['dateCreated'].split("T")[0]
+			current_book['date']=book['dateCreated'][0:4]
 		except:
 			try:
-				current_book['date']=book['dateIssued'].split("T")[0]
+				current_book['date']=book['dateIssued'][0:4]
 			except:
 				current_book['date']="n.d."
 		try:
@@ -167,10 +167,10 @@ def thumbnail_viewer(request, book_pid, page_num, book_num_on_page):
 	except:
 		context['authors']="not available"
 	try:
-		context['date']=book_json['dateIssued'][0].split("T")[0]
+		context['date']=book_json['dateIssued'][0:4]
 	except:
 		try:
-			context['date']=book_json['dateCreated'][0].split("T")[0]
+			context['date']=book_json['dateCreated'][0:4]
 		except:
 			context['date']="n.d."
 	pages=book_json['relations']['hasPart']
@@ -224,10 +224,10 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
 	except:
 		context['authors']="not available"
 	try:
-		context['date']=book_json['dateIssued'][0].split("T")[0]
+		context['date']=book_json['dateIssued'][0:4]
 	except:
 		try:
-			context['date']=book_json['dateCreated'][0].split("T")[0]
+			context['date']=book_json['dateCreated'][0:4]
 		except:
 			context['date']="n.d."
 	context['lowres_url']="https://repository.library.brown.edu/fedora/objects/bdr:"+str(page_pid)+"/datastreams/lowres/content"
@@ -341,10 +341,10 @@ def prints(request,page=1, sort_by="authors"):
 		current_print['det_img_viewer']='https://repository.library.brown.edu/viewer/highres_viewer.html?pid='+str(pid)+'&ds=highres_jp2'
 		#print_json['links']['views']['Detailed Image Viewer']
 		try:
-			current_print['date']=Print['dateCreated'].split("T")[0]
+			current_print['date']=Print['dateCreated'][0:4]
 		except:
 			try:
-				current_print['date']=Print['dateIssued'].split("T")[0]
+				current_print['date']=Print['dateIssued'][0:4]
 			except:
 				current_print['date']="n.d."
 		author_list=Print['contributor_display']
@@ -406,10 +406,10 @@ def specific_print(request, print_pid, page_num, print_num_on_page):
 	except:
 		context['authors']="not available"
 	try:
-		context['date']=print_json['dateIssued'][0].split("T")[0]
+		context['date']=print_json['dateIssued'][0:4]
 	except:
 		try:
-			context['date']=print_json['dateCreated'][0].split("T")[0]
+			context['date']=print_json['dateCreated'][0:4]
 		except:
 			context['date']="n.d."
 			
