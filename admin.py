@@ -6,10 +6,10 @@ from django.contrib import admin
 import rome_app.admin
 
 
-class AboutAdmin(admin.ModelAdmin):
-	fieldsets = (
-		(None, {'fields': 'description'})
-	)
+# class AboutAdmin(admin.ModelAdmin):
+# 	fieldsets = (
+# 		(None, {'fields': 'description'})
+# 	)
 
 # admin.site.register( AboutPage )
 

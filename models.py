@@ -17,7 +17,9 @@ class About(models.Model):
     header = models.CharField( blank=True, max_length=50, help_text=u'header')
     description = models.TextField( blank=True, max_length=10000, help_text=u'description' )
 
-def __unicode__(self):
-    return smart_unicode( self.description, u'utf-8', u'replace' )
+	def __unicode__(self):
+    	return smart_unicode( self.description, u'utf-8', u'replace' )
+    class Meta:
+    	verbose_name = u'About page fields'
 
 # end class About()
