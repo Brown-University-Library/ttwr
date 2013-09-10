@@ -231,7 +231,7 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
 		except:
 			context['date']="n.d."
 	context['lowres_url']="https://repository.library.brown.edu/fedora/objects/bdr:"+str(page_pid)+"/datastreams/lowres/content"
-	context['det_img_view_src']="https://repository.library.brown.edu/viewers/image/zoom/bdr:"+str(page_pid)
+	context['det_img_view_src']="https://repository.library.brown.edu/viewers/image/zoom/bdr:"+str(page_pid)+"/"
 
 	page_json_uri='https://repository.library.brown.edu/api/pub/items/bdr:'+str(page_pid)+'/?q=*&fl=*'
 	#logger.error('json_uri = '+json_uri)
@@ -338,7 +338,7 @@ def prints(request,page=1, sort_by="authors"):
 		current_print['title']=title
 		current_print['short_title']=short_title
 		#print_json=json.loads(urllib2.urlopen(Print['json_uri']).read())
-		current_print['det_img_viewer']='https://repository.library.brown.edu/viewers/image/zoom/bdr:'+str(pid)
+		current_print['det_img_viewer']='https://repository.library.brown.edu/viewers/image/zoom/bdr:'+str(pid)+"/"
 		#print_json['links']['views']['Detailed Image Viewer']
 		try:
 			current_print['date']=Print['dateCreated'][0:4]
@@ -384,7 +384,7 @@ def specific_print(request, print_pid, page_num, print_num_on_page):
 
 	context['book_mode']=0
 	context['print_mode']=1
-	context['det_img_view_src']='https://repository.library.brown.edu/viewer/highres_viewer.html?pid=bdr:'+str(print_pid)+'&ds=highres_jp2'
+	context['det_img_view_src']='https://repository.library.brown.edu/viewers/image/zoom/bdr:'+str(print_pid)+"/"
 	context['back_to_print_href']="../prints_"+str(page_num)+"#"+str(page_num)+"_"+str(print_num_on_page)
 
 	context['pid']=print_pid
