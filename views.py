@@ -177,7 +177,7 @@ def thumbnail_viewer(request, book_pid, page_num, book_num_on_page):
 	for page in pages:
 		curr_thumb={}
 		curr_thumb['src']="https://repository.library.brown.edu/fedora/objects/"+page['pid']+"/datastreams/thumbnail/content"
-		curr_thumb['det_img_view']="https://repository.library.brown.edu/viewer/highres_viewer.html?pid="+page['pid']+"&ds=highres_jp2"
+		curr_thumb['det_img_view']="https://repository.library.brown.edu/viewers/image/zoom/bdr:"+page['pid']+"/"
 		# page_url="https://repository.library.brown.edu/api/pub/items/"+page['pid']
 		# page_json=json.loads(urllib2.urlopen(page_url).read())
 		# 		annotations=page_json['relations']['hasAnnotation']
