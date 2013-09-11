@@ -384,6 +384,8 @@ def specific_print(request, print_pid, page_num, print_num_on_page):
 
 	context['book_mode']=0
 	context['print_mode']=1
+	context['lowres_url']="https://repository.library.brown.edu/fedora/objects/bdr:"+str(print_pid)+"/datastreams/lowres/content"
+
 	context['det_img_view_src']='https://repository.library.brown.edu/viewers/image/zoom/bdr:'+str(print_pid)+"/"
 	context['back_to_print_href']="../prints_"+str(page_num)+"#"+str(page_num)+"_"+str(print_num_on_page)
 
