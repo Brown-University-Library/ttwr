@@ -103,8 +103,10 @@ def books(request,page=1,sort_by='authors'):
 			current_book['title_cut']=1
 		current_book['title']=title
 		current_book['short_title']=short_title
-		current_book['port_url']='https://repository.library.brown.edu/services/book_reader/portfolio/'+pid
-		current_book['book_url']='https://repository.library.brown.edu/services/book_reader/set/'+pid
+		# current_book['port_url']='https://repository.library.brown.edu/services/book_reader/portfolio/'+pid
+		# current_book['book_url']='https://repository.library.brown.edu/services/book_reader/set/'+pid
+		current_book['port_url']='https://repository.library.brown.edu/viewers/readers/portfolio/bdr:'+pid
+		current_book['book_url']='https://repository.library.brown.edu/viewers/readers/set/bdr:'+pid
 		try:
 			current_book['date']=book['dateCreated'][0:4]
 		except:
