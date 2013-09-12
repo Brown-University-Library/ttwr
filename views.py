@@ -386,7 +386,7 @@ def specific_print(request, print_pid, page_num, print_num_on_page):
 
 	context['book_mode']=0
 	context['print_mode']=1
-	context['det_img_view_src']='https://repository.library.brown.edu/viewer/highres_viewer.html?pid=bdr:'+str(print_pid)+'&ds=highres_jp2'
+	context['det_img_view_src']='https://repository.library.brown.edu/viewers/image/zoom/bdr:'+str(pid)#'https://repository.library.brown.edu/viewer/highres_viewer.html?pid=bdr:'+str(print_pid)+'&ds=highres_jp2'
 	context['back_to_print_href']="../prints_"+str(page_num)+"#"+str(page_num)+"_"+str(print_num_on_page)
 
 	context['pid']=print_pid
