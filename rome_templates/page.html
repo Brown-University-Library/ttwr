@@ -26,14 +26,14 @@ function expand_title(title,num)
         </h1>
         <div id="cookietrail">
             <ol>
-                <li><span class="dark">Title:</span> {{ title }}</li><br />
-                <li><span class="dark">Author(s):</span> {{ authors }}</li><br />
-                <li><span class="dark">Date:</span> {{ date }}</li><br />
+                <li>Title: <span class="dark">{{ title }}</span></li><br />
+                <li>Author(s): <span class="dark">{{ authors }}</span></li><br />
+                <li>Date: <span class="dark">{{ date }}</span></li><br />
                 {% if book_mode %}
-                    <li><span class="dark">Book ID:</span> {{ pid }}</li><br />
+                    <li>Book ID: <span class="dark">{{ pid }}</span></li><br />
                 {% endif %}
                 {% if print_mode %}
-                    <li><span class="dark">Print ID:</span> {{ pid }}</li><br />
+                    <li>Print ID: <span class="dark">{{ pid }}</span></li><br />
                 {% endif %}
                 {% if book_mode %}
                     <li><a href="{{back_to_thumbnail_href}}">return to thumbnail viewer</a></li><br />
