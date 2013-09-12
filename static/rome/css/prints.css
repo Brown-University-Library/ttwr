@@ -10,10 +10,12 @@
 	clear: both;
 	}
 
+#page_head ul, ol,
 #page_body ul, ol{
 	padding: 0 50px 0;
 	}
 
+#page_head li,
 #page_body li {
 	margin-bottom: 6px;
 /*	list-style-type: square;*/
