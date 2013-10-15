@@ -49,7 +49,8 @@ function expand_title(title,num)
     {% if book_mode %}
     <div>
         <div id="image_span" style="float:left;padding-left:20px;width:60%">
-        <a href="{{det_img_view_src}}"><img src={{ lowres_url }} width="100%"/></a>
+        <!--<a href="{{det_img_view_src}}"><img src={{ lowres_url }} width="100%"/></a>-->
+        <iframe src={{ det_img_view_src}} width="100%"></iframe>
         </div>
         <div id="metadata" style="float:left;width:36%">
             <ul style="list-style:none">
@@ -100,7 +101,7 @@ function expand_title(title,num)
             {% endfor %}
             </ul>
         </div>
-        <!-- <iframe src={{ det_img_view_src}} width="80%" height="800"></iframe> -->
+        
     </div>
     {% endif %}
     {% if print_mode %}
