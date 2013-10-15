@@ -125,7 +125,7 @@ def books(request,page=1,sort_by='authors'):
 					authors+=author_list[i]+"; "
 			current_book['authors']=authors
 		except:
-			current_book['authors']="not available"
+			current_book['authors']="contributor(s) not available"
 		book_list.append(current_book)
 	book_list=sorted(book_list,key=itemgetter(sort_by,'authors','title','date')) # sort alphabetically
 	for i, book in enumerate(book_list):
@@ -169,7 +169,7 @@ def thumbnail_viewer(request, book_pid, page_num, book_num_on_page):
 				authors+=author_list[i]+"; "
 		context['authors']=authors
 	except:
-		context['authors']="not available"
+		context['authors']="contributor(s) not available"
 	try:
 		context['date']=book_json['dateIssued'][0:4]
 	except:
@@ -226,7 +226,7 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
 				authors+=author_list[i]+"; "
 		context['authors']=authors
 	except:
-		context['authors']="not available"
+		context['authors']="contributor(s) not available"
 	try:
 		context['date']=book_json['dateIssued'][0:4]
 	except:
@@ -412,7 +412,7 @@ def specific_print(request, print_pid, page_num, print_num_on_page):
 				authors+=author_list[i]+"; "
 		context['authors']=authors
 	except:
-		context['authors']="contributors not available"
+		context['authors']="contributor(s) not available"
 	try:
 		context['date']=print_json['dateIssued'][0:4]
 	except:
