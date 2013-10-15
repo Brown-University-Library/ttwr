@@ -412,7 +412,7 @@ def specific_print(request, print_pid, page_num, print_num_on_page):
 				authors+=author_list[i]+"; "
 		context['authors']=authors
 	except:
-		context['authors']="not available"
+		context['authors']="contributors not available"
 	try:
 		context['date']=print_json['dateIssued'][0:4]
 	except:
