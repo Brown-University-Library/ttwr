@@ -48,10 +48,10 @@ function expand_title(title,num)
     <br />
     {% if book_mode %}
     <div>
-        <span id="image_span" style="float:left;padding-left:20px;padding-right:10px;width:60%">
+        <div id="image_span" style="float:left;padding-left:20px;padding-right:10px;width:60%">
         <a href="{{det_img_view_src}}"><img src={{ lowres_url }} width="100%"/></a>
-        </span>
-        <span id="metadata" style="float:left;width:36%">
+        </div>
+        <div id="metadata" style="float:left;width:36%">
             <ul style="list-style:none">
             {% for annotation in annotations %}
                 <li>
@@ -99,7 +99,7 @@ function expand_title(title,num)
                 </li>
             {% endfor %}
             </ul>
-        </span>
+        </div>
         <!-- <iframe src={{ det_img_view_src}} width="80%" height="800"></iframe> -->
     </div>
     {% endif %}
