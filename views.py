@@ -352,7 +352,10 @@ def prints(request,page=1, sort_by="authors"):
 				current_print['date']=Print['dateIssued'][0:4]
 			except:
 				current_print['date']="n.d."
-		author_list=Print['contributor_display']
+		try:
+			author_list=Print['contributor_display']
+		except KeyError:
+			author_list=Print['contributor']
 		authors=""
 		for i in range(len(author_list)):
 			if i==len(author_list)-1:
