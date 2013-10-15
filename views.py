@@ -71,6 +71,7 @@ def books(request,page=1,sort_by='authors'):
 	template=loader.get_template('rome_templates/books.html')
 	context=std_context()
 	context['curr_page']=page
+	context['page_documentation']='Click on "View" to see thumbnails of all the pages of a book. Click "BDR View" to see the default repository entry for a book.'
 	context['sorting']='authors'
 	if sort_by!='authors':
 		context['sorting']=sort_by
@@ -151,6 +152,7 @@ def thumbnail_viewer(request, book_pid, page_num, book_num_on_page):
 	template=loader.get_template('rome_templates/thumbnail_viewer.html')
 	context=std_context()
 	context['back_to_book_href']="../books_"+str(page_num)+"#"+str(page_num)+"_"+str(book_num_on_page)
+	context['page_documentation']='Browse through the pages in this book. Click on an image to explore the page further.'
 	context['pid']=book_pid
 	thumbnails=[]
 	json_uri='https://repository.library.brown.edu/api/pub/items/bdr:'+str(book_pid)+'/?q=*&fl=*'
@@ -298,6 +300,7 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
 def prints(request,page=1, sort_by="authors"):
 	template=loader.get_template('rome_templates/prints.html')
 	context=std_context(title="The Theater that was Rome - Prints")
+	context['page_documentation']='Browse the prints in the Theater that was Rome collection. Click on "View" to explore a print further.'
 	context['curr_page']=page
 	context['sorting']='authors'
 	if sort_by!='authors':
@@ -476,6 +479,7 @@ def links(request):
 def essays(request):
 	template=loader.get_template('rome_templates/essays.html')
 	context=std_context(style="rome/css/links.css")
+	context['page_documentation']='Listed below are essays on topics that relate to the Theater that was Rome collection of books and engravings. The majority of the essays were written by students in Brown University classes that used this material, and edited by Prof. Evelyn Lincoln.'
 	c=RequestContext(request,context)
 	#raise 404 if a certain book does not exist
 	return HttpResponse(template.render(c))
