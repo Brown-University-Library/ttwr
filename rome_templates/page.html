@@ -48,10 +48,10 @@ function expand_title(title,num)
     <br />
     {% if book_mode %}
     <div>
-        <div id="image_span" style="float:left;padding-left:20px;padding-right:10px;width:60%">
+        <div id="image_span" style="position:absolute;display:inline-block;padding-left:20px;padding-right:10px;width:60%">
         <a href="{{det_img_view_src}}"><img src={{ lowres_url }} width="100%"/></a>
         </div>
-        <div id="metadata" style="float:left;width:36%">
+        <div id="metadata" style="position:absolute;display:inline-block;width:36%">
             <ul style="list-style:none">
             {% for annotation in annotations %}
                 <li>
