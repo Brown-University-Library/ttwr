@@ -35,6 +35,7 @@ h1 {
 
 #sitenav ul li {
 	display: block;
+	width:320px;
 	font-size: large;
 	line-height: 2em;
 	color: #999;
