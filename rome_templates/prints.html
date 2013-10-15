@@ -60,8 +60,10 @@ function show_sorting(sorting)
         <h1>
             <span class="repeatbg"><span class="leftcap"><a href="../">The Theater that was Rome - Prints</a></span></span>
         </h1>
+        <div style="font-size:15px; margin-left:20px; width:95%; padding-top:15px; padding-bottom:10px">
+            {{page_documentation}}
+        </div>
         <div style="font-size:15px; margin-left:20px; padding-top:15px; padding-bottom:10px">
-            Prints:
             {% for i in page_range %}
                 <button id="page_button_{{i}}" class="page_button" onclick="show_page({{i}})">{{i}}</button>
             {% endfor %}
