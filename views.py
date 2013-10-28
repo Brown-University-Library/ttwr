@@ -447,9 +447,9 @@ def people(request):
 		bio=bio_set[i]
 		current_bio={}
 		title=bio['primary_title']
-		current_bio['name']=title.split(': ')[1];
-		current_bio['uri']=bio['uri']
-		current_bio['pid']=bio['pid']
+		bio['name']=title.split(': ')[1];
+		bio['uri']=bio['uri']
+		bio['pid']=bio['pid']
 		bio_list.append(bio)
 
 	bio_list=sorted(bio_list,key=itemgetter('name'))
