@@ -452,7 +452,7 @@ def people(request):
 		current_bio['pid']=bio['pid']
 		bio_list.append(bio)
 
-	bio_list=sorted(bio_list,key=itemgetter(sort_by,'name'))
+	bio_list=sorted(bio_list,key=itemgetter('name'))
 	for i, bio in enumerate(bio_list):
 		bio['number_in_list']=i+1
 
