@@ -430,7 +430,7 @@ def specific_print(request, print_pid, page_num, print_num_on_page):
 	#raise 404 if a certain print does not exist
 	return HttpResponse(template.render(c))
 
-def people(request, person_pid):
+def people(request):
 	template=loader.get_template('rome_templates/people.html')
 	context=std_context(title="The Theater that was Rome - Biographies")
 	context['page_documentation']='Browse the biographies of artists related to the Theater that was Rome collection.'
