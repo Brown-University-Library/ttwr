@@ -450,7 +450,7 @@ def people(request):
 		title=bio['primary_title']
 		bio['name']=title.split(': ')[1];
 		bio['uri']=bio['uri']
-		bio['pid']=bio['pid']
+		bio['pid']=bio['pid'].split(":")[1]
 		bio_list.append(bio)
 
 	bio_list=sorted(bio_list,key=itemgetter('name'))
