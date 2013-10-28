@@ -438,6 +438,7 @@ def people(request):
 	url1='https://repository.library.brown.edu/api/pub/collections/621/?q=object_type:tei+AND+display:BDR_PUBLIC&rows='+str(num_bios_estimate)
 	bios_json=json.loads(urllib2.urlopen(url1).read())
 	num_bios=bios_json['items']['numFound']
+	context['num_bios']=num_bios
 	if num_bios>num_bios_estimate:
 		url2='https://repository.library.brown.edu/api/pub/collections/621/?q=object_type:tei+AND+display:BDR_PUBLIC&rows='+str(num_bios)
 		bios_json=json.loads(urllib2.urlopen(url2).read())
@@ -461,7 +462,6 @@ def people(request):
 	bios_per_page=20
 	context['bios_per_page']=bios_per_page
 	PAGIN=Paginator(bio_list,bios_per_page)
-	context['num_bios']=PAGIN.num_pages
 	context['page_range']=PAGIN.page_range
 	context['PAGIN']=PAGIN
 	page_list=[]
