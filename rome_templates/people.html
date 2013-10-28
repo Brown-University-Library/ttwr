@@ -45,7 +45,7 @@ function show_page(i)
             {% for i in page_range %}
                 <button id="page_button_{{i}}" class="page_button" onclick="show_page({{i}})">{{i}}</button>
             {% endfor %}
-            &nbsp showing <span id="prints_shown"></span> of {{num_prints}} biographies; on page <span id="curr_page_span">1</span>
+            &nbsp showing <span id="bios_shown"></span> of {{num_bios}} biographies; on page <span id="curr_page_span">1</span>
         </div>
     </div>
     <div id="page_body">
