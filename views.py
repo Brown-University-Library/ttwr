@@ -462,6 +462,7 @@ def people(request):
 	bios_per_page=20
 	context['bios_per_page']=bios_per_page
 	PAGIN=Paginator(bio_list,bios_per_page)
+	context['num_pages']=PAGIN.num_pages
 	context['page_range']=PAGIN.page_range
 	context['PAGIN']=PAGIN
 	page_list=[]
