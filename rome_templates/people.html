@@ -11,19 +11,22 @@ function load()
 
 function show_page(i)
 {
-    var old_page=document.getElementById("page_"+curr_page);
+    var old_page, new_page, max_num, buttons;
+    old_page=document.getElementById("page_"+curr_page);
     old_page.style.display="none";
     
-    var new_page=document.getElementById("page_"+i);
+    new_page=document.getElementById("page_"+i);
     new_page.style.display="block";
     curr_page=i;
     
-    var buttons=document.getElementsByClassName("page_button");
+    buttons=document.getElementsByClassName("page_button");
     for(var j=0;j<buttons.length;j++)
         buttons[j].style.background="#aaaaaa"
     buttons[parseInt(i)-1].style.background='#888888';
+
+    max_num={{ num_bios }};
     
-    document.getElementById("bios_shown").innerHTML=((parseInt(i)-1)*{{ bios_per_page }}+1)+"-"+(parseInt(i)*{{ bios_per_page }}+1);
+    document.getElementById("bios_shown").innerHTML=((parseInt(i)-1)*{{ bios_per_page }}+1)+"-"+(Math.min(parseInt(i)*{{ bios_per_page }}+1, max_num));
     
     document.getElementById("curr_page_span").innerHTML=i;
 }
