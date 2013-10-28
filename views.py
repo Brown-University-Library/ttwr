@@ -36,37 +36,6 @@ def index(request):
 	#raise 404 if a certain book does not exist
 	return HttpResponse(template.render(c))
 
-def search(request):
-	template=loader.get_template('rome_templates/search.html')
-	context=std_context()
-
-	# if args and length(args)>0:
-	# 		logger.error("got args")
-	# 		context['got_args']=1
-	# 	else:
-	# 		context['got_args']=0
-
-	# if request.method=='POST':
-	# 		form=SearchForm(request.POST)
-	# 		if form.is_valid():
-	# 			data=form.cleaned_data
-	# 			q=urllib.urlencode({'q':data['query']})
-	# 			logger.error('form data submitted: '+q)
-	# 			return HttpResponseRedirect(reverse('search',args=[data['query']])
-	# 	else:
-	# 		form=SearchForm()
-	# 	context['form']=form
-	# 	
-	c=RequestContext(request,context)
-	#raise 404 if a certain book does not exist
-	return HttpResponse(template.render(c))
-
-def search_results(request, query):
-	#logger.error("in search_results, query = "+query)
-	pass
-
-
-
 def books(request,page=1,sort_by='authors'):
 	template=loader.get_template('rome_templates/books.html')
 	context=std_context()
@@ -296,7 +265,6 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
 	#raise 404 if a certain book does not exist
 	return HttpResponse(template.render(c))
 
-
 def prints(request,page=1, sort_by="authors"):
 	template=loader.get_template('rome_templates/prints.html')
 	context=std_context(title="The Theater that was Rome - Prints")
@@ -374,7 +342,7 @@ def prints(request,page=1, sort_by="authors"):
 
 	prints_per_page=20
 	context['prints_per_page']=prints_per_page
-	PAGIN=Paginator(print_list,prints_per_page); #20 prints per page
+	PAGIN=Paginator(print_list,prints_per_page) #20 prints per page
 	context['num_pages']=PAGIN.num_pages
 	context['page_range']=PAGIN.page_range
 	context['PAGIN']=PAGIN
@@ -460,6 +428,49 @@ def specific_print(request, print_pid, page_num, print_num_on_page):
 
 	c=RequestContext(request,context)
 	#raise 404 if a certain print does not exist
+	return HttpResponse(template.render(c))
+
+def people(request, person_pid):
+	template=loader.get_template('rome_templates/people.html')
+	context=std_context(title="The Theater that was Rome - Biographies")
+	context['page_documentation']='Browse the biographies of artists related to the Theater that was Rome collection.'
+	num_bios_estimate=6000
+	url1='https://repository.library.brown.edu/api/pub/collections/621/?q=object_type:tei+AND+display:BDR_PUBLIC&rows='+str(num_bios_estimate)
+	bios_json=json.loads(urllib2.urlopen(url1).read())
+	num_bios=bios_json['items']['numFound']
+	context['num_prints']=num_prints
+	if num_bios>num_bios_estimate:
+		url2='https://repository.library.brown.edu/api/pub/collections/621/?q=object_type:tei+AND+display:BDR_PUBLIC&rows='+str(num_bios)
+		bios_json=json.loads(urllib2.urlopen(url2).read())
+	bio_set=bios_json['items']['docs']
+	bio_list=[]
+	for i in range(len(bio_set)):
+		bio=bio_set[i]
+		current_bio={}
+		title=bio['primary_title']
+		current_bio['name']=title.split(': ')[1];
+		current_bio['uri']=bio['uri']
+		current_bio['pid']=bio['pid']
+		bio_list.append(bio)
+
+	bio_list=sorted(bio_list,key=itemgetter(sort_by,'name'))
+	for i, bio in enumerate(bio_list):
+		bio['number_in_list']=i+1
+
+	context['bio_list']=bio_list
+
+	bios_per_page=20
+	context['bios_per_page']
+	PAGIN=Paginator(bio_list,pios_per_page)
+	context['num_bios']=PAGIN.num_pages
+	context['page_range']=PAGIN.page_range
+	context['PAGIN']=PAGIN
+	page_list=[]
+	for i in PAGIN.page_range:
+		page_list.append(PAGIN.page(i).object_list)
+	context['page_list']=page_list
+
+	c=RequestContext(request,context)
 	return HttpResponse(template.render(c))
 
 def about(request):

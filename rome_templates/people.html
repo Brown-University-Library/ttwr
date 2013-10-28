@@ -1,0 +1,78 @@
+<head>
+<title>{{title}}</title>
+<script type="text/javascript">
+window.onload=load;
+var curr_page;
+function load()
+{
+    curr_page={{ curr_page }};
+    show_page(curr_page);
+}
+
+function show_page(i)
+{
+    var old_page=document.getElementById("page_"+curr_page);
+    old_page.style.display="none";
+    
+    var new_page=document.getElementById("page_"+i);
+    new_page.style.display="block";
+    curr_page=i;
+    
+    var buttons=document.getElementsByClassName("page_button");
+    for(var j=0;j<buttons.length;j++)
+        buttons[j].style.background="#aaaaaa"
+    buttons[parseInt(i)-1].style.background='#888888';
+    
+    document.getElementById("bios_shown").innerHTML=((parseInt(i)-1)*{{ bios_per_page }}+1)+"-"+(parseInt(i)*{{ bios_per_page }}+1);
+    
+    document.getElementById("curr_page_span").innerHTML=i;
+}
+
+</script>
+</head>
+{% load static from staticfiles %}
+<link rel="stylesheet" href="{%static usr_style%}" type="text/css" media="screen" />
+
+<body>
+    <div id="page_head">
+        <h1>
+            <span class="repeatbg"><span class="leftcap"><a href="../">The Theater that was Rome - People</a></span></span>
+        </h1>
+        <div style="font-size:15px; margin-left:20px; width:95%; padding-top:15px; padding-bottom:10px">
+            {{page_documentation}}
+        </div>
+        <div style="font-size:15px; margin-left:20px; padding-top:15px; padding-bottom:10px">
+            {% for i in page_range %}
+                <button id="page_button_{{i}}" class="page_button" onclick="show_page({{i}})">{{i}}</button>
+            {% endfor %}
+            &nbsp showing <span id="prints_shown"></span> of {{num_prints}} biographies; on page <span id="curr_page_span">1</span>
+        </div>
+    </div>
+    <div id="page_body">
+        {% for page in page_list %}
+        <div id="page_{{forloop.counter}}" num="{{forloop.counter}}" style="display:none;">
+            <ol>
+                {% for bio in page %}
+                <li value={{bio.number_in_list}}>
+                    <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}">
+                        <a href="{{ bio.uri }}" target="_blank">
+                            [View]
+                        </a>&nbsp
+                        Person: <span class="dark">{{ bio.name }}</span><br />
+                        <br />
+                        Biography ID: {{ pprint.pid }}
+                    </span>
+                    <br />
+                    <br />
+                </li>
+                {% endfor %}
+            </ol>
+        </div>
+        {% endfor %}
+    </div>
+    <div id="footer">
+	    <span>&#169; {{cpydate}} Brown University</span>
+	    <a href="http://www.brown.edu"><img src="{%static brown_image%}" alt="Brown University" /></a>
+	    <a href="http://www.stg.brown.edu"><img src="{%static stg_image%}" alt="Scholarly Technology Group" /></a>
+	</div>
+</body>

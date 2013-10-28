@@ -9,11 +9,9 @@ from django.contrib import admin
 
 urlpatterns = patterns('',
 	#admin
-	
 	url(r'^admin/', include(admin.site.urls), name='admin'),
 	
 	#index and static
-	
 	url(r'^about/', views.about, name='about'),
 	url(r'^links/$', views.links, name='links'),
 	
@@ -29,9 +27,6 @@ urlpatterns = patterns('',
 	url(r'^essay_(?P<essay_auth>\w+)/$', views.specific_essay, name='specific_essay'),
 	url(r'^essays/$', views.essays, name='essays'),
 	url(r'^prints/$', views.prints, name='prints'),
-	
-	url(r'^$', views.index, name='index'),
-	
-	# url(r'^search/', views.search, name='search'),
-	# url(r'^search(?P<essay_auth>\w+)/$', views.search_results, name='search_results'),
+	url(r'^people/$', views.people, name='people'),
+	url(r'^$', views.index, name='index')
   )

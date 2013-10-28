@@ -80,7 +80,7 @@ function show_sorting(sorting)
         <div id="page_{{forloop.counter}}" num="{{forloop.counter}}" style="display:none;">
             <ol>
                 {% for pprint in page %}
-                <li value={{print.number_in_list}}>
+                <li value={{pprint.number_in_list}}>
                     <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}">
                         <a href="{{ pprint.thumbnail_url_start }}_{{forloop.parentloop.counter}}_{{forloop.counter}}" target="_blank">
                             [View]
