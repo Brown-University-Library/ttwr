@@ -435,22 +435,34 @@ def people(request):
 	context=std_context(title="The Theater that was Rome - Biographies")
 	context['page_documentation']='Browse the biographies of artists related to the Theater that was Rome collection.'
 	num_bios_estimate=6000
-	url1='https://repository.library.brown.edu/api/pub/collections/621/?q=object_type:tei+AND+display:BDR_PUBLIC&rows='+str(num_bios_estimate)
+	url1='https://repository.library.brown.edu/api/pub/search/?q=ir_collection_id:621+AND+object_type:tei+AND+display:BDR_PUBLIC&rows='+str(num_bios_estimate)
+	#url1='https://repository.library.brown.edu/api/pub/collections/621/?q=object_type:tei+AND+display:BDR_PUBLIC&rows='+str(num_bios_estimate)
 	bios_json=json.loads(urllib2.urlopen(url1).read())
-	num_bios=bios_json['items']['numFound']
+	num_bios=bios_json['response']['numFound']
 	context['num_bios']=num_bios
 	if num_bios>num_bios_estimate:
-		url2='https://repository.library.brown.edu/api/pub/collections/621/?q=object_type:tei+AND+display:BDR_PUBLIC&rows='+str(num_bios)
+		url2='https://repository.library.brown.edu/api/pub/search/?q=ir_collection_id:621+AND+object_type:tei+AND+display:BDR_PUBLIC&rows='+str(num_bios)
 		bios_json=json.loads(urllib2.urlopen(url2).read())
-	bio_set=bios_json['items']['docs']
+	bio_set=bios_json['response']['docs']
 	bio_list=[]
 	for i in range(len(bio_set)):
 		bio=bio_set[i]
 		current_bio={}
-		title=bio['primary_title']
-		bio['name']=title.split(': ')[1];
-		bio['uri']=bio['uri']
+		display=bio['contributor_display']
+		parts=display.split("(")
+		if len(parts)>1:
+			bio['role']=' ['+parts[1].split(')')[0]+']'
+		else:
+			bio['role']=''
+		potentialDate = parts[0].split(',')[-1]
+		if re.search('[0-9][0-9][0-9]',potentialDate):
+			bio['date']=' '+potentialDate
+		else:
+			bio['date']=''
+		bio['name']=bio['primary_title'].split(': ')[1]+'.';
 		bio['pid']=bio['pid'].split(":")[1]
+		bio['uri']='https://repository.library.brown.edu/studio/item/'+bio['pid']+'/'
+		
 		bio_list.append(bio)
 
 	bio_list=sorted(bio_list,key=itemgetter('name'))
