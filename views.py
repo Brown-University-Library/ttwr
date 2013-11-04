@@ -451,19 +451,19 @@ def people(request):
 		display=bio['contributor_display'][0]
 		parts=display.split("(")
 		if len(parts)>1:
-			bio['role']=' ['+parts[1].split(')')[0]+']'
+			current_bio['role']=' ['+parts[1].split(')')[0]+']'
 		else:
-			bio['role']=''
+			current_bio['role']=''
 		potentialDate = parts[0].split(',')[-1]
 		if re.search('[0-9][0-9][0-9]',potentialDate):
-			bio['date']=' '+potentialDate
+			current_bio['date']=' '+potentialDate
 		else:
-			bio['date']=''
-		bio['name']=bio['primary_title'].split(': ')[1]+'.';
-		bio['pid']=bio['pid'].split(":")[1]
-		bio['uri']='https://repository.library.brown.edu/studio/item/'+bio['pid']+'/'
+			current_bio['date']=''
+		current_bio['name']=bio['primary_title'].split(': ')[1]+'.';
+		current_bio['pid']=bio['pid'].split(":")[1]
+		current_bio['uri']='https://repository.library.brown.edu/studio/item/'+bio['pid']+'/'
 		
-		bio_list.append(bio)
+		bio_list.append(current_bio)
 
 	bio_list=sorted(bio_list,key=itemgetter('name'))
 	for i, bio in enumerate(bio_list):
