@@ -448,7 +448,7 @@ def people(request):
 	for i in range(len(bio_set)):
 		bio=bio_set[i]
 		current_bio={}
-		display=bio['contributor_display']
+		display=bio['contributor_display'][0]
 		parts=display.split("(")
 		if len(parts)>1:
 			bio['role']=' ['+parts[1].split(')')[0]+']'
