@@ -28,5 +28,6 @@ urlpatterns = patterns('',
 	url(r'^essays/$', views.essays, name='essays'),
 	url(r'^prints/$', views.prints, name='prints'),
 	url(r'^people/$', views.people, name='people'),
+    url(r'^people/(?P<trp_id>\d+)/$', views.person_detail, name='person_detail'),
 	url(r'^$', views.index, name='index')
   )

@@ -62,7 +62,7 @@ function expand_title(title,num)
                 {% endif %}
                 
                 {% for name in annotation.names %}
-                <div style="margin-bottom:5px"><b>{{ name.role }}:</b> {{ name.name }}</div>
+								<div style="margin-bottom:5px"><b>{{ name.role }}:</b> <a href="{% url 'person_detail' name.trp_id %}">{{ name.name }}</a></div>
                 {% endfor %}
                 
                 {% if annotation.has_elements.abstract %}
