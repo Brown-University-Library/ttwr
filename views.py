@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseServerError
 from django.template import Context, loader, RequestContext
 from django.core.paginator import Paginator
 import urllib, urllib2
@@ -12,12 +12,15 @@ import xml.etree.ElementTree as ET
 import re # regular expressions
 # from rome_app import settings_app
 from models import About
+import requests
 
 # from rome_app import models
 # from models import AboutPage
 
 # git push https://ben_leveque@bitbucket.org/birkin/projects-rome_app.git
 # update with efficiency fixes
+
+BDR_SERVER = u'repository.library.brown.edu'
 
 def std_context(style="rome/css/prints.css",title="The Theater that was Rome"):
 	context={}
@@ -453,6 +456,7 @@ def get_bio_list( bio_set):
 		current_bio['name']=bio['primary_title'].split(': ')[1]+'.';
 		current_bio['pid']=bio['pid'].split(":")[1]
 		current_bio['uri']='https://repository.library.brown.edu/studio/item/'+bio['pid']+'/'
+                current_bio['trp_id'] = bio['mods_id_trp_ssim'][0][4:]
 		
 		bio_list.append(current_bio)
 
@@ -462,7 +466,34 @@ def get_bio_list( bio_set):
 	return bio_list
 
 def person_detail(request, trp_id):
-    return HttpResponse( u'Person Page still under construction.  ID is %s' % trp_id )
+    pid = _get_pid_from_trp_id(trp_id)
+    if not pid:
+        return HttpResponseServerError('Internal Server error')
+    context = std_context(title="The Theater that was Rome - Biography")
+    context = RequestContext(request, context)
+    template = loader.get_template('rome_templates/person_detail.html')
+    context['pid'] = pid
+    context['trp_id'] = trp_id
+    return HttpResponse(template.render(context))
+
+
+def person_detail_tei(request, trp_id):
+    pid = _get_pid_from_trp_id(trp_id)
+    if not pid:
+        return HttpResponseServerError('Internal Server error')
+    r = requests.get(u'https://%s/fedora/objects/%s/datastreams/TEI/content' % (BDR_SERVER, pid))
+    if r.ok:
+        return HttpResponse(r.text)
+
+
+def _get_pid_from_trp_id(trp_id):
+    trp_id = u'trp-%s' % trp_id
+    r = requests.get(u'http://%s/api/pub/search?q=mods_id_trp_ssim:%s+AND+display:BDR_PUBLIC&fl=pid' % (BDR_SERVER, trp_id))
+    if r.ok:
+        data = r.json()
+        if data['response']['numFound'] > 0:
+            return data['response']['docs'][0]['pid']
+
 
 def books_for_person( name ):
 	num_books_estimate=6000
