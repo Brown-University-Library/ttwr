@@ -1,4 +1,9 @@
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl" xmlns:TEI="http://www.tei-c.org/ns/1.0" exclude-result-prefixes="xs xd" version="2.0">
+<xsl:stylesheet 
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+  xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl" 
+  xmlns:TEI="http://www.tei-c.org/ns/1.0" 
+  exclude-result-prefixes="xs xd" version="2.0">
 <xd:doc scope="stylesheet">
 <xd:desc>
 <xd:p>
@@ -12,20 +17,20 @@ elli
 <xd:p/>
 </xd:desc>
 </xd:doc>
-<xsl:output method="xml" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" encoding="utf-8" indent="yes"/>
+<!--<xsl:output method="html" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" encoding="utf-8" indent="yes"/>-->
 <xsl:template match="/">
-<div id="page_body">
-<xsl:apply-templates/>
-</div>
+  <xsl:result-document href="#author_info" method="html">
+  <xsl:apply-templates/>
+</xsl:result-document>
 </xsl:template>
 <xsl:template match="TEI:teiHeader"/>
 <xsl:template match="TEI:text/TEI:body">
-<h1>
+<h2>
 <xsl:apply-templates select="TEI:head/TEI:persName"/>
 (
 <xsl:apply-templates select="TEI:head/TEI:date"/>
 )
-</h1>
+</h2>
 <xsl:apply-templates select="TEI:div/TEI:listPerson/TEI:person"/>
 <xsl:apply-templates select="TEI:div[@type='history']"/>
 <xsl:apply-templates select="TEI:div[@type='bibliography']"/>
@@ -64,9 +69,9 @@ elli
 </li>
 </xsl:template>
 <xsl:template match="TEI:persName">
-<a href="{@ref}">
+<!--<a href="{@ref}">-->
 <xsl:apply-templates/>
-</a>
+<!--</a>-->
 </xsl:template>
 <xsl:template match="//TEI:birth">
 <p>

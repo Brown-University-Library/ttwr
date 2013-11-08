@@ -5,33 +5,13 @@
 <script type="text/javascript" language="javascript" src="{% static 'rome/Saxonce/Saxonce.nocache.js' %}"></script>
 <script type="text/javascript">
 window.onload=load;
-var curr_page;
 function load()
 {
-    curr_page={{ curr_page }};
-    show_page(curr_page);
-}
 
-function show_page(i)
-{
-    var old_page, new_page, max_num, buttons;
-    old_page=document.getElementById("page_"+curr_page);
-    old_page.style.display="none";
     
-    new_page=document.getElementById("page_"+i);
-    new_page.style.display="block";
-    curr_page=i;
+   // document.getElementById("bios_shown").innerHTML=((parseInt(i)-1)*{{ bios_per_page }}+1)+"-"+(Math.min(parseInt(i)*{{ bios_per_page }}+1, max_num));
     
-    buttons=document.getElementsByClassName("page_button");
-    for(var j=0;j<buttons.length;j++)
-        buttons[j].style.background="#aaaaaa"
-    buttons[parseInt(i)-1].style.background='#888888';
-
-    max_num={{ num_bios }};
-    
-    document.getElementById("bios_shown").innerHTML=((parseInt(i)-1)*{{ bios_per_page }}+1)+"-"+(Math.min(parseInt(i)*{{ bios_per_page }}+1, max_num));
-    
-    document.getElementById("curr_page_span").innerHTML=i;
+   // document.getElementById("curr_page_span").innerHTML=i;
 }
 
 </script>
@@ -49,11 +29,10 @@ function show_page(i)
     </div>
     <div id="page_body">
         <div id="author_info">
-            <p>Author info</p>
             <script type="application/xslt+xml" language="xslt2.0" src="{%static 'rome/bio.xslt' %}" data-source="{% url 'person_detail_tei' trp_id %}"></script>
         </div>
         <div id="related_sources">
-            <p>Related Resources</p>
+            <h2>Related Resources</h2>
         </div>
     </div>
     <div id="footer">
