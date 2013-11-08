@@ -232,7 +232,11 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
 				break
 		curr_annot['names']=[]
 		for name in root.getiterator('{http://www.loc.gov/mods/v3}name'):
-			curr_annot['names'].append({'name':name[0].text, 'role':name[1][0].text.capitalize()})
+			curr_annot['names'].append({
+				'name':name[0].text,
+				'role':name[1][0].text.capitalize(),
+				'trp_id': name.attrib['{http://www.w3.org/1999/xlink}href'],
+			})
 		for abstract in root.getiterator('{http://www.loc.gov/mods/v3}abstract'):
 			curr_annot['abstract']=abstract.text
 			curr_annot['has_elements']['abstract']=1
@@ -430,20 +434,7 @@ def specific_print(request, print_pid, page_num, print_num_on_page):
 	#raise 404 if a certain print does not exist
 	return HttpResponse(template.render(c))
 
-def people(request):
-	template=loader.get_template('rome_templates/people.html')
-	context=std_context(title="The Theater that was Rome - Biographies")
-	context['page_documentation']='Browse the biographies of artists related to the Theater that was Rome collection.'
-	num_bios_estimate=6000
-	url1='https://repository.library.brown.edu/api/pub/search/?q=ir_collection_id:621+AND+object_type:tei+AND+display:BDR_PUBLIC&rows='+str(num_bios_estimate)
-	#url1='https://repository.library.brown.edu/api/pub/collections/621/?q=object_type:tei+AND+display:BDR_PUBLIC&rows='+str(num_bios_estimate)
-	bios_json=json.loads(urllib2.urlopen(url1).read())
-	num_bios=bios_json['response']['numFound']
-	context['num_bios']=num_bios
-	if num_bios>num_bios_estimate:
-		url2='https://repository.library.brown.edu/api/pub/search/?q=ir_collection_id:621+AND+object_type:tei+AND+display:BDR_PUBLIC&rows='+str(num_bios)
-		bios_json=json.loads(urllib2.urlopen(url2).read())
-	bio_set=bios_json['response']['docs']
+def get_bio_list( bio_set):
 	bio_list=[]
 	for i in range(len(bio_set)):
 		bio=bio_set[i]
@@ -468,19 +459,62 @@ def people(request):
 	bio_list=sorted(bio_list,key=itemgetter('name'))
 	for i, bio in enumerate(bio_list):
 		bio['number_in_list']=i+1
+	return bio_list
 
-	context['bio_list']=bio_list
+def person_detail(request, trp_id):
+    return HttpResponse( u'Person Page still under construction.  ID is %s' % trp_id )
+
+def books_for_person( name ):
+	num_books_estimate=6000
+	query_uri = 'https://repository.library.brown.edu/bdr_apis/pub/collections/621/?q=object_type:implicit-set+name:%s&rows=%s' % (name, num_books_estimate)
+	books_json=json.loads(urllib2.urlopen(query_uri).read())
+	num_books=books_json['items']['numFound']
+	if num_books>num_books_estimate:
+		query_uri = 'https://repository.library.brown.edu/bdr_apis/pub/collections/621/?q=object_type:implicit-set+name:%s&rows=%s' % (name, num_books_estimate)
+		books_json=json.loads(urllib2.urlopen(query_uri).read())
+	books_set=books_json['items']['docs']
+	return []
+
+def prints_for_person( name ):
+	num_prints_estimate=6000
+	query_uri = 'https://repository.library.brown.edu/bdr_apis/pub/collections/621/?q=genre_aat:*prints*&fl=*&fq=discover:BDR_PUBLIC+name:%s&rows=%s' % (name, num_prints_estimate)
+	prints_json=json.loads(urllib2.urlopen(query_uri).read())
+	num_prints=prints_json['items']['numFound']
+	if num_prints>num_prints_estimate:
+		query_uri = 'https://repository.library.brown.edu/bdr_apis/pub/collections/621/?q=genre_aat:*prints*&fl=*&fq=discover:BDR_PUBLIC+name:%s&rows=%s' % (name, num_prints_estimate)
+	prints_json=json.loads(urllib2.urlopen(query_uri).read())
+	prints_set=prints_json['items']['docs']
+	return []
+
+
+def people(request):
+	template=loader.get_template('rome_templates/people.html')
+	num_bios_estimate=6000
+	url1='https://repository.library.brown.edu/api/pub/search/?q=ir_collection_id:621+AND+object_type:tei+AND+display:BDR_PUBLIC&rows='+str(num_bios_estimate)
+	bios_json=json.loads(urllib2.urlopen(url1).read())
+	
+	num_bios=bios_json['response']['numFound']
+	if num_bios>num_bios_estimate:
+		url2='https://repository.library.brown.edu/api/pub/search/?q=ir_collection_id:621+AND+object_type:tei+AND+display:BDR_PUBLIC&rows='+str(num_bios)
+		bios_json=json.loads(urllib2.urlopen(url2).read())
+
+	bio_set=bios_json['response']['docs']
+	bio_list = get_bio_list(bio_set)
 
 	bios_per_page=20
-	context['bios_per_page']=bios_per_page
 	PAGIN=Paginator(bio_list,bios_per_page)
+	page_list=[]
+	for i in PAGIN.page_range:
+		page_list.append(PAGIN.page(i).object_list)
+	context=std_context(title="The Theater that was Rome - Biographies")
+	context['page_documentation']='Browse the biographies of artists related to the Theater that was Rome collection.'
+	context['num_bios']=num_bios
+	context['bio_list']=bio_list
+	context['bios_per_page']=bios_per_page
 	context['num_pages']=PAGIN.num_pages
 	context['page_range']=PAGIN.page_range
 	context['curr_page']=1
 	context['PAGIN']=PAGIN
-	page_list=[]
-	for i in PAGIN.page_range:
-		page_list.append(PAGIN.page(i).object_list)
 	context['page_list']=page_list
 
 	c=RequestContext(request,context)
@@ -489,8 +523,6 @@ def people(request):
 def about(request):
 	template=loader.get_template('rome_templates/about.html')
 	context=std_context(style="rome/css/links.css")
-	# page_data = About.objects.using(settings_app.DB).get(head_title="Abouts")
-	# context.page_data = page_data
 	c=RequestContext(request,context)
 	#raise 404 if a certain book does not exist
 	return HttpResponse(template.render(c))	
@@ -512,7 +544,6 @@ def essays(request):
 	return HttpResponse(template.render(c))
 
 def specific_essay(request, essay_auth):
-	#a=urllib2.urlopen('./essays/book-essay-'+essay_auth+".html").read()
 	template=loader.get_template('rome_templates/essays/book-essay-'+essay_auth+'.html')
 	context=std_context(style="rome/css/links.css")
 	context['usr_essays_style']="rome/css/essays.css"
