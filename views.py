@@ -466,7 +466,7 @@ def get_bio_list( bio_set):
 	return bio_list
 
 def person_detail(request, trp_id):
-    pid = _get_pid_from_trp_id(trp_id)
+    (pid, name) = _get_info_from_trp_id(trp_id)
     if not pid:
         return HttpResponseServerError('Internal Server error')
     context = std_context(title="The Theater that was Rome - Biography")
@@ -474,11 +474,13 @@ def person_detail(request, trp_id):
     template = loader.get_template('rome_templates/person_detail.html')
     context['pid'] = pid
     context['trp_id'] = trp_id
+    context['books'] = _books_for_person(name)
+    context['prints'] = _prints_for_person(name)
     return HttpResponse(template.render(context))
 
 
 def person_detail_tei(request, trp_id):
-    pid = _get_pid_from_trp_id(trp_id)
+    pid, name = _get_info_from_trp_id(trp_id)
     if not pid:
         return HttpResponseServerError('Internal Server error')
     r = requests.get(u'https://%s/fedora/objects/%s/datastreams/TEI/content' % (BDR_SERVER, pid))
@@ -486,36 +488,29 @@ def person_detail_tei(request, trp_id):
         return HttpResponse(r.text)
 
 
-def _get_pid_from_trp_id(trp_id):
+def _get_info_from_trp_id(trp_id):
     trp_id = u'trp-%s' % trp_id
-    r = requests.get(u'http://%s/api/pub/search?q=mods_id_trp_ssim:%s+AND+display:BDR_PUBLIC&fl=pid' % (BDR_SERVER, trp_id))
+    r = requests.get(u'http://%s/api/pub/search?q=mods_id_trp_ssim:%s+AND+display:BDR_PUBLIC&fl=pid,name' % (BDR_SERVER, trp_id))
     if r.ok:
-        data = r.json()
+        data = json.loads(r.text)
         if data['response']['numFound'] > 0:
-            return data['response']['docs'][0]['pid']
+            return (data['response']['docs'][0]['pid'], data['response']['docs'][0]['name'])
 
 
-def books_for_person( name ):
-	num_books_estimate=6000
-	query_uri = 'https://repository.library.brown.edu/bdr_apis/pub/collections/621/?q=object_type:implicit-set+name:%s&rows=%s' % (name, num_books_estimate)
-	books_json=json.loads(urllib2.urlopen(query_uri).read())
-	num_books=books_json['items']['numFound']
-	if num_books>num_books_estimate:
-		query_uri = 'https://repository.library.brown.edu/bdr_apis/pub/collections/621/?q=object_type:implicit-set+name:%s&rows=%s' % (name, num_books_estimate)
-		books_json=json.loads(urllib2.urlopen(query_uri).read())
-	books_set=books_json['items']['docs']
-	return []
+def _books_for_person(name):
+    num_books_estimate = 6000
+    query_uri = 'https://%s/api/pub/collections/621/?q=object_type:implicit-set+AND+name:"%s"&rows=%s' % (BDR_SERVER, name[0], num_books_estimate)
+    books_json = json.loads(requests.get(query_uri).text)
+    books_set = books_json['items']['docs']
+    return books_set
 
-def prints_for_person( name ):
-	num_prints_estimate=6000
-	query_uri = 'https://repository.library.brown.edu/bdr_apis/pub/collections/621/?q=genre_aat:*prints*&fl=*&fq=discover:BDR_PUBLIC+name:%s&rows=%s' % (name, num_prints_estimate)
-	prints_json=json.loads(urllib2.urlopen(query_uri).read())
-	num_prints=prints_json['items']['numFound']
-	if num_prints>num_prints_estimate:
-		query_uri = 'https://repository.library.brown.edu/bdr_apis/pub/collections/621/?q=genre_aat:*prints*&fl=*&fq=discover:BDR_PUBLIC+name:%s&rows=%s' % (name, num_prints_estimate)
-	prints_json=json.loads(urllib2.urlopen(query_uri).read())
-	prints_set=prints_json['items']['docs']
-	return []
+
+def _prints_for_person(name):
+    num_prints_estimate = 6000
+    query_uri = 'https://%s/api/pub/collections/621/?q=genre_aat:*prints*+AND+name:"%s"&rows=%s' % (BDR_SERVER, name[0], num_prints_estimate)
+    prints_json = json.loads(requests.get(query_uri).text)
+    prints_set = prints_json['items']['docs']
+    return prints_set
 
 
 def people(request):
