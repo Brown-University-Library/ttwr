@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django.http import HttpResponse, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError
 from django.template import Context, loader, RequestContext
 from django.core.paginator import Paginator
 import urllib, urllib2
@@ -467,9 +467,9 @@ def get_bio_list( bio_set):
 	return bio_list
 
 def person_detail(request, trp_id):
-    (pid, name) = _get_info_from_trp_id(trp_id)
-    if not pid:
-        return HttpResponseServerError('Internal Server error')
+    pid, name = _get_info_from_trp_id(trp_id)
+    if not pid or not name:
+        return HttpResponseNotFound('Person %s Not Found' % trp_id)
     context = std_context(title="The Theater that was Rome - Biography")
     context = RequestContext(request, context)
     template = loader.get_template('rome_templates/person_detail.html')
@@ -483,10 +483,12 @@ def person_detail(request, trp_id):
 def person_detail_tei(request, trp_id):
     pid, name = _get_info_from_trp_id(trp_id)
     if not pid:
-        return HttpResponseServerError('Internal Server error')
+        return HttpResponseNotFound('Not Found')
     r = requests.get(u'https://%s/fedora/objects/%s/datastreams/TEI/content' % (BDR_SERVER, pid))
     if r.ok:
         return HttpResponse(r.text)
+    else:
+        return HttpResponseServerError('Internal Server error')
 
 
 def _get_info_from_trp_id(trp_id):
@@ -496,6 +498,7 @@ def _get_info_from_trp_id(trp_id):
         data = json.loads(r.text)
         if data['response']['numFound'] > 0:
             return (data['response']['docs'][0]['pid'], data['response']['docs'][0]['name'])
+    return None, None
 
 
 def _books_for_person(name):
