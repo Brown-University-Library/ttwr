@@ -495,8 +495,20 @@ def _pages_for_person(name):
     num_prints_estimate = 6000
     query_uri = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:annotation+AND+name:"%s"+AND+display:BDR_PUBLIC&rows=%s&fl=rel_is_annotation_of_ssim,primary_title,pid' % (BDR_SERVER, name[0], num_prints_estimate)
     pages_json = json.loads(requests.get(query_uri).text)
-    pages_set = pages_json['response']['docs']
-    return pages_set
+    pages = pages_json['response']['docs']
+    for page in pages:
+        page['page_id'] = page['rel_is_annotation_of_ssim'][0].replace(u'bdr:', '')
+        page['book_id'] = _get_book_pid_from_page_pid(page['rel_is_annotation_of_ssim'][0])
+    return pages
+
+
+def _get_book_pid_from_page_pid(page_pid):
+    query = u'https://%s/api/pub/search/?q=pid:"%s"+AND+display:BDR_PUBLIC&fl=rel_is_member_of_ssim' % (BDR_SERVER, page_pid)
+    r = requests.get(query)
+    if r.ok:
+        data = json.loads(r.text)
+        if data['response']['numFound'] > 0:
+            return data['response']['docs'][0]['rel_is_member_of_ssim'][0].replace(u'bdr:', '')
 
 
 def people(request):
