@@ -456,7 +456,8 @@ def get_bio_list( bio_set):
 		current_bio['name']=bio['primary_title'].split(': ')[1]+'.';
 		current_bio['pid']=bio['pid'].split(":")[1]
 		current_bio['uri']='https://repository.library.brown.edu/studio/item/'+bio['pid']+'/'
-                current_bio['trp_id'] = bio['mods_id_trp_ssim'][0][4:]
+                #drop the 'trp-' in the trp id
+                current_bio['trp_id'] = bio['mods_id_trp_ssim'][0].replace(u'trp-', u'')
 		
 		bio_list.append(current_bio)
 
@@ -489,7 +490,7 @@ def person_detail_tei(request, trp_id):
 
 
 def _get_info_from_trp_id(trp_id):
-    trp_id = u'trp-%s' % trp_id
+    trp_id = u'trp-%04d' % int(trp_id)
     r = requests.get(u'http://%s/api/pub/search?q=mods_id_trp_ssim:%s+AND+display:BDR_PUBLIC&fl=pid,name' % (BDR_SERVER, trp_id))
     if r.ok:
         data = json.loads(r.text)
