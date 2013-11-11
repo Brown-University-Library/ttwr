@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django.http import HttpResponse, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError
 from django.template import Context, loader, RequestContext
 from django.core.paginator import Paginator
 import urllib, urllib2
@@ -9,18 +9,13 @@ import logging
 logger = logging.getLogger(__name__)
 from operator import itemgetter
 import xml.etree.ElementTree as ET
-import re # regular expressions
-# from rome_app import settings_app
+import re
 from models import About
 import requests
 
-# from rome_app import models
-# from models import AboutPage
-
-# git push https://ben_leveque@bitbucket.org/birkin/projects-rome_app.git
-# update with efficiency fixes
 
 BDR_SERVER = u'repository.library.brown.edu'
+
 
 def std_context(style="rome/css/prints.css",title="The Theater that was Rome"):
 	context={}
@@ -33,7 +28,7 @@ def std_context(style="rome/css/prints.css",title="The Theater that was Rome"):
 	return context
 
 def index(request):
-	template=loader.get_template('rome_templates/index.html') #built-in from django.template
+	template=loader.get_template('rome_templates/index.html')
 	context=std_context(style="rome/css/home.css")
 	c=RequestContext(request,context)
 	#raise 404 if a certain book does not exist
@@ -76,10 +71,8 @@ def books(request,page=1,sort_by='authors'):
 			current_book['title_cut']=1
 		current_book['title']=title
 		current_book['short_title']=short_title
-		# current_book['port_url']='https://repository.library.brown.edu/services/book_reader/portfolio/'+pid
-		# current_book['book_url']='https://repository.library.brown.edu/services/book_reader/set/'+pid
-		current_book['port_url']='https://repository.library.brown.edu/viewers/readers/portfolio/'+pid
-		current_book['book_url']='https://repository.library.brown.edu/viewers/readers/set/'+pid
+		current_book['port_url']='https://%s/viewers/readers/portfolio/%s/' % (BDR_SERVER, pid)
+		current_book['book_url']='https://%s/viewers/readers/set/%s/' % (BDR_SERVER, pid)
 		try:
 			current_book['date']=book['dateCreated'][0:4]
 		except:
@@ -120,6 +113,7 @@ def books(request,page=1,sort_by='authors'):
 	c=RequestContext(request,context)
 	return HttpResponse(template.render(c))
 
+
 def thumbnail_viewer(request, book_pid, page_num, book_num_on_page):
 	template=loader.get_template('rome_templates/thumbnail_viewer.html')
 	context=std_context()
@@ -127,8 +121,8 @@ def thumbnail_viewer(request, book_pid, page_num, book_num_on_page):
 	context['page_documentation']='Browse through the pages in this book. Click on an image to explore the page further.'
 	context['pid']=book_pid
 	thumbnails=[]
-	json_uri='https://repository.library.brown.edu/api/pub/items/bdr:'+str(book_pid)+'/?q=*&fl=*'
-	book_json=json.loads(urllib2.urlopen(json_uri).read())
+	json_uri='https://%s/api/pub/items/bdr:%s/?q=*&fl=*' % (BDR_SERVER, str(book_pid))
+	book_json = json.loads(requests.get(json_uri).text)
 	context['short_title']=book_json['brief']['title']
 	context['title']=book_json['primary_title']
 	try:
@@ -152,15 +146,8 @@ def thumbnail_viewer(request, book_pid, page_num, book_num_on_page):
 	pages=book_json['relations']['hasPart']
 	for page in pages:
 		curr_thumb={}
-		curr_thumb['src']="https://repository.library.brown.edu/fedora/objects/"+page['pid']+"/datastreams/thumbnail/content"
-		curr_thumb['det_img_view']="https://repository.library.brown.edu/viewers/image/zoom/bdr:"+page['pid']+"/"
-		# page_url="https://repository.library.brown.edu/api/pub/items/"+page['pid']
-		# page_json=json.loads(urllib2.urlopen(page_url).read())
-		# 		annotations=page_json['relations']['hasAnnotation']
-		# 		curr_thumb['has_metadata']=0
-		# 		if len(annotations):
-		# 			curr_thumb['has_metadata']=1
-		
+		curr_thumb['src']='https://%s/fedora/objects/%s/datastreams/thumbnail/content' % (BDR_SERVER, page['pid'])
+		curr_thumb['det_img_view']='https://%s/viewers/image/zoom/bdr:%s/' % (BDR_SERVER, page['pid'])
 		curr_pid=page['pid'].split(":")[1]
 		curr_thumb['page_view']="../page_"+str(book_pid)+"_"+str(curr_pid)+"_"+str(page_num)+"_"+str(book_num_on_page)
 		thumbnails.append(curr_thumb)
@@ -280,9 +267,6 @@ def prints(request,page=1, sort_by="authors"):
 	context['sorting']='authors'
 	if sort_by!='authors':
 		context['sorting']=sort_by
-	# url1='https://repository.library.brown.edu/bdr_apis/pub/collections/621/?q=genre_aat:*prints*&fl=*'
-	# url1='https://repository.library.brown.edu/bdr_apis/pub/collections/621/?q=genre_aat:*(prints)&fl=*&fq=discover:BDR_PUBLIC';
-	# num_prints=json.loads(urllib2.urlopen(url1).read())['items']['numFound']
 	# load json for all prints in the collection #
 	num_prints_estimate=6000
 	url1='https://repository.library.brown.edu/bdr_apis/pub/collections/621/?q=genre_aat:*prints*&fl=*&fq=discover:BDR_PUBLIC&rows='+str(num_prints_estimate)
@@ -293,10 +277,6 @@ def prints(request,page=1, sort_by="authors"):
 		url2='https://repository.library.brown.edu/bdr_apis/pub/collections/621/?q=genre_aat:*prints*&fl=*&fq=discover:BDR_PUBLIC&rows='+str(num_prints)
 		prints_json=json.loads(urllib2.urlopen(url2).read())
 	
-	# context['num_prints']=num_prints
-	# 	url2=url1+'&rows='+str(num_prints)
-	# 
-	# 	prints_json=json.loads(urllib2.urlopen(url2).read())
 	prints_set=prints_json['items']['docs']
 
 	print_list=[]
@@ -317,9 +297,7 @@ def prints(request,page=1, sort_by="authors"):
 			current_print['title_cut']=1
 		current_print['title']=title
 		current_print['short_title']=short_title
-		#print_json=json.loads(urllib2.urlopen(Print['json_uri']).read())
 		current_print['det_img_viewer']='https://repository.library.brown.edu/viewers/image/zoom/bdr:'+str(pid)
-		#print_json['links']['views']['Detailed Image Viewer']
 		try:
 			current_print['date']=Print['dateCreated'][0:4]
 		except:
@@ -367,13 +345,12 @@ def specific_print(request, print_pid, page_num, print_num_on_page):
 
 	context['book_mode']=0
 	context['print_mode']=1
-	context['det_img_view_src']='https://repository.library.brown.edu/viewers/image/zoom/bdr:'+str(print_pid)#'https://repository.library.brown.edu/viewer/highres_viewer.html?pid=bdr:'+str(print_pid)+'&ds=highres_jp2'
+	context['det_img_view_src']='https://repository.library.brown.edu/viewers/image/zoom/bdr:'+str(print_pid)
 	context['back_to_print_href']="../prints_"+str(page_num)+"#"+str(page_num)+"_"+str(print_num_on_page)
 
 	context['pid']=print_pid
 
 	json_uri='https://repository.library.brown.edu/api/pub/items/bdr:'+str(print_pid)+'/?q=*&fl=*'
-	#logger.error('json_uri = '+json_uri)
 	print_json=json.loads(urllib2.urlopen(json_uri).read())
 	context['short_title']=print_json['brief']['title']
 	context['title']=print_json['primary_title']
@@ -467,9 +444,9 @@ def get_bio_list( bio_set):
 	return bio_list
 
 def person_detail(request, trp_id):
-    (pid, name) = _get_info_from_trp_id(trp_id)
-    if not pid:
-        return HttpResponseServerError('Internal Server error')
+    pid, name = _get_info_from_trp_id(trp_id)
+    if not pid or not name:
+        return HttpResponseNotFound('Person %s Not Found' % trp_id)
     context = std_context(title="The Theater that was Rome - Biography")
     context = RequestContext(request, context)
     template = loader.get_template('rome_templates/person_detail.html')
@@ -483,10 +460,12 @@ def person_detail(request, trp_id):
 def person_detail_tei(request, trp_id):
     pid, name = _get_info_from_trp_id(trp_id)
     if not pid:
-        return HttpResponseServerError('Internal Server error')
+        return HttpResponseNotFound('Not Found')
     r = requests.get(u'https://%s/fedora/objects/%s/datastreams/TEI/content' % (BDR_SERVER, pid))
     if r.ok:
         return HttpResponse(r.text)
+    else:
+        return HttpResponseServerError('Internal Server error')
 
 
 def _get_info_from_trp_id(trp_id):
@@ -496,6 +475,7 @@ def _get_info_from_trp_id(trp_id):
         data = json.loads(r.text)
         if data['response']['numFound'] > 0:
             return (data['response']['docs'][0]['pid'], data['response']['docs'][0]['name'])
+    return None, None
 
 
 def _books_for_person(name):
@@ -578,5 +558,3 @@ def specific_essay(request, essay_auth):
 	#raise 404 if a certain book does not exist
 	return HttpResponse(template.render(c))
 
-def stub(request):
-    return HttpResponse( u'still under construction' )
