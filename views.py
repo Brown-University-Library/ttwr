@@ -44,21 +44,24 @@ def books(request,page=1,sort_by='authors'):
 		context['sorting']=sort_by
 	# load json for all books in the collection #
 	num_books_estimate=6000 #should be plenty
-	url1='https://repository.library.brown.edu/bdr_apis/pub/collections/621/?q=object_type:implicit-set&fl=*&fq=discover:BDR_PUBLIC&rows='+str(num_books_estimate)
-	books_json=json.loads(urllib2.urlopen(url1).read())
-	num_books=books_json['items']['numFound']
-	context['num_books']=num_books
+	url1 = 'https://%s/api/pub/collections/621/?q=object_type:implicit-set&fl=*&fq=discover:BDR_PUBLIC&rows=%s' % (BDR_SERVER, num_books_estimate)
+	books_json = json.loads(requests.get(url1).text)
+	num_books = books_json['items']['numFound']
+	context['num_books'] = num_books
 	if num_books>num_books_estimate: #only reload if we need to find more books
-		url2='https://repository.library.brown.edu/bdr_apis/pub/collections/621/?q=object_type:implicit-set&fl=*&fq=discover:BDR_PUBLIC&rows='+str(num_books)
-		books_json=json.loads(urllib2.urlopen(url2).read())
-	books_set=books_json['items']['docs']
-	book_list=[]
+		url2 = 'https://%s/api/pub/collections/621/?q=object_type:implicit-set&fl=*&fq=discover:BDR_PUBLIC&rows=%s' % (BDR_SERVER, num_books)
+		books_json = json.loads(requests.get(url2).text)
+	books_set = books_json['items']['docs']
+	book_list = []
 
 	# create list of books with information to display for each #
 	for i in range(num_books):
 		current_book={}
 		book=books_set[i]
-		title=book['primary_title'] #"<br />".join(book['primary_title'].split("\n"))
+                if 'nonsort' in book:
+		    title = u'%s %s' % (book['nonsort'], book['primary_title'])
+                else:
+		    title = u'%s' % book['primary_title']
 		pid=book['pid']
 		current_book['pid']=book['pid'].split(":")[1]
 		current_book['thumbnail_url_start']="../book_"+str(current_book['pid'])
