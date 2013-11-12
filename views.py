@@ -128,7 +128,7 @@ def thumbnail_viewer(request, book_pid, page_num, book_num_on_page):
     json_uri='https://%s/api/pub/items/bdr:%s/?q=*&fl=*' % (BDR_SERVER, str(book_pid))
     book_json = json.loads(requests.get(json_uri).text)
     context['short_title']=book_json['brief']['title']
-    context['title']=book_json['primary_title']
+    context['title'] = _get_full_title(book_json)
     try:
         author_list=book_json['contributor_display']
         authors=""
@@ -178,7 +178,7 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
     #logger.error('json_uri = '+json_uri)
     book_json=json.loads(urllib2.urlopen(book_json_uri).read())
     context['short_title']=book_json['brief']['title']
-    context['title']=book_json['primary_title']
+    context['title'] = _get_full_title(book_json)
     try:
         author_list=book_json['contributor_display']
         authors=""
@@ -353,7 +353,7 @@ def specific_print(request, print_pid, page_num, print_num_on_page):
     json_uri='https://repository.library.brown.edu/api/pub/items/bdr:'+str(print_pid)+'/?q=*&fl=*'
     print_json=json.loads(urllib2.urlopen(json_uri).read())
     context['short_title']=print_json['brief']['title']
-    context['title']=print_json['primary_title']
+    context['title'] = _get_full_title(print_json)
     try:
         author_list=print_json['contributor_display']
         authors=""
