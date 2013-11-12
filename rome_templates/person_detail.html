@@ -39,7 +39,7 @@ function load()
                   <h4>Books</h4>
                     <ul>
                     {% for book in books %}
-                        <li>{{book.title}}</li>
+                    <li><a href="{% url 'thumbnail_viewer' book.pid|cut:'bdr:' 1 1 %}">{{book.title}}</a></li>
                     {% endfor %}
                     </ul>
                 {% endif %}
@@ -47,7 +47,7 @@ function load()
                 <h4>Prints</h4>
                 <ul>
                 {% for print in prints %}
-                    <li>{{print.title}}</li>
+                    <li><a href="{% url 'specific_print' print.pid|cut:'bdr:' 1 1 %}">{{print.title}}</a></li>
                 {% endfor %}
                 </ul>
                 {% endif %}
