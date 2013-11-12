@@ -279,7 +279,7 @@ def prints(request,page=1, sort_by="authors"):
 	for i in range(len(prints_set)): #create list of prints to load
 		current_print={}
 		Print=prints_set[i]
-		title=Print['primary_title']
+		title = _get_full_title(Print)
 		current_print['in_chinea']=0
 		if re.search(r"chinea",title,re.IGNORECASE):
 			current_print['in_chinea']=1
