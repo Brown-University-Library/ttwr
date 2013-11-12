@@ -268,22 +268,18 @@ def prints(request,page=1, sort_by="authors"):
 	if sort_by!='authors':
 		context['sorting']=sort_by
 	# load json for all prints in the collection #
-	num_prints_estimate=6000
-	url1='https://repository.library.brown.edu/bdr_apis/pub/collections/621/?q=genre_aat:*prints*&fl=*&fq=discover:BDR_PUBLIC&rows='+str(num_prints_estimate)
-	prints_json=json.loads(urllib2.urlopen(url1).read())
-	num_prints=prints_json['items']['numFound']
-	context['num_prints']=num_prints
-	if num_prints>num_prints_estimate:
-		url2='https://repository.library.brown.edu/bdr_apis/pub/collections/621/?q=genre_aat:*prints*&fl=*&fq=discover:BDR_PUBLIC&rows='+str(num_prints)
-		prints_json=json.loads(urllib2.urlopen(url2).read())
-	
-	prints_set=prints_json['items']['docs']
+	num_prints_estimate = 6000
+	url1 = 'https://%s/bdr_apis/pub/collections/621/?q=genre_aat:*prints*&fl=*&fq=discover:BDR_PUBLIC&rows=%s' % (BDR_SERVER, num_prints_estimate)
+	prints_json = json.loads(requests.get(url1).text)
+	num_prints = prints_json['items']['numFound']
+	context['num_prints'] = num_prints
+	prints_set = prints_json['items']['docs']
 
 	print_list=[]
 	for i in range(len(prints_set)): #create list of prints to load
 		current_print={}
 		Print=prints_set[i]
-		title=Print['primary_title'] #"<br />".join(Print['primary_title'].split("\n"))
+		title=Print['primary_title']
 		current_print['in_chinea']=0
 		if re.search(r"chinea",title,re.IGNORECASE):
 			current_print['in_chinea']=1
@@ -297,7 +293,7 @@ def prints(request,page=1, sort_by="authors"):
 			current_print['title_cut']=1
 		current_print['title']=title
 		current_print['short_title']=short_title
-		current_print['det_img_viewer']='https://repository.library.brown.edu/viewers/image/zoom/bdr:'+str(pid)
+		current_print['det_img_viewer']='https://%s/viewers/image/zoom/bdr:%s' % (BDR_SERVER, pid)
 		try:
 			current_print['date']=Print['dateCreated'][0:4]
 		except:
@@ -454,6 +450,7 @@ def person_detail(request, trp_id):
     context['trp_id'] = trp_id
     context['books'] = _books_for_person(name)
     context['prints'] = _prints_for_person(name)
+    context['pages'] = _pages_for_person(name)
     return HttpResponse(template.render(context))
 
 
@@ -494,18 +491,38 @@ def _prints_for_person(name):
     return prints_set
 
 
-def people(request):
-	template=loader.get_template('rome_templates/people.html')
-	num_bios_estimate=6000
-	url1='https://repository.library.brown.edu/api/pub/search/?q=ir_collection_id:621+AND+object_type:tei+AND+display:BDR_PUBLIC&rows='+str(num_bios_estimate)
-	bios_json=json.loads(urllib2.urlopen(url1).read())
-	
-	num_bios=bios_json['response']['numFound']
-	if num_bios>num_bios_estimate:
-		url2='https://repository.library.brown.edu/api/pub/search/?q=ir_collection_id:621+AND+object_type:tei+AND+display:BDR_PUBLIC&rows='+str(num_bios)
-		bios_json=json.loads(urllib2.urlopen(url2).read())
+def _pages_for_person(name):
+    num_prints_estimate = 6000
+    query_uri = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:annotation+AND+name:"%s"+AND+display:BDR_PUBLIC&rows=%s&fl=rel_is_annotation_of_ssim,primary_title,pid' % (BDR_SERVER, name[0], num_prints_estimate)
+    pages_json = json.loads(requests.get(query_uri).text)
+    pages = pages_json['response']['docs']
+    for page in pages:
+        page['page_id'] = page['rel_is_annotation_of_ssim'][0].replace(u'bdr:', '')
+        page['book_id'] = _get_book_pid_from_page_pid(page['rel_is_annotation_of_ssim'][0])
+    return pages
 
-	bio_set=bios_json['response']['docs']
+
+def _get_book_pid_from_page_pid(page_pid):
+    query = u'https://%s/api/pub/search/?q=pid:"%s"+AND+display:BDR_PUBLIC&fl=rel_is_member_of_ssim' % (BDR_SERVER, page_pid)
+    r = requests.get(query)
+    if r.ok:
+        data = json.loads(r.text)
+        if data['response']['numFound'] > 0:
+            return data['response']['docs'][0]['rel_is_member_of_ssim'][0].replace(u'bdr:', '')
+
+
+def people(request):
+	template = loader.get_template('rome_templates/people.html')
+	num_bios_estimate = 6000
+	url1 = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:tei+AND+display:BDR_PUBLIC&rows=%s' % (BDR_SERVER, num_bios_estimate)
+	bios_json = json.loads(requests.get(url1).text)
+	
+	num_bios = bios_json['response']['numFound']
+	if num_bios > num_bios_estimate:
+		url2 = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:tei+AND+display:BDR_PUBLIC&rows=%s' % (BDR_SERVER, num_bios)
+		bios_json = json.loads(requests.get(url2).text)
+
+	bio_set = bios_json['response']['docs']
 	bio_list = get_bio_list(bio_set)
 
 	bios_per_page=20
