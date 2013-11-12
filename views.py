@@ -58,10 +58,7 @@ def books(request,page=1,sort_by='authors'):
 	for i in range(num_books):
 		current_book={}
 		book=books_set[i]
-                if 'nonsort' in book:
-		    title = u'%s %s' % (book['nonsort'], book['primary_title'])
-                else:
-		    title = u'%s' % book['primary_title']
+		title = _get_full_title(book)
 		pid=book['pid']
 		current_book['pid']=book['pid'].split(":")[1]
 		current_book['thumbnail_url_start']="../book_"+str(current_book['pid'])
@@ -480,29 +477,41 @@ def _get_info_from_trp_id(trp_id):
 
 def _books_for_person(name):
     num_books_estimate = 6000
-    query_uri = 'https://%s/api/pub/collections/621/?q=object_type:implicit-set+AND+name:"%s"&rows=%s' % (BDR_SERVER, name[0], num_books_estimate)
+    query_uri = 'https://%s/api/pub/collections/621/?q=object_type:implicit-set+AND+name:"%s"&fl=*&rows=%s' % (BDR_SERVER, name[0], num_books_estimate)
     books_json = json.loads(requests.get(query_uri).text)
     books_set = books_json['items']['docs']
+    for book in books_set:
+        book['title'] = _get_full_title(book)
     return books_set
 
 
 def _prints_for_person(name):
     num_prints_estimate = 6000
-    query_uri = 'https://%s/api/pub/collections/621/?q=genre_aat:*prints*+AND+name:"%s"&rows=%s' % (BDR_SERVER, name[0], num_prints_estimate)
+    query_uri = 'https://%s/api/pub/collections/621/?q=genre_aat:*prints*+AND+name:"%s"&rows=%s&fl=*' % (BDR_SERVER, name[0], num_prints_estimate)
     prints_json = json.loads(requests.get(query_uri).text)
     prints_set = prints_json['items']['docs']
+    for p in prints_set:
+        p['title'] = _get_full_title(p)
     return prints_set
 
 
 def _pages_for_person(name):
     num_prints_estimate = 6000
-    query_uri = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:annotation+AND+name:"%s"+AND+display:BDR_PUBLIC&rows=%s&fl=rel_is_annotation_of_ssim,primary_title,pid' % (BDR_SERVER, name[0], num_prints_estimate)
+    query_uri = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:annotation+AND+name:"%s"+AND+display:BDR_PUBLIC&rows=%s&fl=rel_is_annotation_of_ssim,primary_title,pid,nonsort' % (BDR_SERVER, name[0], num_prints_estimate)
     pages_json = json.loads(requests.get(query_uri).text)
     pages = pages_json['response']['docs']
     for page in pages:
+        page['title'] = _get_full_title(page)
         page['page_id'] = page['rel_is_annotation_of_ssim'][0].replace(u'bdr:', '')
         page['book_id'] = _get_book_pid_from_page_pid(page['rel_is_annotation_of_ssim'][0])
     return pages
+
+
+def _get_full_title(data):
+    if 'nonsort' in data:
+        return u'%s %s' % (data['nonsort'], data['primary_title'])
+    else:
+        return u'%s' % data['primary_title']
 
 
 def _get_book_pid_from_page_pid(page_pid):
