@@ -3,6 +3,7 @@
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError
 from django.template import Context, loader, RequestContext
 from django.core.paginator import Paginator
+from django.core.urlresolvers import reverse
 import urllib, urllib2
 import json
 import logging
@@ -65,7 +66,7 @@ def books(request):
         title = _get_full_title(book)
         pid=book['pid']
         current_book['pid']=book['pid'].split(":")[1]
-        current_book['thumbnail_url_start']="../book_"+str(current_book['pid'])
+        current_book['thumbnail_url'] = reverse('thumbnail_viewer', kwargs={'book_pid':current_book['pid']})
         current_book['studio_uri']=book['uri']
         short_title=title
         current_book['title_cut']=0
@@ -118,10 +119,11 @@ def books(request):
     return HttpResponse(template.render(c))
 
 
-def thumbnail_viewer(request, book_pid, page_num, book_num_on_page):
+def thumbnail_viewer(request, book_pid):
+    book_list_page = request.GET.get('book_list_page', 1)
     template=loader.get_template('rome_templates/thumbnail_viewer.html')
     context=std_context()
-    context['back_to_book_href']="../books/?page=%s" % page_num
+    context['back_to_book_href'] = u'%s?page=%s' % (reverse('books'), book_list_page)
     context['page_documentation']='Browse through the pages in this book. Click on an image to explore the page further.'
     context['pid']=book_pid
     thumbnails=[]
@@ -153,7 +155,7 @@ def thumbnail_viewer(request, book_pid, page_num, book_num_on_page):
         curr_thumb['src']='https://%s/fedora/objects/%s/datastreams/thumbnail/content' % (BDR_SERVER, page['pid'])
         curr_thumb['det_img_view']='https://%s/viewers/image/zoom/bdr:%s/' % (BDR_SERVER, page['pid'])
         curr_pid=page['pid'].split(":")[1]
-        curr_thumb['page_view']="../page_"+str(book_pid)+"_"+str(curr_pid)+"_"+str(page_num)+"_"+str(book_num_on_page)
+        curr_thumb['page_view'] = reverse('page_viewer', args=[book_pid, curr_pid, book_list_page, 1])
         thumbnails.append(curr_thumb)
     context['thumbnails']=thumbnails
     
@@ -169,8 +171,8 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
     context['book_mode']=1
     context['print_mode']=0
 
-    context['back_to_book_href']="../books/?page=%s" % page_num
-    context['back_to_thumbnail_href']="../book_"+str(book_pid)+"_"+str(page_num)+"_"+str(book_num_on_page)
+    context['back_to_book_href'] = u'%s?page=%s' % (reverse('books'), page_num)
+    context['back_to_thumbnail_href'] = u'%s?book_list_page=%s' % (reverse('thumbnail_viewer', kwargs={'book_pid':book_pid}), page_num)
 
     context['pid']=book_pid
     thumbnails=[]

@@ -71,9 +71,9 @@ function show_sorting(sorting)
             &nbsp showing <span id="books_shown"></span> of {{num_books}} books; on page <span id="curr_page_span">1</span>
             &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
             Sort by:&nbsp
-            <a id="sort_authors" class="sort_link" href="../books/?sort_by=authors">Author</a> |
-            <a id="sort_title"   class="sort_link" href="../books/?sort_by=title">Title</a> |
-            <a id="sort_date"    class="sort_link" href="../books/?sort_by=date">Date</a>
+            <a id="sort_authors" class="sort_link" href="{% url 'books' %}?sort_by=authors">Author</a> |
+            <a id="sort_title"   class="sort_link" href="{% url 'books' %}?sort_by=title">Title</a> |
+            <a id="sort_date"    class="sort_link" href="{% url 'books' %}?sort_by=date">Date</a>
         </div>
     </div>
     <div id="page_body">
@@ -83,7 +83,7 @@ function show_sorting(sorting)
                 {% for book in page %}
                 <li value={{book.number_in_list}}>
                     <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}">
-                        <a href="{{ book.thumbnail_url_start }}_{{forloop.parentloop.counter}}_{{forloop.counter}}">
+                        <a href="{{ book.thumbnail_url }}?book_list_page={{forloop.parentloop.counter}}">
                                 [View]&nbsp
                         </a>
                         <span class="dark">{{ book.authors }}</span><br />
