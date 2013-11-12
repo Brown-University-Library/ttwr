@@ -36,9 +36,11 @@ def index(request):
     return HttpResponse(template.render(c))
 
 
-def books(request,page=1,sort_by='authors'):
+def books(request):
     template=loader.get_template('rome_templates/books.html')
     context=std_context()
+    page = request.GET.get('page', 1)
+    sort_by = request.GET.get('sort_by', 'authors')
     context['curr_page']=page
     context['page_documentation']='Click on "View" to see thumbnails of all the pages of a book. Click "BDR View" to see the default repository entry for a book.'
     context['sorting']='authors'
@@ -119,7 +121,7 @@ def books(request,page=1,sort_by='authors'):
 def thumbnail_viewer(request, book_pid, page_num, book_num_on_page):
     template=loader.get_template('rome_templates/thumbnail_viewer.html')
     context=std_context()
-    context['back_to_book_href']="../books_"+str(page_num)+"#"+str(page_num)+"_"+str(book_num_on_page)
+    context['back_to_book_href']="../books/?page=%s" % page_num
     context['page_documentation']='Browse through the pages in this book. Click on an image to explore the page further.'
     context['pid']=book_pid
     thumbnails=[]
@@ -167,7 +169,7 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
     context['book_mode']=1
     context['print_mode']=0
 
-    context['back_to_book_href']="../books_"+str(page_num)+"#"+str(page_num)+"_"+str(book_num_on_page)
+    context['back_to_book_href']="../books/?page=%s" % page_num
     context['back_to_thumbnail_href']="../book_"+str(book_pid)+"_"+str(page_num)+"_"+str(book_num_on_page)
 
     context['pid']=book_pid
