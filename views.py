@@ -120,10 +120,13 @@ def books(request):
 
 
 def thumbnail_viewer(request, book_pid):
-    book_list_page = request.GET.get('book_list_page', 1)
+    book_list_page = request.GET.get('book_list_page', None)
     template=loader.get_template('rome_templates/thumbnail_viewer.html')
     context=std_context()
-    context['back_to_book_href'] = u'%s?page=%s' % (reverse('books'), book_list_page)
+    if book_list_page:
+        context['back_to_book_href'] = u'%s?page=%s' % (reverse('books'), book_list_page)
+    else:
+        context['back_to_book_href'] = reverse('books')
     context['page_documentation']='Browse through the pages in this book. Click on an image to explore the page further.'
     context['pid']=book_pid
     thumbnails=[]
@@ -155,7 +158,10 @@ def thumbnail_viewer(request, book_pid):
         curr_thumb['src']='https://%s/fedora/objects/%s/datastreams/thumbnail/content' % (BDR_SERVER, page['pid'])
         curr_thumb['det_img_view']='https://%s/viewers/image/zoom/bdr:%s/' % (BDR_SERVER, page['pid'])
         curr_pid=page['pid'].split(":")[1]
-        curr_thumb['page_view'] = reverse('page_viewer', args=[book_pid, curr_pid, book_list_page, 1])
+        if book_list_page:
+            curr_thumb['page_view'] = u'%s?book_list_page=%s' % (reverse('book_page_viewer', args=[book_pid, curr_pid]), book_list_page)
+        else:
+            curr_thumb['page_view'] = reverse('book_page_viewer', args=[book_pid, curr_pid])
         thumbnails.append(curr_thumb)
     context['thumbnails']=thumbnails
     
@@ -163,16 +169,25 @@ def thumbnail_viewer(request, book_pid):
     #raise 404 if a certain book does not exist
     return HttpResponse(template.render(c))
 
-def page(request, book_pid, page_pid, page_num, book_num_on_page):
+def page(request, page_pid, book_pid=None):
     #note: page_pid does not include 'bdr:'
     template=loader.get_template('rome_templates/page.html')
     context=std_context()
 
+    if not book_pid:
+        book_pid = _get_book_pid_from_page_pid(u'bdr:%s' % page_pid)
+
+    book_list_page = request.GET.get('book_list_page', None)
+
     context['book_mode']=1
     context['print_mode']=0
 
-    context['back_to_book_href'] = u'%s?page=%s' % (reverse('books'), page_num)
-    context['back_to_thumbnail_href'] = u'%s?book_list_page=%s' % (reverse('thumbnail_viewer', kwargs={'book_pid':book_pid}), page_num)
+    if book_list_page:
+        context['back_to_book_href'] = u'%s?page=%s' % (reverse('books'), book_list_page)
+        context['back_to_thumbnail_href'] = u'%s?book_list_page=%s' % (reverse('thumbnail_viewer', kwargs={'book_pid':book_pid}), book_list_page)
+    else:
+        context['back_to_book_href'] = reverse('books')
+        context['back_to_thumbnail_href'] = reverse('thumbnail_viewer', kwargs={'book_pid':book_pid})
 
     context['pid']=book_pid
     thumbnails=[]
@@ -509,7 +524,6 @@ def _pages_for_person(name):
     for page in pages:
         page['title'] = _get_full_title(page)
         page['page_id'] = page['rel_is_annotation_of_ssim'][0].replace(u'bdr:', '')
-        page['book_id'] = _get_book_pid_from_page_pid(page['rel_is_annotation_of_ssim'][0])
     return pages
 
 
