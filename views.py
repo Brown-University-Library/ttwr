@@ -280,7 +280,10 @@ def page(request, page_pid, book_pid=None):
     #raise 404 if a certain book does not exist
     return HttpResponse(template.render(c))
 
-def prints(request,page=1, sort_by="authors"):
+
+def prints(request):
+    page = request.GET.get('page', 1)
+    sort_by = request.GET.get('sort_by', 'authors')
     template=loader.get_template('rome_templates/prints.html')
     context=std_context(title="The Theater that was Rome - Prints")
     context['page_documentation']='Browse the prints in the Theater that was Rome collection. Click on "View" to explore a print further.'
@@ -308,7 +311,7 @@ def prints(request,page=1, sort_by="authors"):
         current_print['studio_uri']=Print['uri']
         short_title=title
         current_print['title_cut']=0
-        current_print['thumbnail_url_start']="../sprint_"+pid.split(":")[1]
+        current_print['thumbnail_url'] = reverse('specific_print', args=[pid.split(":")[1]])
         if len(title)>60:
             short_title=title[0:57]+"..."
             current_print['title_cut']=1
@@ -356,20 +359,25 @@ def prints(request,page=1, sort_by="authors"):
     c=RequestContext(request,context)
     return HttpResponse(template.render(c))
 
-def specific_print(request, print_pid, page_num, print_num_on_page):
-    template=loader.get_template('rome_templates/page.html')
-    context=std_context()
+def specific_print(request, print_pid):
+    template = loader.get_template('rome_templates/page.html')
+    context = std_context()
 
-    context['book_mode']=0
-    context['print_mode']=1
-    context['det_img_view_src']='https://repository.library.brown.edu/viewers/image/zoom/bdr:'+str(print_pid)
-    context['back_to_print_href']="../prints_"+str(page_num)+"#"+str(page_num)+"_"+str(print_num_on_page)
+    prints_list_page = request.GET.get('prints_list_page', None)
+
+    context['book_mode'] = 0
+    context['print_mode'] = 1
+    context['det_img_view_src'] = 'https://%s/viewers/image/zoom/bdr:%s/' % (BDR_SERVER, print_pid)
+    if prints_list_page:
+        context['back_to_print_href'] = u'%s?page=%s' % (reverse('prints'), prints_list_page)
+    else:
+        context['back_to_print_href'] = reverse('prints')
 
     context['pid']=print_pid
 
-    json_uri='https://repository.library.brown.edu/api/pub/items/bdr:'+str(print_pid)+'/?q=*&fl=*'
-    print_json=json.loads(urllib2.urlopen(json_uri).read())
-    context['short_title']=print_json['brief']['title']
+    json_uri = 'https://%s/api/pub/items/bdr:%s/' % (BDR_SERVER, print_pid)
+    print_json = json.loads(requests.get(json_uri).text)
+    context['short_title'] = print_json['brief']['title']
     context['title'] = _get_full_title(print_json)
     try:
         author_list=print_json['contributor_display']
