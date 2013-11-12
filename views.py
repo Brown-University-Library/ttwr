@@ -509,7 +509,10 @@ def _pages_for_person(name):
 
 def _get_full_title(data):
     if 'nonsort' in data:
-        return u'%s %s' % (data['nonsort'], data['primary_title'])
+        if data['nonsort'].endswith(u"'"):
+            return u'%s%s' % (data['nonsort'], data['primary_title'])
+        else:
+            return u'%s %s' % (data['nonsort'], data['primary_title'])
     else:
         return u'%s' % data['primary_title']
 
