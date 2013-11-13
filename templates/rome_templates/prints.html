@@ -73,9 +73,9 @@ function show_sorting(sorting)
             &nbsp showing <span id="prints_shown"></span> of {{num_prints}} prints; on page <span id="curr_page_span">1</span>
             &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
             Sort by:&nbsp
-            <a id="sort_authors" class="sort_link" href="../prints_authors">Author</a> |
-            <a id="sort_title"   class="sort_link" href="../prints_title">Title</a> |
-            <a id="sort_date"    class="sort_link" href="../prints_date">Date</a>
+            <a id="sort_authors" class="sort_link" href="{% url 'prints' %}?sort_by=authors">Author</a> |
+            <a id="sort_title"   class="sort_link" href="{% url 'prints' %}?sort_by=title">Title</a> |
+            <a id="sort_date"    class="sort_link" href="{% url 'prints' %}?sort_by=date">Date</a>
         </div>
     </div>
     <div id="page_body">
@@ -85,7 +85,7 @@ function show_sorting(sorting)
                 {% for pprint in page %}
                 <li value={{pprint.number_in_list}}>
                     <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}">
-                        <a href="{{ pprint.thumbnail_url_start }}_{{forloop.parentloop.counter}}_{{forloop.counter}}" target="_blank">
+                        <a href="{{ pprint.thumbnail_url }}?prints_list_page={{forloop.parentloop.counter}}" target="_blank">
                             [View]
                         </a>&nbsp
                         Author(s): <span class="dark">{{ pprint.authors }}</span><br />

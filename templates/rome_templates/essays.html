@@ -1,42 +1,10 @@
-<!-- <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; " />
-<title>The Theater that was Rome: Essays</title>
-
-<link href="css/links.css" rel="stylesheet" type="text/css" />
-</head>
-
-<body>
-
-<div id="page_head">
-<h1>
-<span class="repeatbg"><span class="leftcap"><a href="home">The Theater that was Rome: Essays</a></span></span>
-</h1>
-
-</div>
-
-<div id="page_body">
-<h3>Various Essays</h3>
-    <ul>
-        <li> <span><a target="_blank" href="https://sites.google.com/a/brown.edu/stg-test/">HIAA2540D  The Theater that was Rome Seminar, Fall 2011</a></span> 
-        <br />Website with collaboratively authored essays on themes that arose during the semester.</li>
-    </ul>
-    <h3>Essays on Individual Books</h3>
-    <ul>
-        <li> <span><a href="essays/aldini">Aldini</a></span></li>
-        <li> <span><a href="essays/book-essay-barbault.html">Barbault</a></span></li>
-        <li> <span><a href="essays/book-essay-bosio.html">Bosio</a></span></li>
-        <li> <span><a href="essays/book-essay-lauro.html">Lauro</a></span></li>
-        <li> <span><a href="essays/book-essay-piranesiCampo.html">Piranesi, Campo</a></span></li>
-    </ul>
-</div> -->
-
-
 <head>
 <title>{{title}}</title>
 </head>
 {% load static from staticfiles %}
+{% load url from future %}
 <link rel="stylesheet" href="{%static usr_style%}" type="text/css" media="screen" />
 
 <body>
@@ -61,11 +29,11 @@
         </ul>
         <h3>Essays on Individual Books</h3>
         <ul>
-            <li><span><a href="../essay_aldini">Aldini</a></span></li>
-            <li> <span><a href="../essay_barbault">Barbault</a></span></li>
-            <li> <span><a href="../essay_bosio">Bosio</a></span></li>
-            <li> <span><a href="../essay_lauro">Lauro</a></span></li>
-            <li> <span><a href="../essay_piranesiCampo">Piranesi, Campo</a></span></li>
+            <li><span><a href="{% url 'specific_essay' 'aldini' %}">Aldini</a></span></li>
+            <li> <span><a href="{% url 'specific_essay' 'barbault' %}">Barbault</a></span></li>
+            <li> <span><a href="{% url 'specific_essay' 'bosio' %}">Bosio</a></span></li>
+            <li> <span><a href="{% url 'specific_essay' 'lauro' %}">Lauro</a></span></li>
+            <li> <span><a href="{% url 'specific_essay' 'piranesiCampo' %}">Piranesi, Campo</a></span></li>
         </ul>
     </div>
 

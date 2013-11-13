@@ -3,6 +3,7 @@
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError
 from django.template import Context, loader, RequestContext
 from django.core.paginator import Paginator
+from django.core.urlresolvers import reverse
 import urllib, urllib2
 import json
 import logging
@@ -65,7 +66,7 @@ def books(request):
         title = _get_full_title(book)
         pid=book['pid']
         current_book['pid']=book['pid'].split(":")[1]
-        current_book['thumbnail_url_start']="../book_"+str(current_book['pid'])
+        current_book['thumbnail_url'] = reverse('thumbnail_viewer', kwargs={'book_pid':current_book['pid']})
         current_book['studio_uri']=book['uri']
         short_title=title
         current_book['title_cut']=0
@@ -118,10 +119,14 @@ def books(request):
     return HttpResponse(template.render(c))
 
 
-def thumbnail_viewer(request, book_pid, page_num, book_num_on_page):
+def thumbnail_viewer(request, book_pid):
+    book_list_page = request.GET.get('book_list_page', None)
     template=loader.get_template('rome_templates/thumbnail_viewer.html')
     context=std_context()
-    context['back_to_book_href']="../books/?page=%s" % page_num
+    if book_list_page:
+        context['back_to_book_href'] = u'%s?page=%s' % (reverse('books'), book_list_page)
+    else:
+        context['back_to_book_href'] = reverse('books')
     context['page_documentation']='Browse through the pages in this book. Click on an image to explore the page further.'
     context['pid']=book_pid
     thumbnails=[]
@@ -153,7 +158,10 @@ def thumbnail_viewer(request, book_pid, page_num, book_num_on_page):
         curr_thumb['src']='https://%s/fedora/objects/%s/datastreams/thumbnail/content' % (BDR_SERVER, page['pid'])
         curr_thumb['det_img_view']='https://%s/viewers/image/zoom/bdr:%s/' % (BDR_SERVER, page['pid'])
         curr_pid=page['pid'].split(":")[1]
-        curr_thumb['page_view']="../page_"+str(book_pid)+"_"+str(curr_pid)+"_"+str(page_num)+"_"+str(book_num_on_page)
+        if book_list_page:
+            curr_thumb['page_view'] = u'%s?book_list_page=%s' % (reverse('book_page_viewer', args=[book_pid, curr_pid]), book_list_page)
+        else:
+            curr_thumb['page_view'] = reverse('book_page_viewer', args=[book_pid, curr_pid])
         thumbnails.append(curr_thumb)
     context['thumbnails']=thumbnails
     
@@ -161,16 +169,25 @@ def thumbnail_viewer(request, book_pid, page_num, book_num_on_page):
     #raise 404 if a certain book does not exist
     return HttpResponse(template.render(c))
 
-def page(request, book_pid, page_pid, page_num, book_num_on_page):
+def page(request, page_pid, book_pid=None):
     #note: page_pid does not include 'bdr:'
     template=loader.get_template('rome_templates/page.html')
     context=std_context()
 
+    if not book_pid:
+        book_pid = _get_book_pid_from_page_pid(u'bdr:%s' % page_pid)
+
+    book_list_page = request.GET.get('book_list_page', None)
+
     context['book_mode']=1
     context['print_mode']=0
 
-    context['back_to_book_href']="../books/?page=%s" % page_num
-    context['back_to_thumbnail_href']="../book_"+str(book_pid)+"_"+str(page_num)+"_"+str(book_num_on_page)
+    if book_list_page:
+        context['back_to_book_href'] = u'%s?page=%s' % (reverse('books'), book_list_page)
+        context['back_to_thumbnail_href'] = u'%s?book_list_page=%s' % (reverse('thumbnail_viewer', kwargs={'book_pid':book_pid}), book_list_page)
+    else:
+        context['back_to_book_href'] = reverse('books')
+        context['back_to_thumbnail_href'] = reverse('thumbnail_viewer', kwargs={'book_pid':book_pid})
 
     context['pid']=book_pid
     thumbnails=[]
@@ -263,7 +280,10 @@ def page(request, book_pid, page_pid, page_num, book_num_on_page):
     #raise 404 if a certain book does not exist
     return HttpResponse(template.render(c))
 
-def prints(request,page=1, sort_by="authors"):
+
+def prints(request):
+    page = request.GET.get('page', 1)
+    sort_by = request.GET.get('sort_by', 'authors')
     template=loader.get_template('rome_templates/prints.html')
     context=std_context(title="The Theater that was Rome - Prints")
     context['page_documentation']='Browse the prints in the Theater that was Rome collection. Click on "View" to explore a print further.'
@@ -291,7 +311,7 @@ def prints(request,page=1, sort_by="authors"):
         current_print['studio_uri']=Print['uri']
         short_title=title
         current_print['title_cut']=0
-        current_print['thumbnail_url_start']="../sprint_"+pid.split(":")[1]
+        current_print['thumbnail_url'] = reverse('specific_print', args=[pid.split(":")[1]])
         if len(title)>60:
             short_title=title[0:57]+"..."
             current_print['title_cut']=1
@@ -339,20 +359,25 @@ def prints(request,page=1, sort_by="authors"):
     c=RequestContext(request,context)
     return HttpResponse(template.render(c))
 
-def specific_print(request, print_pid, page_num, print_num_on_page):
-    template=loader.get_template('rome_templates/page.html')
-    context=std_context()
+def specific_print(request, print_pid):
+    template = loader.get_template('rome_templates/page.html')
+    context = std_context()
 
-    context['book_mode']=0
-    context['print_mode']=1
-    context['det_img_view_src']='https://repository.library.brown.edu/viewers/image/zoom/bdr:'+str(print_pid)
-    context['back_to_print_href']="../prints_"+str(page_num)+"#"+str(page_num)+"_"+str(print_num_on_page)
+    prints_list_page = request.GET.get('prints_list_page', None)
+
+    context['book_mode'] = 0
+    context['print_mode'] = 1
+    context['det_img_view_src'] = 'https://%s/viewers/image/zoom/bdr:%s/' % (BDR_SERVER, print_pid)
+    if prints_list_page:
+        context['back_to_print_href'] = u'%s?page=%s' % (reverse('prints'), prints_list_page)
+    else:
+        context['back_to_print_href'] = reverse('prints')
 
     context['pid']=print_pid
 
-    json_uri='https://repository.library.brown.edu/api/pub/items/bdr:'+str(print_pid)+'/?q=*&fl=*'
-    print_json=json.loads(urllib2.urlopen(json_uri).read())
-    context['short_title']=print_json['brief']['title']
+    json_uri = 'https://%s/api/pub/items/bdr:%s/' % (BDR_SERVER, print_pid)
+    print_json = json.loads(requests.get(json_uri).text)
+    context['short_title'] = print_json['brief']['title']
     context['title'] = _get_full_title(print_json)
     try:
         author_list=print_json['contributor_display']
@@ -507,7 +532,6 @@ def _pages_for_person(name):
     for page in pages:
         page['title'] = _get_full_title(page)
         page['page_id'] = page['rel_is_annotation_of_ssim'][0].replace(u'bdr:', '')
-        page['book_id'] = _get_book_pid_from_page_pid(page['rel_is_annotation_of_ssim'][0])
     return pages
 
 
