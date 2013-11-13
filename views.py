@@ -214,11 +214,10 @@ def page(request, page_pid, book_pid=None):
             context['date']=book_json['dateCreated'][0:4]
         except:
             context['date']="n.d."
-    context['lowres_url']="https://repository.library.brown.edu/fedora/objects/bdr:"+str(page_pid)+"/datastreams/lowres/content"
-    context['det_img_view_src']="https://repository.library.brown.edu/viewers/image/zoom/bdr:"+str(page_pid)
+    context['lowres_url']="https://%s/fedora/objects/bdr:%s/datastreams/lowres/content" % (BDR_SERVER, page_pid)
+    context['det_img_view_src']="https://%s/viewers/image/zoom/bdr:%s" % (BDR_SERVER, page_pid)
 
-    page_json_uri='https://repository.library.brown.edu/api/pub/items/bdr:'+str(page_pid)+'/?q=*&fl=*'
-    #logger.error('json_uri = '+json_uri)
+    page_json_uri='https://%s/api/pub/items/bdr:%s/?q=*&fl=*' % (BDR_SERVER, page_pid)
     
     # annotations/metadata
     page_json=json.loads(urllib2.urlopen(page_json_uri).read())
@@ -229,13 +228,13 @@ def page(request, page_pid, book_pid=None):
     for i in range(len(annotations)):
         annot_pid=annotations[i]['pid']
         annot_studio_uri=annotations[i]['uri']
-        annot_xml_uri='https://repository.library.brown.edu/fedora/objects/'+annot_pid+'/datastreams/content/content'
+        annot_xml_uri='https://%s/fedora/objects/%s/datastreams/MODS/content' % (BDR_SERVER, annot_pid)
         context['annotation_uris'].append(annot_xml_uri)
         curr_annot={}
         curr_annot['xml_uri']=annot_xml_uri
-        curr_annot['has_elements']={'inscriptions':0, 'annotations':0, 'annotator':0, 'origin':0, 'title':0, 'abstract':0}
+        curr_annot['has_elements'] = {'inscriptions':0, 'annotations':0, 'annotator':0, 'origin':0, 'title':0, 'abstract':0}
 
-        root=ET.fromstring(urllib2.urlopen(annot_xml_uri).read()) #root of our xml tree
+        root = ET.fromstring(requests.get(annot_xml_uri).content)
         for title in root.getiterator('{http://www.loc.gov/mods/v3}titleInfo'):
             if title.attrib['lang']=='en':
                 curr_annot['title']=title[0].text
@@ -412,7 +411,7 @@ def specific_print(request, print_pid):
         curr_annot={}
         curr_annot['xml_uri']=annot_xml_uri
 
-        root=ET.fromstring(urllib2.urlopen(annot_xml_uri).read()) #root of our xml tree
+        root = ET.fromstring(requets.get(annot_xml_uri).content)
         for title in root.getiterator('{http://www.loc.gov/mods/v3}titleInfo'):
             if title.attrib['lang']=='en':
                 curr_annot['title']=title[0].text
