@@ -234,7 +234,7 @@ def page(request, page_pid, book_pid=None):
         curr_annot['xml_uri']=annot_xml_uri
         curr_annot['has_elements'] = {'inscriptions':0, 'annotations':0, 'annotator':0, 'origin':0, 'title':0, 'abstract':0}
 
-        root = ET.fromstring(requests.get(annot_xml_uri).text)
+        root = ET.fromstring(requests.get(annot_xml_uri).content)
         for title in root.getiterator('{http://www.loc.gov/mods/v3}titleInfo'):
             if title.attrib['lang']=='en':
                 curr_annot['title']=title[0].text
@@ -411,7 +411,7 @@ def specific_print(request, print_pid):
         curr_annot={}
         curr_annot['xml_uri']=annot_xml_uri
 
-        root=ET.fromstring(urllib2.urlopen(annot_xml_uri).read()) #root of our xml tree
+        root = ET.fromstring(requets.get(annot_xml_uri).content)
         for title in root.getiterator('{http://www.loc.gov/mods/v3}titleInfo'):
             if title.attrib['lang']=='en':
                 curr_annot['title']=title[0].text
