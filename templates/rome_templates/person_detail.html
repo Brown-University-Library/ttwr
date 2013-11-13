@@ -47,7 +47,7 @@ function load()
                 <h4>Prints</h4>
                 <ul>
                 {% for print in prints %}
-                    <li><a href="{% url 'specific_print' print.pid|cut:'bdr:' 1 1 %}">{{print.title}}</a></li>
+                    <li><a href="{% url 'specific_print' print.pid|cut:'bdr:' %}">{{print.title}}</a></li>
                 {% endfor %}
                 </ul>
                 {% endif %}
