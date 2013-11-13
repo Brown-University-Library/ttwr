@@ -40,7 +40,7 @@ function show_page(i)
 
     max_num = {{num_books}};
     
-    document.getElementById("books_shown").innerHTML=((parseInt(i)-1)*{{ books_per_page }}+1)+"-"+(Math.min(parseInt(i)*{{ books_per_page }}+1, max_num));
+    document.getElementById("books_shown").innerHTML=((parseInt(i)-1)*{{ books_per_page }}+1)+"-"+(Math.min(parseInt(i)*{{ books_per_page }}, max_num));
     
     document.getElementById("curr_page_span").innerHTML=i;
 }
@@ -54,6 +54,7 @@ function show_sorting(sorting)
 </script>
 </head>
 {% load static from staticfiles %}
+{% load url from future %}
 <link rel="stylesheet" href="{%static usr_style%}" type="text/css" media="screen" />
 
 <body>
