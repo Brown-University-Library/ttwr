@@ -176,6 +176,8 @@ def page(request, page_pid, book_pid=None):
 
     if not book_pid:
         book_pid = _get_book_pid_from_page_pid(u'bdr:%s' % page_pid)
+    if not book_pid:
+        return HttpResponseNotFound('Book for this page not found.')
 
     book_list_page = request.GET.get('book_list_page', None)
 
@@ -551,8 +553,10 @@ def _get_book_pid_from_page_pid(page_pid):
         data = json.loads(r.text)
         if data['relations']['isPartOf']:
             return data['relations']['isPartOf'][0]['pid'].replace(u'bdr:', '')
-        else:
+        elif data['relations']['isMemberOf']:
             return data['relations']['isMemberOf'][0]['pid'].replace(u'bdr:', '')
+        else:
+            return None
 
 
 def people(request):
