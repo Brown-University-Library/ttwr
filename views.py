@@ -176,6 +176,8 @@ def page(request, page_pid, book_pid=None):
 
     if not book_pid:
         book_pid = _get_book_pid_from_page_pid(u'bdr:%s' % page_pid)
+    if not book_pid:
+        return HttpResponseNotFound('Book for this page not found.')
 
     book_list_page = request.GET.get('book_list_page', None)
 
@@ -545,12 +547,16 @@ def _get_full_title(data):
 
 
 def _get_book_pid_from_page_pid(page_pid):
-    query = u'https://%s/api/pub/search/?q=pid:"%s"+AND+display:BDR_PUBLIC&fl=rel_is_member_of_ssim' % (BDR_SERVER, page_pid)
+    query = u'https://%s/api/pub/items/%s/' % (BDR_SERVER, page_pid)
     r = requests.get(query)
     if r.ok:
         data = json.loads(r.text)
-        if data['response']['numFound'] > 0:
-            return data['response']['docs'][0]['rel_is_member_of_ssim'][0].replace(u'bdr:', '')
+        if data['relations']['isPartOf']:
+            return data['relations']['isPartOf'][0]['pid'].replace(u'bdr:', '')
+        elif data['relations']['isMemberOf']:
+            return data['relations']['isMemberOf'][0]['pid'].replace(u'bdr:', '')
+        else:
+            return None
 
 
 def people(request):
