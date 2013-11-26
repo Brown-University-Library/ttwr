@@ -545,12 +545,14 @@ def _get_full_title(data):
 
 
 def _get_book_pid_from_page_pid(page_pid):
-    query = u'https://%s/api/pub/search/?q=pid:"%s"+AND+display:BDR_PUBLIC&fl=rel_is_member_of_ssim' % (BDR_SERVER, page_pid)
+    query = u'https://%s/api/pub/items/%s/' % (BDR_SERVER, page_pid)
     r = requests.get(query)
     if r.ok:
         data = json.loads(r.text)
-        if data['response']['numFound'] > 0:
-            return data['response']['docs'][0]['rel_is_member_of_ssim'][0].replace(u'bdr:', '')
+        if data['relations']['isPartOf']:
+            return data['relations']['isPartOf'][0]['pid'].replace(u'bdr:', '')
+        else:
+            return data['relations']['isMemberOf'][0]['pid'].replace(u'bdr:', '')
 
 
 def people(request):
