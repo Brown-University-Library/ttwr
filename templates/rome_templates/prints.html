@@ -8,6 +8,7 @@ function load()
     curr_page={{ curr_page }};
     show_page(curr_page);
     show_sorting('{{ sorting }}');
+    show_collection('{{ collection }}')
 }
 function expand_title(page_num,num_on_page)
 {
@@ -53,6 +54,14 @@ function show_sorting(sorting)
         links[i].style.fontWeight="normal";
     document.getElementById("sort_"+sorting).style.fontWeight="bold";
 }
+
+function show_collection(collection)
+{
+    var links=document.getElementsByClassName("sort_collection");
+    for(var i=0;i<links.length;i++)
+        links[i].style.fontWeight="normal";
+    document.getElementById("collection_"+collection).style.fontWeight="bold";
+}
 </script>
 </head>
 {% load static from staticfiles %}
@@ -74,9 +83,14 @@ function show_sorting(sorting)
             &nbsp showing <span id="prints_shown"></span> of {{num_prints}} prints; on page <span id="curr_page_span">1</span>
             &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
             Sort by:&nbsp
-            <a id="sort_authors" class="sort_link" href="{% url 'prints' %}?sort_by=authors">Author</a> |
-            <a id="sort_title"   class="sort_link" href="{% url 'prints' %}?sort_by=title">Title</a> |
-            <a id="sort_date"    class="sort_link" href="{% url 'prints' %}?sort_by=date">Date</a>
+            <a id="sort_authors" class="sort_link" href="{% url 'prints' %}?sort_by=authors&collection={{ collection }}">Author</a> |
+            <a id="sort_title"   class="sort_link" href="{% url 'prints' %}?sort_by=title&collection={{ collection }}">Title</a> |
+            <a id="sort_date"    class="sort_link" href="{% url 'prints' %}?sort_by=date&collection={{ collection }}">Date</a>
+            &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+            Collection:&nbsp;
+            <a id="collection_chinea" class="sort_collection" href="{% url 'prints' %}?collection=chinea&sort_by={{ sorting }}">Chinea</a> |
+            <a id="collection_not" class="sort_collection" href="{% url 'prints' %}?collection=not&sort_by={{ sorting }}">Non-Chinea</a> |
+            <a id="collection_both" class="sort_collection" href="{% url 'prints' %}?collection=both&sort_by={{ sorting }}">Both</a>
         </div>
     </div>
     <div id="page_body">
@@ -86,7 +100,7 @@ function show_sorting(sorting)
                 {% for pprint in page %}
                 <li value={{pprint.number_in_list}}>
                     <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}">
-                        <a href="{{ pprint.thumbnail_url }}?prints_list_page={{forloop.parentloop.counter}}" target="_blank">
+                        <a href="{{ pprint.thumbnail_url }}?prints_list_page={{forloop.parentloop.counter}}&collection={{ collection }}" target="_blank">
                             [View]
                         </a>&nbsp
                         Author(s): <span class="dark">{{ pprint.authors }}</span><br />

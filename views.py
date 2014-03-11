@@ -285,6 +285,13 @@ def page(request, page_pid, book_pid=None):
 def prints(request):
     page = request.GET.get('page', 1)
     sort_by = request.GET.get('sort_by', 'authors')
+    collection = request.GET.get('collection', 'both')
+    chinea = ""
+    if(collection == 'chinea'):
+        chinea = "+AND+(primary_title:\"Chinea\"+OR+subtitle:\"Chinea\")"
+    elif(collection == 'not'):
+        chinea = "+NOT+primary_title:\"Chinea\"+NOT+subtitle:\"Chinea\""
+
     template=loader.get_template('rome_templates/prints.html')
     context=std_context(title="The Theater that was Rome - Prints")
     context['page_documentation']='Browse the prints in the Theater that was Rome collection. Click on "View" to explore a print further.'
@@ -295,7 +302,7 @@ def prints(request):
     # load json for all prints in the collection #
     num_prints_estimate = 6000
 
-    url1 = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:image-compound&rows=%s' % (BDR_SERVER, num_prints_estimate)
+    url1 = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:image-compound%s&rows=%s' % (BDR_SERVER, chinea, num_prints_estimate)
     prints_json = json.loads(requests.get(url1).text)
     num_prints = prints_json['response']['numFound']
     context['num_prints'] = num_prints
@@ -307,10 +314,12 @@ def prints(request):
         Print=prints_set[i]
         title = _get_full_title(Print)
         current_print['in_chinea']=0
-        if re.search(r"chinea",title,re.IGNORECASE):
+        if collection == "chinea":
+            current_print['in_chinea']=1
+        elif (re.search(r"chinea",title,re.IGNORECASE) or (re.search(r"chinea",Print[u'subtitle'][0],re.IGNORECASE) if u'subtitle' in Print else False)):
             current_print['in_chinea']=1
         pid=Print['pid']
-        current_print['studio_uri']=BDR_SERVER + "/studio/" + pid
+        current_print['studio_uri']= "https://" + BDR_SERVER + "/studio/item/" + pid
         short_title=title
         current_print['title_cut']=0
         current_print['thumbnail_url'] = reverse('specific_print', args=[pid.split(":")[1]])
@@ -360,6 +369,7 @@ def prints(request):
     for i in PAGIN.page_range:
         page_list.append(PAGIN.page(i).object_list)
     context['page_list']=page_list
+    context['collection']=collection
 
     c=RequestContext(request,context)
     return HttpResponse(template.render(c))
@@ -369,12 +379,13 @@ def specific_print(request, print_pid):
     context = std_context()
 
     prints_list_page = request.GET.get('prints_list_page', None)
+    collection = request.GET.get('collection', None)
 
     context['book_mode'] = 0
     context['print_mode'] = 1
     context['det_img_view_src'] = 'https://%s/viewers/image/zoom/bdr:%s/' % (BDR_SERVER, print_pid)
     if prints_list_page:
-        context['back_to_print_href'] = u'%s?page=%s' % (reverse('prints'), prints_list_page)
+        context['back_to_print_href'] = u'%s?page=%s&collection=%s' % (reverse('prints'), prints_list_page, collection)
     else:
         context['back_to_print_href'] = reverse('prints')
 
