@@ -294,11 +294,12 @@ def prints(request):
         context['sorting']=sort_by
     # load json for all prints in the collection #
     num_prints_estimate = 6000
-    url1 = 'https://%s/bdr_apis/pub/collections/621/?q=genre_aat:*prints*&fl=*&fq=discover:BDR_PUBLIC&rows=%s' % (BDR_SERVER, num_prints_estimate)
+
+    url1 = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:image-compound&rows=%s' % (BDR_SERVER, num_prints_estimate)
     prints_json = json.loads(requests.get(url1).text)
-    num_prints = prints_json['items']['numFound']
+    num_prints = prints_json['response']['numFound']
     context['num_prints'] = num_prints
-    prints_set = prints_json['items']['docs']
+    prints_set = prints_json['response']['docs']
 
     print_list=[]
     for i in range(len(prints_set)): #create list of prints to load
@@ -309,7 +310,7 @@ def prints(request):
         if re.search(r"chinea",title,re.IGNORECASE):
             current_print['in_chinea']=1
         pid=Print['pid']
-        current_print['studio_uri']=Print['uri']
+        current_print['studio_uri']=BDR_SERVER + "/studio/" + pid
         short_title=title
         current_print['title_cut']=0
         current_print['thumbnail_url'] = reverse('specific_print', args=[pid.split(":")[1]])
@@ -318,7 +319,7 @@ def prints(request):
             current_print['title_cut']=1
         current_print['title']=title
         current_print['short_title']=short_title
-        current_print['det_img_viewer']='https://%s/viewers/image/zoom/bdr:%s' % (BDR_SERVER, pid)
+        current_print['det_img_viewer']='https://%s/viewers/image/zoom/%s' % (BDR_SERVER, pid)
         try:
             current_print['date']=Print['dateCreated'][0:4]
         except:
@@ -329,7 +330,10 @@ def prints(request):
         try:
             author_list=Print['contributor_display']
         except KeyError:
-            author_list=Print['contributor']
+            try:
+                author_list=Print['contributor']
+            except:
+                author_list=["Unknown"];
         authors=""
         for i in range(len(author_list)):
             if i==len(author_list)-1:
@@ -527,13 +531,19 @@ def _prints_for_person(name):
 
 def _pages_for_person(name):
     num_prints_estimate = 6000
-    query_uri = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:annotation+AND+name:"%s"+AND+display:BDR_PUBLIC&rows=%s&fl=rel_is_annotation_of_ssim,primary_title,pid,nonsort' % (BDR_SERVER, name[0], num_prints_estimate)
+    query_uri = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:annotation+AND+contributor:"%s"+AND+display:BDR_PUBLIC&rows=%s&fl=rel_is_annotation_of_ssim,primary_title,pid,nonsort' % (BDR_SERVER, name[0], num_prints_estimate)
     pages_json = json.loads(requests.get(query_uri).text)
     pages = pages_json['response']['docs']
     for page in pages:
         page['title'] = _get_full_title(page)
         page['page_id'] = page['rel_is_annotation_of_ssim'][0].replace(u'bdr:', '')
     return pages
+
+# def _plates_for_person(name):
+#     num_plates_estimate = 6000
+#     query_uri = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:annotation+AND+contributor:"%s"+AND+display:BDR_PUBLIC&rows=%s&fl=rel_is_annotation_of_ssim,primary_title,pid,nonsort' %(BDR_SERVER, name[0], num_plates_estimate)
+#     pages_json = json.loads(request.get(query_uri).text)
+#     pages = pages_json['response']['docs']
 
 
 def _get_full_title(data):
