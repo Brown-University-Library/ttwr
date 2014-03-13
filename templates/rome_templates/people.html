@@ -59,7 +59,7 @@ function show_page(i)
                 {% for bio in page %}
                 <li value={{bio.number_in_list}}>
                     <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}">
-                        <a href="{% url 'person_detail' bio.trp_id %}" target="_blank">
+                        <a href="{% url 'person_detail' bio.trp_id %}">
                             [View]
                         </a>&nbsp
                         <span class="dark">{{ bio.name }} {{ bio.date }} {{ bio.role }}</span>

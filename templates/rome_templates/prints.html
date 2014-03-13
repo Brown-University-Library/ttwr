@@ -100,7 +100,7 @@ function show_collection(collection)
                 {% for pprint in page %}
                 <li value={{pprint.number_in_list}}>
                     <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}">
-                        <a href="{{ pprint.thumbnail_url }}?prints_list_page={{forloop.parentloop.counter}}&collection={{ collection }}" target="_blank">
+                        <a href="{{ pprint.thumbnail_url }}?prints_list_page={{forloop.parentloop.counter}}&collection={{collection}}">
                             [View]
                         </a>&nbsp
                         Author(s): <span class="dark">{{ pprint.authors }}</span><br />

@@ -471,7 +471,7 @@ def get_bio_list( bio_set):
             current_bio['date']=' '+potentialDate
         else:
             current_bio['date']=''
-        current_bio['name']=bio['primary_title'].split(': ')[1]+'.';
+        current_bio['name']=bio['name'][0].lstrip(" ")+'.';
         current_bio['pid']=bio['pid'].split(":")[1]
         current_bio['uri']='https://repository.library.brown.edu/studio/item/'+bio['pid']+'/'
         #drop the 'trp-' in the trp id
@@ -542,7 +542,8 @@ def _prints_for_person(name):
 
 def _pages_for_person(name):
     num_prints_estimate = 6000
-    query_uri = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:annotation+AND+contributor:"%s"+AND+display:BDR_PUBLIC&rows=%s&fl=rel_is_annotation_of_ssim,primary_title,pid,nonsort' % (BDR_SERVER, name[0], num_prints_estimate)
+    name[0] = name[0].split(",")[0]
+    query_uri = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:"annotation"+AND+contributor:"%s"+AND+display:BDR_PUBLIC&rows=%s&fl=rel_is_annotation_of_ssim,primary_title,pid,nonsort' % (BDR_SERVER, name[0], num_prints_estimate)
     pages_json = json.loads(requests.get(query_uri).text)
     pages = pages_json['response']['docs']
     for page in pages:

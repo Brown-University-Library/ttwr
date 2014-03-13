@@ -36,6 +36,7 @@ function expand_title(title,num)
                 {% if print_mode %}
                     <li>Print ID: <span class="dark">{{ pid }}</span></li><br />
                 {% endif %}
+                <li><a href="https://repository.library.brown.edu/studio/item/bdr:{{ pid }}/" target="_blank">[BDR View]</a></li><br />
                 {% if book_mode %}
                     <li><a href="{{back_to_thumbnail_href}}">return to thumbnail viewer</a></li><br />
                     <li><a href="{{back_to_book_href}}">return to book list</a></li><br />
@@ -43,6 +44,7 @@ function expand_title(title,num)
                 {% if print_mode %}
                     <li><a href="{{back_to_print_href}}">return to print list</a>
                 {% endif %}
+
             </ol>
         </div>
     </div>
