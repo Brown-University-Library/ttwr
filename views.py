@@ -193,7 +193,7 @@ def page(request, page_pid, book_pid=None):
 
     context['pid']=book_pid
     thumbnails=[]
-    book_json_uri='https://repository.library.brown.edu/api/pub/items/bdr:'+str(book_pid)+'/?q=*&fl=*'
+    book_json_uri='https://repository.library.brown.edu/api/pub/items/bdr:'+str(book_pid)+'/'
     #logger.error('json_uri = '+json_uri)
     book_json=json.loads(urllib2.urlopen(book_json_uri).read())
     context['short_title']=book_json['brief']['title']
@@ -219,7 +219,7 @@ def page(request, page_pid, book_pid=None):
     context['lowres_url']="https://%s/fedora/objects/bdr:%s/datastreams/lowres/content" % (BDR_SERVER, page_pid)
     context['det_img_view_src']="https://%s/viewers/image/zoom/bdr:%s" % (BDR_SERVER, page_pid)
 
-    page_json_uri='https://%s/api/pub/items/bdr:%s/?q=*&fl=*' % (BDR_SERVER, page_pid)
+    page_json_uri='https://%s/api/pub/items/bdr:%s/' % (BDR_SERVER, page_pid)
     
     # annotations/metadata
     page_json=json.loads(urllib2.urlopen(page_json_uri).read())
@@ -240,8 +240,11 @@ def page(request, page_pid, book_pid=None):
         for title in root.getiterator('{http://www.loc.gov/mods/v3}titleInfo'):
             if title.attrib['lang']=='en':
                 curr_annot['title']=title[0].text
-                curr_annot['has_elements']['title']=1
-                break
+                curr_annot['has_elements']['title'] += 1
+            else:
+                curr_annot['orig_title']=title[0].text
+                curr_annot['has_elements']['title'] += 1
+
         curr_annot['names']=[]
         for name in root.getiterator('{http://www.loc.gov/mods/v3}name'):
             curr_annot['names'].append({
@@ -532,9 +535,9 @@ def _books_for_person(name):
 
 def _prints_for_person(name):
     num_prints_estimate = 6000
-    query_uri = 'https://%s/api/pub/collections/621/?q=genre_aat:*prints*+AND+name:"%s"&rows=%s&fl=*' % (BDR_SERVER, name[0], num_prints_estimate)
+    query_uri = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:image-compound+AND+contributor:"%s"&rows=%s' % (BDR_SERVER, name[0], num_prints_estimate)
     prints_json = json.loads(requests.get(query_uri).text)
-    prints_set = prints_json['items']['docs']
+    prints_set = prints_json['response']['docs']
     for p in prints_set:
         p['title'] = _get_full_title(p)
     return prints_set

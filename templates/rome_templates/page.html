@@ -61,7 +61,12 @@ function expand_title(title,num)
                 <li>
                     
                 {% if annotation.has_elements.title %}
-                <div style="margin-bottom:5px"><b>Title:</b> {{ annotation.title }}</div>
+                {% if annotation.title %}
+                <div style="margin-bottom:10px; font-size:125%; text-align:center;"><b>{{ annotation.orig_title }}</b></div>
+                <div style="margin-bottom:5px; font-size:100%; text-align:center;"><i> {{ annotation.title }} </i></div>
+                {% else %}
+                <div style="margin-bottom:10px; font-size:125%; text-align:center;"><b>{{ annotation.orig_title }}</b></div>
+                {% endif %}
                 {% endif %}
                 
                 {% for name in annotation.names %}
@@ -99,6 +104,7 @@ function expand_title(title,num)
                 {% if annotation.has_elements.annotator %}
                 <div style="margin-bottom:5px"><i>[{{ annotation.annotator }}]</i></div>
                 {% endif %}
+                <br />
                 <br />
                 </li>
             {% endfor %}
