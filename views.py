@@ -498,7 +498,7 @@ def person_detail(request, trp_id):
     context['trp_id'] = trp_id
     context['books'] = _books_for_person(name)
     context['prints'] = _prints_for_person(name)
-    context['pages'] = _pages_for_person(name)
+    context['pages_books'] = _pages_for_person(name)
     return HttpResponse(template.render(context))
 
 
@@ -549,16 +549,35 @@ def _pages_for_person(name):
     query_uri = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:"annotation"+AND+contributor:"%s"+AND+display:BDR_PUBLIC&rows=%s&fl=rel_is_annotation_of_ssim,primary_title,pid,nonsort' % (BDR_SERVER, name[0], num_prints_estimate)
     pages_json = json.loads(requests.get(query_uri).text)
     pages = pages_json['response']['docs']
+    books = {}
     for page in pages:
         page['title'] = _get_full_title(page)
         page['page_id'] = page['rel_is_annotation_of_ssim'][0].replace(u'bdr:', '')
-    return pages
+        
+        book_pid, book_title, page_num, thumb = _book_info_for_page(page['page_id'])
+        if book_pid in books:
+            books[book_pid]['pages'][int(page_num)] = page
+        else:
+            books[book_pid] = {}
+            books[book_pid]['title'] = book_title
+            books[book_pid]['pid'] = book_pid
+            books[book_pid]['pages'] = {}
+            books[book_pid]['pages'][int(page_num)] = page
+            books[book_pid]['url'] = "/rome/books/%s" % book_pid
 
-# def _plates_for_person(name):
-#     num_plates_estimate = 6000
-#     query_uri = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:annotation+AND+contributor:"%s"+AND+display:BDR_PUBLIC&rows=%s&fl=rel_is_annotation_of_ssim,primary_title,pid,nonsort' %(BDR_SERVER, name[0], num_plates_estimate)
-#     pages_json = json.loads(request.get(query_uri).text)
-#     pages = pages_json['response']['docs']
+        page['thumb'] = thumb
+        
+    return books
+
+def _book_info_for_page(pid):
+    query = u"https://%s/api/pub/items/bdr:%s/" % (BDR_SERVER, pid)
+    data = json.loads(requests.get(query).text)
+    book = data['relations']['isPartOf'][0]
+    title = _get_full_title(book)
+    num = data['rel_has_pagination_ssim'][0]
+    book_pid = book['pid'].replace(u'bdr:', '')
+    thumb = data['links']['thumbnail']
+    return (book_pid, title, num, thumb)
 
 
 def _get_full_title(data):

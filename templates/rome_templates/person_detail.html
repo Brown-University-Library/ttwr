@@ -33,7 +33,7 @@ function load()
             <script type="application/xslt+xml" language="xslt2.0" src="{%static 'rome/bio.xslt' %}" data-source="{% url 'person_detail_tei' trp_id %}"></script>
         </div>
         <div id="related_sources">
-            {% if books or prints or pages %}
+            {% if books or prints or pages_books %}
                 <h2>Related Resources</h2>
                 {% if books %}
                   <h4>Books</h4>
@@ -51,13 +51,19 @@ function load()
                 {% endfor %}
                 </ul>
                 {% endif %}
-                {% if pages %}
+                {% if pages_books%}
                 <h4>Pages</h4>
                 <ul>
-                {% for page in pages %}
-                <li><a href="{% url 'page_viewer' page.page_id %}" target="_blank">{{page.title}}</a></li>
+                {% for key,book in pages_books.items %}
+                <li><b><a href="{{book.url}}" target="_blank" style="font-size:120%;">{{book.title}}</a></b><br/>
+                <table style="width:80%;">
+                {% for num,page in book.pages.items %}
+                <tr><td style="text-align:center; margin:10px;"><b>Image {{ num }}</b></td><td style="margin:5px;"><img height='150px' src="{{page.thumb}}"/> </td><td><a href="/rome/pages/{{page.page_id}}" target="_blank">{{page.title}}</a></td></tr>
+                {% endfor %}
+                </table>
                 {% endfor %}
                 </ul>
+                </li>
                 {% endif %}
             {% endif %}
         </div>
