@@ -16,6 +16,30 @@ function load()
 }
 
 </script>
+<style type="text/css">
+    td {
+        font-size: 13px;
+
+    }
+    table {
+        width: 80%;
+        margin-left: 20px;
+        margin-top: 10px;
+    }
+    img {
+        margin: 10px;
+
+    }
+
+    td.thumbnail {
+        border-right: 1px solid black;
+        border-bottom: 1px solid black;
+    }
+
+    td.title {
+        border-bottom: 1px solid black;
+    }
+</style>
 </head>
 <link rel="stylesheet" href="{%static usr_style%}" type="text/css" media="screen" />
 
@@ -55,10 +79,17 @@ function load()
                 <h4>Pages</h4>
                 <ul>
                 {% for key,book in pages_books.items %}
-                <li><b><a href="{{book.url}}" target="_blank" style="font-size:120%;">{{book.title}}</a></b><br/>
-                <table style="width:80%;">
+                <li><a href="{% url 'thumbnail_viewer' key %}" target="_blank">{{book.title}}</a><br/>
+                <table>
                 {% for num,page in book.pages.items %}
-                <tr><td style="text-align:center; margin:10px;"><b>Image {{ num }}</b></td><td style="margin:5px;"><img height='150px' src="{{page.thumb}}"/> </td><td><a href="/rome/pages/{{page.page_id}}" target="_blank">{{page.title}}</a></td></tr>
+                <tr>
+                    <td class="thumbnail">
+                        <a href="{% url 'page_viewer' page.pid|cut:'bdr:' %}" target="_blank"><img height='150px' src="{{page.thumb}}"/></a>
+                    </td>
+                        <td class="title">Image {{ num }}<br/>
+                        <a href="{% url 'page_viewer' page.pid|cut:'bdr:' %}" target="_blank">{{page.title}}</a>
+                    </td>
+                </tr>
                 {% endfor %}
                 </table>
                 {% endfor %}

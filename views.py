@@ -563,8 +563,6 @@ def _pages_for_person(name):
             books[book_pid]['pid'] = book_pid
             books[book_pid]['pages'] = {}
             books[book_pid]['pages'][int(page_num)] = page
-            books[book_pid]['url'] = "/rome/books/%s" % book_pid
-
         page['thumb'] = thumb
         
     return books
