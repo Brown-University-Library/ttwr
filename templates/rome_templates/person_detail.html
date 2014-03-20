@@ -84,10 +84,10 @@ function load()
                 {% for num,page in book.pages.items %}
                 <tr>
                     <td class="thumbnail">
-                        <a href="{% url 'page_viewer' page.pid|cut:'bdr:' %}" target="_blank"><img height='150px' src="{{page.thumb}}"/></a>
+                        <a href="{% url 'page_viewer' page.page_id|cut:'bdr:' %}" target="_blank"><img height='150px' src="{{page.thumb}}"/></a>
                     </td>
                         <td class="title">Image {{ num }}<br/>
-                        <a href="{% url 'page_viewer' page.pid|cut:'bdr:' %}" target="_blank">{{page.title}}</a>
+                        <a href="{% url 'page_viewer' page.page_id|cut:'bdr:' %}" target="_blank">{{page.title}}</a>
                     </td>
                 </tr>
                 {% endfor %}
