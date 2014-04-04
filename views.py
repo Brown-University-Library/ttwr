@@ -14,6 +14,8 @@ import re
 from models import About
 import requests
 
+# import sys
+
 
 BDR_SERVER = u'repository.library.brown.edu'
 
@@ -488,6 +490,7 @@ def get_bio_list( bio_set):
     return bio_list
 
 def person_detail(request, trp_id):
+    # g = int(request.GET.get("g", "50"))
     pid, name = _get_info_from_trp_id(trp_id)
     if not pid or not name:
         return HttpResponseNotFound('Person %s Not Found' % trp_id)
@@ -543,28 +546,55 @@ def _prints_for_person(name):
     return prints_set
 
 
-def _pages_for_person(name):
+def _pages_for_person(name, group_amount=50):
+    # print >>sys.stderr, ("Retrieving pages for person %s" % name)
     num_prints_estimate = 6000
     name[0] = name[0].split(",")[0]
     query_uri = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:"annotation"+AND+contributor:"%s"+AND+display:BDR_PUBLIC&rows=%s&fl=rel_is_annotation_of_ssim,primary_title,pid,nonsort' % (BDR_SERVER, name[0], num_prints_estimate)
     pages_json = json.loads(requests.get(query_uri).text)
-    pages = pages_json['response']['docs']
+    pages = dict([(page['rel_is_annotation_of_ssim'][0].replace(u'bdr:', u''), page) for page in pages_json['response']['docs']])
     books = {}
-    for page in pages:
+    pages_to_look_up = []
+    for page_id in pages:
+        page = pages[page_id]
         page['title'] = _get_full_title(page)
-        page['page_id'] = page['rel_is_annotation_of_ssim'][0].replace(u'bdr:', '')
-        
-        book_pid, book_title, page_num, thumb = _book_info_for_page(page['page_id'])
-        if book_pid in books:
-            books[book_pid]['pages'][int(page_num)] = page
-        else:
-            books[book_pid] = {}
-            books[book_pid]['title'] = book_title
-            books[book_pid]['pid'] = book_pid
-            books[book_pid]['pages'] = {}
-            books[book_pid]['pages'][int(page_num)] = page
-        page['thumb'] = thumb
-        
+        page['page_id'] = page_id
+        pages_to_look_up.append(page['rel_is_annotation_of_ssim'][0].replace(u':', u'\:'))
+
+        # book_pid, book_title, page_num, thumb = _book_info_for_page(page['page_id'])
+        # if book_pid in books:
+        #     books[book_pid]['pages'][int(page_num)] = page
+        # else:
+        #     books[book_pid] = {}
+        #     books[book_pid]['title'] = book_title
+        #     books[book_pid]['pid'] = book_pid
+        #     books[book_pid]['pages'] = {}
+        #     books[book_pid]['pages'][int(page_num)] = page
+        page['thumb'] = u"https://%s/viewers/image/thumbnail/%s/" % (BDR_SERVER, page['rel_is_annotation_of_ssim'][0])
+
+    num_pages = len(pages_to_look_up)
+    # print >>sys.stderr, ("Found %s pages for %s" % (pages_to_look_up, name))
+    i = 0
+    while(i < num_pages):
+        # print >>sys.stderr, ("Starting group %d of size %d (%d/%d)" % (i / 25, group_amount, i, num_pages))
+        group = pages_to_look_up[i : i+group_amount]
+        pids = "(pid:" + ("+OR+pid:".join(group)) + ")"
+        book_query = u"https://%s/api/pub/search/?q=%s+AND+display:BDR_PUBLIC&fl=pid,primary_title,rel_is_part_of_ssim,rel_has_pagination_ssim&rows=%s" % (BDR_SERVER, pids, group_amount)
+        data = json.loads(requests.get(book_query).text)
+        book_response = data['response']['docs']
+        for p in book_response:
+            pid = p['rel_is_part_of_ssim'][0].replace(u'bdr:', u'')
+            n = p['rel_has_pagination_ssim'][0]
+            if(pid not in books):
+                books[pid] = dict()
+                books[pid]['title'] = p['primary_title']
+                books[pid]['pages'] = {}
+                books[pid]['pid'] = pid
+            books[pid]['pages'][int(n)] = pages[p['pid'].replace(u'bdr:', u'')]
+            # print >>sys.stderr, ("Organized page %s of %s" %(i, num_pages))
+
+        i += group_amount
+
     return books
 
 def _book_info_for_page(pid):
