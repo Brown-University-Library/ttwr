@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-
-# from rome_app.models import AboutPage
-from rome_app.models import About
 from django.contrib import admin
-import rome_app.admin
+from .models import Biography, Essay
+from .forms import BiographyModelForm, EssayModelForm
 
+class BiographyAdmin(admin.ModelAdmin):
+    list_display = ['id', 'name', 'trp_id']
+    form = BiographyModelForm
 
-# class AboutAdmin(admin.ModelAdmin):
-# 	fieldsets = (
-# 		(None, {'fields': 'description'})
-# 	)
+class EssayAdmin(admin.ModelAdmin):
+    list_display = ['id', 'author', 'title']
+    form = EssayModelForm
 
-# admin.site.register( AboutPage )
+admin.site.register(Biography, BiographyAdmin)
+admin.site.register(Essay, EssayAdmin)
 
-admin.site.register(About)

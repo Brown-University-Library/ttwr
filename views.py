@@ -11,10 +11,8 @@ logger = logging.getLogger(__name__)
 from operator import itemgetter
 import xml.etree.ElementTree as ET
 import re
-from models import About
 import requests
-
-# import sys
+from .models import Biography, Essay
 
 
 BDR_SERVER = u'repository.library.brown.edu'
@@ -490,7 +488,7 @@ def get_bio_list( bio_set):
     return bio_list
 
 def person_detail(request, trp_id):
-    # g = int(request.GET.get("g", "50"))
+    #TODO remove this view once biographies aren't pulled from the BDR anymore
     pid, name = _get_info_from_trp_id(trp_id)
     if not pid or not name:
         return HttpResponseNotFound('Person %s Not Found' % trp_id)
@@ -502,6 +500,23 @@ def person_detail(request, trp_id):
     context['books'] = _books_for_person(name)
     context['prints'] = _prints_for_person(name)
     context['pages_books'] = _pages_for_person(name)
+    return HttpResponse(template.render(context))
+
+
+def person_detail_db(request, trp_id):
+    #view that pull bio information from the db, instead of the BDR
+    try:
+        bio = Biography.objects.get(trp_id=trp_id)
+    except DoesNotExist:
+        return HttpResponseNotFound('Person %s Not Found' % trp_id)
+    context = std_context(title="The Theater that was Rome - Biography")
+    context = RequestContext(request, context)
+    template = loader.get_template('rome_templates/person_detail_db.html')
+    context['bio'] = bio
+    context['trp_id'] = trp_id
+    context['books'] = _books_for_person([bio.name])
+    context['prints'] = _prints_for_person([bio.name])
+    context['pages_books'] = _pages_for_person([bio.name])
     return HttpResponse(template.render(context))
 
 
@@ -693,5 +708,14 @@ def specific_essay(request, essay_auth):
     context['usr_essays_style']="rome/css/essays.css"
     c=RequestContext(request,context)
     #raise 404 if a certain book does not exist
+    return HttpResponse(template.render(c))
+
+def specific_essay_db(request, essay_slug):
+    essay = Essay.objects.get(slug=essay_slug)
+    template=loader.get_template('rome_templates/specific_essay.html')
+    context=std_context(style="rome/css/links.css")
+    context['usr_essays_style']="rome/css/essays.css"
+    context['essay_text'] = essay.text
+    c=RequestContext(request,context)
     return HttpResponse(template.render(c))
 
