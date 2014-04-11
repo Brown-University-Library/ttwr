@@ -1,4 +1,5 @@
 {% load static from staticfiles %}
+{% load markdown_deux_tags %}
 {% load url from future %}
 <html>
 <head>
@@ -41,9 +42,7 @@
     </div>
     <div id="page_body">
         <div id="author_info">
-            <p>{{bio.name}}</p>
-            <p>{{bio.trp_id}}</p>
-            <p>{{bio.bio}}</p>
+            <p>{{bio.bio|markdown}}</p>
         </div>
         <div id="related_sources">
             {% if books or prints or pages_books %}
