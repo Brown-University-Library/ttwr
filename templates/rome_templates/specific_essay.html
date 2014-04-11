@@ -1,3 +1,4 @@
+{% load markdown_deux_tags %}
 <head>
 <title>{{title}}</title>
 </head>
@@ -16,7 +17,9 @@
         </ol>
     </div>
     <div id="page_body">
-        {% block essay %}{% endblock %}
+        {% block essay %}
+        {{essay_text|markdown}}
+        {% endblock %}
     </div>
 
 <div id="footer">

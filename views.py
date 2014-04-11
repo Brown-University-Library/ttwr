@@ -710,3 +710,12 @@ def specific_essay(request, essay_auth):
     #raise 404 if a certain book does not exist
     return HttpResponse(template.render(c))
 
+def specific_essay_db(request, essay_slug):
+    essay = Essay.objects.get(slug=essay_slug)
+    template=loader.get_template('rome_templates/specific_essay.html')
+    context=std_context(style="rome/css/links.css")
+    context['usr_essays_style']="rome/css/essays.css"
+    context['essay_text'] = essay.text
+    c=RequestContext(request,context)
+    return HttpResponse(template.render(c))
+
