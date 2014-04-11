@@ -1,0 +1,97 @@
+{% load static from staticfiles %}
+{% load url from future %}
+<html>
+<head>
+<title>{{title}}</title>
+<style type="text/css">
+    td {
+        font-size: 13px;
+
+    }
+    table {
+        width: 80%;
+        margin-left: 20px;
+        margin-top: 10px;
+    }
+    img {
+        margin: 10px;
+
+    }
+
+    td.thumbnail {
+        border-right: 1px solid black;
+        border-bottom: 1px solid black;
+    }
+
+    td.title {
+        border-bottom: 1px solid black;
+    }
+</style>
+</head>
+<link rel="stylesheet" href="{%static usr_style%}" type="text/css" media="screen" />
+
+<body>
+    <div id="page_head">
+        <h1>
+            <span class="repeatbg"><span class="leftcap"><a href="../">The Theater that was Rome - People</a></span></span>
+        </h1>
+        <div style="font-size:15px; margin-left:20px; width:95%; padding-top:15px; padding-bottom:10px">
+            {{page_documentation}}
+        </div>
+    </div>
+    <div id="page_body">
+        <div id="author_info">
+            <p>{{bio.name}}</p>
+            <p>{{bio.trp_id}}</p>
+            <p>{{bio.bio}}</p>
+        </div>
+        <div id="related_sources">
+            {% if books or prints or pages_books %}
+                <h2>Related Resources</h2>
+                {% if books %}
+                  <h4>Books</h4>
+                    <ul>
+                    {% for book in books %}
+                    <li><a href="{% url 'thumbnail_viewer' book.pid|cut:'bdr:' %}">{{book.title}}</a></li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+                {% if prints %}
+                <h4>Prints</h4>
+                <ul>
+                {% for print in prints %}
+                    <li><a href="{% url 'specific_print' print.pid|cut:'bdr:' %}" target="_blank">{{print.title}}</a></li>
+                {% endfor %}
+                </ul>
+                {% endif %}
+                {% if pages_books%}
+                <h4>Pages</h4>
+                <ul>
+                {% for key,book in pages_books.items %}
+                <li><a href="{% url 'thumbnail_viewer' key %}" target="_blank">{{book.title}}</a><br/>
+                <table>
+                {% for num,page in book.pages.items %}
+                <tr>
+                    <td class="thumbnail">
+                        <a href="{% url 'book_page_viewer' key page.page_id|cut:'bdr:' %}" target="_blank"><img height='150px' src="{{page.thumb}}"/></a>
+                    </td>
+                        <td class="title">Image {{ num }}<br/>
+                        <a href="{% url 'book_page_viewer' key page.page_id|cut:'bdr:' %}" target="_blank">{{page.title}}</a>
+                    </td>
+                </tr>
+                {% endfor %}
+                </table>
+                {% endfor %}
+                </ul>
+                </li>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    <div id="footer">
+	    <span>&#169; {{cpydate}} Brown University</span>
+	    <a href="http://www.brown.edu"><img src="{%static brown_image%}" alt="Brown University" /></a>
+	    <a href="http://www.stg.brown.edu"><img src="{%static stg_image%}" alt="Scholarly Technology Group" /></a>
+	</div>
+</body>
+</html>
