@@ -11,10 +11,7 @@ logger = logging.getLogger(__name__)
 from operator import itemgetter
 import xml.etree.ElementTree as ET
 import re
-from models import About
 import requests
-
-# import sys
 
 
 BDR_SERVER = u'repository.library.brown.edu'
