@@ -5,6 +5,7 @@ class Biography(models.Model):
 
     name = models.CharField(max_length=254)
     trp_id = models.CharField(max_length=15, unique=True)
+    external_id = models.CharField(max_length=254, unique=True, null=True, blank=True)
     bio = models.TextField()
 
 
