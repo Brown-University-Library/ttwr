@@ -9,7 +9,7 @@ class Biography(models.Model):
     external_id = models.CharField(max_length=254, unique=True, null=True, blank=True, help_text='Optional: enter Ulan id in the form of a URL; if there is no Ulan id, enter LCCN in the form of a URL')
     birth_date = models.CharField(max_length=25, null=True, blank=True, help_text='Optional: enter birth date as yyyy-mm-dd (for sorting and filtering)')
     death_date = models.CharField(max_length=25, null=True, blank=True, help_text='Optional: enter death date as yyyy-mm-dd')
-    roles = models.CharField(max_length=254, null=True, blank=True, help_text='Optional: enter roles, separated by spaces')
+    roles = models.CharField(max_length=254, null=True, blank=True, help_text='Optional: enter roles, separated by a semi-colon')
     bio = models.TextField()
 
     class Meta:
