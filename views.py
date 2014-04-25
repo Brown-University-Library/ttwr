@@ -249,7 +249,7 @@ def page(request, page_pid, book_pid=None):
         for name in root.getiterator('{http://www.loc.gov/mods/v3}name'):
             curr_annot['names'].append({
                 'name':name[0].text,
-                'role':name[1][0].text.capitalize(),
+                'role':name[1][0].text.capitalize() if(name[1][0].text) else "",
                 'trp_id': name.attrib['{http://www.w3.org/1999/xlink}href'],
             })
         for abstract in root.getiterator('{http://www.loc.gov/mods/v3}abstract'):
