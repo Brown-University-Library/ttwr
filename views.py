@@ -2,6 +2,7 @@
 
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError
 from django.template import Context, loader, RequestContext
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
 from django.core.urlresolvers import reverse
 import urllib, urllib2
@@ -487,27 +488,12 @@ def get_bio_list( bio_set):
         bio['number_in_list']=i+1
     return bio_list
 
-def person_detail(request, trp_id):
-    #TODO remove this view once biographies aren't pulled from the BDR anymore
-    pid, name = _get_info_from_trp_id(trp_id)
-    if not pid or not name:
-        return HttpResponseNotFound('Person %s Not Found' % trp_id)
-    context = std_context(title="The Theater that was Rome - Biography")
-    context = RequestContext(request, context)
-    template = loader.get_template('rome_templates/person_detail.html')
-    context['pid'] = pid
-    context['trp_id'] = trp_id
-    context['books'] = _books_for_person(name)
-    context['prints'] = _prints_for_person(name)
-    context['pages_books'] = _pages_for_person(name)
-    return HttpResponse(template.render(context))
-
 
 def person_detail_db(request, trp_id):
     #view that pull bio information from the db, instead of the BDR
     try:
         bio = Biography.objects.get(trp_id=trp_id)
-    except DoesNotExist:
+    except ObjectDoesNotExist:
         return HttpResponseNotFound('Person %s Not Found' % trp_id)
     context = std_context(title="The Theater that was Rome - Biography")
     context = RequestContext(request, context)
@@ -702,13 +688,6 @@ def essays(request):
     #raise 404 if a certain book does not exist
     return HttpResponse(template.render(c))
 
-def specific_essay(request, essay_auth):
-    template=loader.get_template('rome_templates/essays/book-essay-'+essay_auth+'.html')
-    context=std_context(style="rome/css/links.css")
-    context['usr_essays_style']="rome/css/essays.css"
-    c=RequestContext(request,context)
-    #raise 404 if a certain book does not exist
-    return HttpResponse(template.render(c))
 
 def specific_essay_db(request, essay_slug):
     essay = Essay.objects.get(slug=essay_slug)

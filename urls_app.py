@@ -23,10 +23,8 @@ urlpatterns = patterns('',
     url(r'^prints/$', views.prints, name='prints'),
     url(r'^prints/(?P<print_pid>\d+)/$', views.specific_print, name='specific_print'),
     url(r'^essays/$', views.essays, name='essays'),
-    url(r'^essays/(?P<essay_auth>\w+)/$', views.specific_essay, name='specific_essay'),
-    url(r'^essays/(?P<essay_slug>\w+)/tmp/$', views.specific_essay_db, name='specific_essay_db'), #tmp view for transition time
+    url(r'^essays/(?P<essay_slug>\w+)/$', views.specific_essay_db, name='specific_essay'),
     url(r'^people/$', views.people, name='people'),
-    url(r'^people/(?P<trp_id>\d+)/$', views.person_detail, name='person_detail'),
-    url(r'^people/(?P<trp_id>\d+)/tmp/$', views.person_detail_db, name='person_detail_db'), #tmp view for transition time
+    url(r'^people/(?P<trp_id>\d+)/$', views.person_detail_db, name='person_detail'),
     url(r'^people/(?P<trp_id>\d+)/TEI/$', views.person_detail_tei, name='person_detail_tei'),
 )
