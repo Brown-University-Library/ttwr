@@ -2,6 +2,7 @@
 
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError
 from django.template import Context, loader, RequestContext
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
 from django.core.urlresolvers import reverse
 import urllib, urllib2
@@ -492,7 +493,7 @@ def person_detail_db(request, trp_id):
     #view that pull bio information from the db, instead of the BDR
     try:
         bio = Biography.objects.get(trp_id=trp_id)
-    except DoesNotExist:
+    except ObjectDoesNotExist:
         return HttpResponseNotFound('Person %s Not Found' % trp_id)
     context = std_context(title="The Theater that was Rome - Biography")
     context = RequestContext(request, context)
