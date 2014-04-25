@@ -690,7 +690,10 @@ def essays(request):
 
 
 def specific_essay_db(request, essay_slug):
-    essay = Essay.objects.get(slug=essay_slug)
+    try:
+        essay = Essay.objects.get(slug=essay_slug)
+    except ObjectDoesNotExist:
+        return HttpResponseNotFound('Essay %s Not Found' % essay_slug)
     template=loader.get_template('rome_templates/specific_essay.html')
     context=std_context(style="rome/css/links.css")
     context['usr_essays_style']="rome/css/essays.css"
