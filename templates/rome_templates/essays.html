@@ -17,23 +17,11 @@
         <div style="font-size:15px; margin-left:20px; width:95%; padding-top:15px; padding-bottom:10px">
             {{page_documentation}}
         </div>
-        <h3>Various Essays</h3>
-        <ul>
-            <li>
-                <span><a target="_blank" href="https://sites.google.com/a/brown.edu/stg-test/">
-                        HIAA2540D  The Theater that was Rome Seminar, Fall 2011
-                </a></span>
-                <br />
-                Website with collaboratively authored essays on themes that arose during the semester.
-            </li>
-        </ul>
         <h3>Essays on Individual Books</h3>
         <ul>
-            <li><span><a href="{% url 'specific_essay' 'aldini' %}">Aldini</a></span></li>
-            <li> <span><a href="{% url 'specific_essay' 'barbault' %}">Barbault</a></span></li>
-            <li> <span><a href="{% url 'specific_essay' 'bosio' %}">Bosio</a></span></li>
-            <li> <span><a href="{% url 'specific_essay' 'lauro' %}">Lauro</a></span></li>
-            <li> <span><a href="{% url 'specific_essay' 'piranesiCampo' %}">Piranesi, Campo</a></span></li>
+            {% for essay in essay_objs %}
+            <li><span><a href="{% url 'specific_essay' essay.slug %}">{{essay.title}}</a></span></li>
+            {% endfor %}
         </ul>
     </div>
 
