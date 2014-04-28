@@ -677,7 +677,6 @@ def links(request):
     context=std_context(style="rome/css/links.css")
 
     c=RequestContext(request,context)
-    #raise 404 if a certain book does not exist
     return HttpResponse(template.render(c)) 
 
 def essays(request):
@@ -685,7 +684,8 @@ def essays(request):
     context=std_context(style="rome/css/links.css")
     context['page_documentation']='Listed below are essays on topics that relate to the Theater that was Rome collection of books and engravings. The majority of the essays were written by students in Brown University classes that used this material, and edited by Prof. Evelyn Lincoln.'
     c=RequestContext(request,context)
-    #raise 404 if a certain book does not exist
+    essay_objs = Essay.objects.all()
+    c['essay_objs'] = essay_objs
     return HttpResponse(template.render(c))
 
 
