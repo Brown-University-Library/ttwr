@@ -581,15 +581,15 @@ def _pages_for_person(name, group_amount=50):
         # print >>sys.stderr, ("Starting group %d of size %d (%d/%d)" % (i / 25, group_amount, i, num_pages))
         group = pages_to_look_up[i : i+group_amount]
         pids = "(pid:" + ("+OR+pid:".join(group)) + ")"
-        book_query = u"https://%s/api/pub/search/?q=%s+AND+display:BDR_PUBLIC&fl=pid,primary_title,rel_is_part_of_ssim,rel_has_pagination_ssim&rows=%s" % (BDR_SERVER, pids, group_amount)
+        book_query = u"https://%s/api/pub/search/?q=%s+AND+display:BDR_PUBLIC&fl=pid,primary_title,nonsort,rel_is_part_of_ssim,rel_has_pagination_ssim&rows=%s" % (BDR_SERVER, pids, group_amount)
         data = json.loads(requests.get(book_query).text)
         book_response = data['response']['docs']
         for p in book_response:
             pid = p['rel_is_part_of_ssim'][0].replace(u'bdr:', u'')
             n = p['rel_has_pagination_ssim'][0]
             if(pid not in books):
-                books[pid] = dict()
-                books[pid]['title'] = p['primary_title']
+                books[pid] = {}
+                books[pid]['title'] = _get_full_title(p)
                 books[pid]['pages'] = {}
                 books[pid]['pid'] = pid
             books[pid]['pages'][int(n)] = pages[p['pid'].replace(u'bdr:', u'')]
