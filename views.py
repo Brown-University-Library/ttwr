@@ -666,6 +666,47 @@ def people(request):
     c=RequestContext(request,context)
     return HttpResponse(template.render(c))
 
+def filter_bios(fq, bio_list):
+    return [b for b in bio_list if fq in b.roles]
+
+def people_db(request):
+    template = loader.get_template('rome_templates/people_db.html')
+    fq = request.GET.get('filter', 'all')
+
+    bio_list = Biography.objects.all()
+    role_set = set()
+
+    for bio in bio_list:
+        bio.roles = [role.strip(" ") for role in bio.roles.split(';') if role.strip(" ") != '']
+        role_set |= set(bio.roles)
+
+    if fq != 'all':
+        bio_list = filter_bios(fq, bio_list)
+
+    bios_per_page=20
+    PAGIN=Paginator(bio_list,bios_per_page)
+    page_list=[]
+
+    for i in PAGIN.page_range:
+        page_list.append(PAGIN.page(i).object_list)
+
+    context=std_context(title="The Theater that was Rome - Biographies")
+    context['page_documentation']='Browse the biographies of artists related to the Theater that was Rome collection.'
+    context['num_bios']=len(bio_list)
+    context['bio_list']=bio_list
+    context['bios_per_page']=bios_per_page
+    context['num_pages']=PAGIN.num_pages
+    context['page_range']=PAGIN.page_range
+    context['curr_page']=1
+    context['PAGIN']=PAGIN
+    context['page_list']=page_list
+    context['role_set']=role_set
+    context['sorting'] = fq
+
+    c=RequestContext(request, context)
+    return HttpResponse(template.render(c))
+
+
 def about(request):
     template=loader.get_template('rome_templates/about.html')
     context=std_context(style="rome/css/links.css")

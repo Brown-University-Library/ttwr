@@ -14,6 +14,7 @@ class Biography(models.Model):
 
     class Meta:
         verbose_name_plural = 'biographies'
+        ordering = ['name']
 
 class Essay(models.Model):
 
