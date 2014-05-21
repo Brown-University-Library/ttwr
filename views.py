@@ -251,7 +251,7 @@ def page(request, page_pid, book_pid=None):
             curr_annot['names'].append({
                 'name':name[0].text,
                 'role':name[1][0].text.capitalize() if(name[1][0].text) else "Contributor",
-                'trp_id': name.attrib['{http://www.w3.org/1999/xlink}href'],
+                'trp_id': "%04d" % int(name.attrib['{http://www.w3.org/1999/xlink}href']),
             })
         for abstract in root.getiterator('{http://www.loc.gov/mods/v3}abstract'):
             curr_annot['abstract']=abstract.text
@@ -491,6 +491,7 @@ def get_bio_list( bio_set):
 
 def person_detail_db(request, trp_id):
     #view that pull bio information from the db, instead of the BDR
+    trp_id = "%04d" % int(trp_id)
     try:
         bio = Biography.objects.get(trp_id=trp_id)
     except ObjectDoesNotExist:
