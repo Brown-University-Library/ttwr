@@ -251,7 +251,7 @@ def page(request, page_pid, book_pid=None):
             curr_annot['names'].append({
                 'name':name[0].text,
                 'role':name[1][0].text.capitalize() if(name[1][0].text) else "Contributor",
-                'trp_id': name.attrib['{http://www.w3.org/1999/xlink}href'],
+                'trp_id': "%04d" % int(name.attrib['{http://www.w3.org/1999/xlink}href']),
             })
         for abstract in root.getiterator('{http://www.loc.gov/mods/v3}abstract'):
             curr_annot['abstract']=abstract.text
@@ -459,38 +459,9 @@ def specific_print(request, print_pid):
     #raise 404 if a certain print does not exist
     return HttpResponse(template.render(c))
 
-def get_bio_list( bio_set):
-    bio_list=[]
-    for i in range(len(bio_set)):
-        bio=bio_set[i]
-        current_bio={}
-        display=bio['contributor_display'][0]
-        parts=display.split("(")
-        if len(parts)>1:
-            current_bio['role']=' ['+parts[1].split(')')[0]+']'
-        else:
-            current_bio['role']=''
-        potentialDate = parts[0].split(',')[-1]
-        if re.search('[0-9][0-9][0-9]',potentialDate):
-            current_bio['date']=' '+potentialDate
-        else:
-            current_bio['date']=''
-        current_bio['name']=bio['name'][0].lstrip(" ")+'.';
-        current_bio['pid']=bio['pid'].split(":")[1]
-        current_bio['uri']='https://repository.library.brown.edu/studio/item/'+bio['pid']+'/'
-        #drop the 'trp-' in the trp id
-        current_bio['trp_id'] = bio['mods_id_trp_ssim'][0].replace(u'trp-', u'')
-
-        bio_list.append(current_bio)
-
-    bio_list=sorted(bio_list,key=itemgetter('name'))
-    for i, bio in enumerate(bio_list):
-        bio['number_in_list']=i+1
-    return bio_list
-
-
 def person_detail_db(request, trp_id):
     #view that pull bio information from the db, instead of the BDR
+    trp_id = "%04d" % int(trp_id)
     try:
         bio = Biography.objects.get(trp_id=trp_id)
     except ObjectDoesNotExist:
@@ -580,15 +551,15 @@ def _pages_for_person(name, group_amount=50):
         # print >>sys.stderr, ("Starting group %d of size %d (%d/%d)" % (i / 25, group_amount, i, num_pages))
         group = pages_to_look_up[i : i+group_amount]
         pids = "(pid:" + ("+OR+pid:".join(group)) + ")"
-        book_query = u"https://%s/api/pub/search/?q=%s+AND+display:BDR_PUBLIC&fl=pid,primary_title,rel_is_part_of_ssim,rel_has_pagination_ssim&rows=%s" % (BDR_SERVER, pids, group_amount)
+        book_query = u"https://%s/api/pub/search/?q=%s+AND+display:BDR_PUBLIC&fl=pid,primary_title,nonsort,rel_is_part_of_ssim,rel_has_pagination_ssim&rows=%s" % (BDR_SERVER, pids, group_amount)
         data = json.loads(requests.get(book_query).text)
         book_response = data['response']['docs']
         for p in book_response:
             pid = p['rel_is_part_of_ssim'][0].replace(u'bdr:', u'')
             n = p['rel_has_pagination_ssim'][0]
             if(pid not in books):
-                books[pid] = dict()
-                books[pid]['title'] = p['primary_title']
+                books[pid] = {}
+                books[pid]['title'] = _get_full_title(p)
                 books[pid]['pages'] = {}
                 books[pid]['pid'] = pid
             books[pid]['pages'][int(n)] = pages[p['pid'].replace(u'bdr:', u'')]
@@ -631,29 +602,33 @@ def _get_book_pid_from_page_pid(page_pid):
         else:
             return None
 
+def filter_bios(fq, bio_list):
+    return [b for b in bio_list if fq in b.roles]
 
-def people(request):
-    template = loader.get_template('rome_templates/people.html')
-    num_bios_estimate = 6000
-    url1 = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:tei+AND+display:BDR_PUBLIC&rows=%s' % (BDR_SERVER, num_bios_estimate)
-    bios_json = json.loads(requests.get(url1).text)
-    
-    num_bios = bios_json['response']['numFound']
-    if num_bios > num_bios_estimate:
-        url2 = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:tei+AND+display:BDR_PUBLIC&rows=%s' % (BDR_SERVER, num_bios)
-        bios_json = json.loads(requests.get(url2).text)
+def people_db(request):
+    template = loader.get_template('rome_templates/people_db.html')
+    fq = request.GET.get('filter', 'all')
 
-    bio_set = bios_json['response']['docs']
-    bio_list = get_bio_list(bio_set)
+    bio_list = Biography.objects.all()
+    role_set = set()
+
+    for bio in bio_list:
+        bio.roles = [role.strip(" ") for role in bio.roles.split(';') if role.strip(" ") != '']
+        role_set |= set(bio.roles)
+
+    if fq != 'all':
+        bio_list = filter_bios(fq, bio_list)
 
     bios_per_page=20
     PAGIN=Paginator(bio_list,bios_per_page)
     page_list=[]
+
     for i in PAGIN.page_range:
         page_list.append(PAGIN.page(i).object_list)
+
     context=std_context(title="The Theater that was Rome - Biographies")
     context['page_documentation']='Browse the biographies of artists related to the Theater that was Rome collection.'
-    context['num_bios']=num_bios
+    context['num_bios']=len(bio_list)
     context['bio_list']=bio_list
     context['bios_per_page']=bios_per_page
     context['num_pages']=PAGIN.num_pages
@@ -661,9 +636,12 @@ def people(request):
     context['curr_page']=1
     context['PAGIN']=PAGIN
     context['page_list']=page_list
+    context['role_set']=role_set
+    context['sorting'] = fq
 
-    c=RequestContext(request,context)
+    c=RequestContext(request, context)
     return HttpResponse(template.render(c))
+
 
 def about(request):
     template=loader.get_template('rome_templates/about.html')

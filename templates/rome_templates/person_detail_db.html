@@ -27,6 +27,20 @@
     td.title {
         border-bottom: 1px solid black;
     }
+
+    #page_body div#author_info li {
+        color: black;
+    }
+
+    li.page_list_item {
+        margin-top: 25px;
+        list-style: none;
+    }
+
+    li.page_list_item b {
+        color: black;
+    }
+
 </style>
 </head>
 <link rel="stylesheet" href="{%static usr_style%}" type="text/css" media="screen" />
@@ -51,7 +65,7 @@
                   <h4>Books</h4>
                     <ul>
                     {% for book in books %}
-                    <li><a href="{% url 'thumbnail_viewer' book.pid|cut:'bdr:' %}">{{book.title}}</a></li>
+                    <li><b><a href="{% url 'thumbnail_viewer' book.pid|cut:'bdr:' %}">{{book.title}}</a></b></li>
                     {% endfor %}
                     </ul>
                 {% endif %}
@@ -59,7 +73,7 @@
                 <h4>Prints</h4>
                 <ul>
                 {% for print in prints %}
-                    <li><a href="{% url 'specific_print' print.pid|cut:'bdr:' %}" target="_blank">{{print.title}}</a></li>
+                    <li><b><a href="{% url 'specific_print' print.pid|cut:'bdr:' %}" target="_blank">{{print.title}}</a></b></li>
                 {% endfor %}
                 </ul>
                 {% endif %}
@@ -67,7 +81,7 @@
                 <h4>Pages</h4>
                 <ul>
                 {% for key,book in pages_books.items %}
-                <li><a href="{% url 'thumbnail_viewer' key %}" target="_blank">{{book.title}}</a><br/>
+                <li class="page_list_item"><b>In <a href="{% url 'thumbnail_viewer' key %}" target="_blank">{{book.title}}</a> ({{ book.pages|length }}):</b><br/>
                 <table>
                 {% for num,page in book.pages.items %}
                 <tr>
