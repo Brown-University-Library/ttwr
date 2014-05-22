@@ -459,36 +459,6 @@ def specific_print(request, print_pid):
     #raise 404 if a certain print does not exist
     return HttpResponse(template.render(c))
 
-def get_bio_list( bio_set):
-    bio_list=[]
-    for i in range(len(bio_set)):
-        bio=bio_set[i]
-        current_bio={}
-        display=bio['contributor_display'][0]
-        parts=display.split("(")
-        if len(parts)>1:
-            current_bio['role']=' ['+parts[1].split(')')[0]+']'
-        else:
-            current_bio['role']=''
-        potentialDate = parts[0].split(',')[-1]
-        if re.search('[0-9][0-9][0-9]',potentialDate):
-            current_bio['date']=' '+potentialDate
-        else:
-            current_bio['date']=''
-        current_bio['name']=bio['name'][0].lstrip(" ")+'.';
-        current_bio['pid']=bio['pid'].split(":")[1]
-        current_bio['uri']='https://repository.library.brown.edu/studio/item/'+bio['pid']+'/'
-        #drop the 'trp-' in the trp id
-        current_bio['trp_id'] = bio['mods_id_trp_ssim'][0].replace(u'trp-', u'')
-
-        bio_list.append(current_bio)
-
-    bio_list=sorted(bio_list,key=itemgetter('name'))
-    for i, bio in enumerate(bio_list):
-        bio['number_in_list']=i+1
-    return bio_list
-
-
 def person_detail_db(request, trp_id):
     #view that pull bio information from the db, instead of the BDR
     trp_id = "%04d" % int(trp_id)
@@ -631,40 +601,6 @@ def _get_book_pid_from_page_pid(page_pid):
             return data['relations']['isMemberOf'][0]['pid'].replace(u'bdr:', '')
         else:
             return None
-
-
-def people(request):
-    template = loader.get_template('rome_templates/people.html')
-    num_bios_estimate = 6000
-    url1 = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:tei+AND+display:BDR_PUBLIC&rows=%s' % (BDR_SERVER, num_bios_estimate)
-    bios_json = json.loads(requests.get(url1).text)
-    
-    num_bios = bios_json['response']['numFound']
-    if num_bios > num_bios_estimate:
-        url2 = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:tei+AND+display:BDR_PUBLIC&rows=%s' % (BDR_SERVER, num_bios)
-        bios_json = json.loads(requests.get(url2).text)
-
-    bio_set = bios_json['response']['docs']
-    bio_list = get_bio_list(bio_set)
-
-    bios_per_page=20
-    PAGIN=Paginator(bio_list,bios_per_page)
-    page_list=[]
-    for i in PAGIN.page_range:
-        page_list.append(PAGIN.page(i).object_list)
-    context=std_context(title="The Theater that was Rome - Biographies")
-    context['page_documentation']='Browse the biographies of artists related to the Theater that was Rome collection.'
-    context['num_bios']=num_bios
-    context['bio_list']=bio_list
-    context['bios_per_page']=bios_per_page
-    context['num_pages']=PAGIN.num_pages
-    context['page_range']=PAGIN.page_range
-    context['curr_page']=1
-    context['PAGIN']=PAGIN
-    context['page_list']=page_list
-
-    c=RequestContext(request,context)
-    return HttpResponse(template.render(c))
 
 def filter_bios(fq, bio_list):
     return [b for b in bio_list if fq in b.roles]
