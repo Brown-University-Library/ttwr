@@ -157,6 +157,7 @@ def thumbnail_viewer(request, book_pid):
     for page in pages:
         curr_thumb={}
         curr_thumb['src']='https://%s/fedora/objects/%s/datastreams/thumbnail/content' % (BDR_SERVER, page['pid'])
+        curr_thumb['src_alt']='https://%s/viewers/image/thumbnail/%s/' %(BDR_SERVER, page['pid'])
         curr_thumb['det_img_view']='https://%s/viewers/image/zoom/bdr:%s/' % (BDR_SERVER, page['pid'])
         curr_pid=page['pid'].split(":")[1]
         if book_list_page:
