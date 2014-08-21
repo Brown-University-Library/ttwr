@@ -240,7 +240,7 @@ def page(request, page_pid, book_pid=None):
     for i in range(len(annotations)):
         annot_pid=annotations[i]['pid']
         annot_studio_uri=annotations[i]['uri']
-        annot_xml_uri='https://%s/fedora/objects/%s/datastreams/MODS/content' % (BDR_SERVER, annot_pid)
+        annot_xml_uri='https://%s/services/getMods/%s/' % (BDR_SERVER, annot_pid)
         context['annotation_uris'].append(annot_xml_uri)
         curr_annot={}
         curr_annot['xml_uri']=annot_xml_uri
