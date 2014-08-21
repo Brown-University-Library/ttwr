@@ -530,7 +530,7 @@ def _prints_for_person(name):
 def _pages_for_person(name, group_amount=50):
     # print >>sys.stderr, ("Retrieving pages for person %s" % name)
     num_prints_estimate = 6000
-    name[0] = name[0].split(",")[0]
+    # name[0] = name[0].split(",")[0]
     query_uri = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:"annotation"+AND+contributor:"%s"+AND+display:BDR_PUBLIC&rows=%s&fl=rel_is_annotation_of_ssim,primary_title,pid,nonsort' % (BDR_SERVER, name[0], num_prints_estimate)
     pages_json = json.loads(requests.get(query_uri).text)
     pages = dict([(page['rel_is_annotation_of_ssim'][0].replace(u'bdr:', u''), page) for page in pages_json['response']['docs']])
