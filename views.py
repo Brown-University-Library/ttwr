@@ -195,9 +195,13 @@ def page(request, page_pid, book_pid=None):
 
     context['pid']=book_pid
     thumbnails=[]
-    book_json_uri='https://repository.library.brown.edu/api/pub/items/bdr:'+str(book_pid)+'/'
-    #logger.error('json_uri = '+json_uri)
-    book_json=json.loads(urllib2.urlopen(book_json_uri).read())
+    book_json_uri = u'https://%s/api/pub/items/bdr:%s/' % (BDR_SERVER, book_pid)
+    r = requests.get(book_json_uri, timeout=60)
+    if not r.ok:
+        logger.error(u'TTWR - error retrieving url %s' % book_json_uri)
+        logger.error(u'TTWR - response: %s - %s' % (r.status_code, r.text))
+        return HttpResponseServerError('Error retrieving content.')
+    book_json = json.loads(r.text)
     context['short_title']=book_json['brief']['title']
     context['title'] = _get_full_title(book_json)
     try:
@@ -221,10 +225,14 @@ def page(request, page_pid, book_pid=None):
     context['lowres_url']="https://%s/fedora/objects/bdr:%s/datastreams/lowres/content" % (BDR_SERVER, page_pid)
     context['det_img_view_src']="https://%s/viewers/image/zoom/bdr:%s" % (BDR_SERVER, page_pid)
 
-    page_json_uri='https://%s/api/pub/items/bdr:%s/' % (BDR_SERVER, page_pid)
-    
     # annotations/metadata
-    page_json=json.loads(urllib2.urlopen(page_json_uri).read())
+    page_json_uri = u'https://%s/api/pub/items/bdr:%s/' % (BDR_SERVER, page_pid)
+    r = requests.get(page_json_uri, timeout=60)
+    if not r.ok:
+        logger.error(u'TTWR - error retrieving url %s' % page_json_uri)
+        logger.error(u'TTWR - response: %s - %s' % (r.status_code, r.text))
+        return HttpResponseServerError('Error retrieving content.')
+    page_json = json.loads(r.text)
     annotations=page_json['relations']['hasAnnotation']
     context['has_annotations']=len(annotations)
     context['annotation_uris']=[]
