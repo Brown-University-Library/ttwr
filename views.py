@@ -156,8 +156,8 @@ def thumbnail_viewer(request, book_pid):
     pages=book_json['relations']['hasPart']
     for page in pages:
         curr_thumb={}
-        curr_thumb['src']='https://%s/fedora/objects/%s/datastreams/thumbnail/content' % (BDR_SERVER, page['pid'])
-        curr_thumb['src_alt']='https://%s/viewers/image/thumbnail/%s/' %(BDR_SERVER, page['pid'])
+        curr_thumb['src']='https://%s/viewers/image/thumbnail/%s/' % (BDR_SERVER, page['pid'])
+        #curr_thumb['src_alt']='https://%s/viewers/image/thumbnail/%s/' %(BDR_SERVER, page['pid'])
         curr_thumb['det_img_view']='https://%s/viewers/image/zoom/bdr:%s/' % (BDR_SERVER, page['pid'])
         curr_pid=page['pid'].split(":")[1]
         if book_list_page:
@@ -551,8 +551,7 @@ def _pages_for_person(name, group_amount=50):
         #     books[book_pid]['pid'] = book_pid
         #     books[book_pid]['pages'] = {}
         #     books[book_pid]['pages'][int(page_num)] = page
-        page['thumb'] = u"https://%s/fedora/objects/%s/datastreams/thumbnail/content"  % (BDR_SERVER, page['rel_is_annotation_of_ssim'][0])
-        page['thumb_alt'] = u"https://%s/viewers/image/thumbnail/%s/" % (BDR_SERVER, page['rel_is_annotation_of_ssim'][0])
+        page['thumb'] = u"https://%s/viewers/image/thumbnail/%s/"  % (BDR_SERVER, page['rel_is_annotation_of_ssim'][0])
 
     num_pages = len(pages_to_look_up)
     # print >>sys.stderr, ("Found %s pages for %s" % (pages_to_look_up, name))
