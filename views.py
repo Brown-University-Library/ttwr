@@ -156,7 +156,8 @@ def thumbnail_viewer(request, book_pid):
     pages=book_json['relations']['hasPart']
     for page in pages:
         curr_thumb={}
-        curr_thumb['src']='https://%s/fedora/objects/%s/datastreams/thumbnail/content' % (BDR_SERVER, page['pid'])
+        curr_thumb['src']='https://%s/viewers/image/thumbnail/%s/' % (BDR_SERVER, page['pid'])
+        #curr_thumb['src_alt']='https://%s/viewers/image/thumbnail/%s/' %(BDR_SERVER, page['pid'])
         curr_thumb['det_img_view']='https://%s/viewers/image/zoom/bdr:%s/' % (BDR_SERVER, page['pid'])
         curr_pid=page['pid'].split(":")[1]
         if book_list_page:
@@ -239,7 +240,7 @@ def page(request, page_pid, book_pid=None):
     for i in range(len(annotations)):
         annot_pid=annotations[i]['pid']
         annot_studio_uri=annotations[i]['uri']
-        annot_xml_uri='https://%s/fedora/objects/%s/datastreams/MODS/content' % (BDR_SERVER, annot_pid)
+        annot_xml_uri='https://%s/services/getMods/%s/' % (BDR_SERVER, annot_pid)
         context['annotation_uris'].append(annot_xml_uri)
         curr_annot={}
         curr_annot['xml_uri']=annot_xml_uri
@@ -529,7 +530,7 @@ def _prints_for_person(name):
 def _pages_for_person(name, group_amount=50):
     # print >>sys.stderr, ("Retrieving pages for person %s" % name)
     num_prints_estimate = 6000
-    name[0] = name[0].split(",")[0]
+    # name[0] = name[0].split(",")[0]
     query_uri = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:"annotation"+AND+contributor:"%s"+AND+display:BDR_PUBLIC&rows=%s&fl=rel_is_annotation_of_ssim,primary_title,pid,nonsort' % (BDR_SERVER, name[0], num_prints_estimate)
     pages_json = json.loads(requests.get(query_uri).text)
     pages = dict([(page['rel_is_annotation_of_ssim'][0].replace(u'bdr:', u''), page) for page in pages_json['response']['docs']])
@@ -550,7 +551,7 @@ def _pages_for_person(name, group_amount=50):
         #     books[book_pid]['pid'] = book_pid
         #     books[book_pid]['pages'] = {}
         #     books[book_pid]['pages'][int(page_num)] = page
-        page['thumb'] = u"https://%s/viewers/image/thumbnail/%s/" % (BDR_SERVER, page['rel_is_annotation_of_ssim'][0])
+        page['thumb'] = u"https://%s/viewers/image/thumbnail/%s/"  % (BDR_SERVER, page['rel_is_annotation_of_ssim'][0])
 
     num_pages = len(pages_to_look_up)
     # print >>sys.stderr, ("Found %s pages for %s" % (pages_to_look_up, name))
