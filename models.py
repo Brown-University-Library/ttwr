@@ -1,6 +1,6 @@
 from django.db import models
 
-
+# Database Models
 class Biography(models.Model):
 
     name = models.CharField(max_length=254, help_text='Enter name as it appears in the book metadata')
@@ -23,3 +23,8 @@ class Essay(models.Model):
     title = models.CharField(max_length=254)
     text = models.TextField()
 
+# Non-Database Models
+# BDRItem
+# Book
+# Page
+# Print

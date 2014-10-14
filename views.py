@@ -5,7 +5,6 @@ from django.template import Context, loader, RequestContext
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
 from django.core.urlresolvers import reverse
-import urllib, urllib2
 import json
 import logging
 logger = logging.getLogger(__name__)
@@ -38,8 +37,8 @@ def index(request):
     return HttpResponse(template.render(c))
 
 
-def books(request):
-    template=loader.get_template('rome_templates/books.html')
+def book_list(request):
+    template=loader.get_template('rome_templates/book_list.html')
     context=std_context()
     page = request.GET.get('page', 1)
     sort_by = request.GET.get('sort_by', 'authors')
@@ -120,9 +119,9 @@ def books(request):
     return HttpResponse(template.render(c))
 
 
-def thumbnail_viewer(request, book_pid):
+def book_detail(request, book_pid):
     book_list_page = request.GET.get('book_list_page', None)
-    template=loader.get_template('rome_templates/thumbnail_viewer.html')
+    template=loader.get_template('rome_templates/book_detail.html')
     context=std_context()
     if book_list_page:
         context['back_to_book_href'] = u'%s?page=%s' % (reverse('books'), book_list_page)
@@ -157,7 +156,6 @@ def thumbnail_viewer(request, book_pid):
     for page in pages:
         curr_thumb={}
         curr_thumb['src']='https://%s/viewers/image/thumbnail/%s/' % (BDR_SERVER, page['pid'])
-        #curr_thumb['src_alt']='https://%s/viewers/image/thumbnail/%s/' %(BDR_SERVER, page['pid'])
         curr_thumb['det_img_view']='https://%s/viewers/image/zoom/bdr:%s/' % (BDR_SERVER, page['pid'])
         curr_pid=page['pid'].split(":")[1]
         if book_list_page:
@@ -166,14 +164,14 @@ def thumbnail_viewer(request, book_pid):
             curr_thumb['page_view'] = reverse('book_page_viewer', args=[book_pid, curr_pid])
         thumbnails.append(curr_thumb)
     context['thumbnails']=thumbnails
-    
+
     c=RequestContext(request,context)
     #raise 404 if a certain book does not exist
     return HttpResponse(template.render(c))
 
-def page(request, page_pid, book_pid=None):
+def page_detail(request, page_pid, book_pid=None):
     #note: page_pid does not include 'bdr:'
-    template=loader.get_template('rome_templates/page.html')
+    template=loader.get_template('rome_templates/page_detail.html')
     context=std_context()
 
     if not book_pid:
@@ -289,13 +287,14 @@ def page(request, page_pid, book_pid=None):
                 curr_annot['has_elements']['annotator']=1
             #curr_annot['notes'].append(curr_note)
         context['annotations'].append(curr_annot)
-        
+
     c=RequestContext(request,context)
     #raise 404 if a certain book does not exist
     return HttpResponse(template.render(c))
 
 
-def prints(request):
+def print_list(request):
+    template=loader.get_template('rome_templates/print_list.html')
     page = request.GET.get('page', 1)
     sort_by = request.GET.get('sort_by', 'authors')
     collection = request.GET.get('collection', 'both')
@@ -305,7 +304,6 @@ def prints(request):
     elif(collection == 'not'):
         chinea = "+NOT+primary_title:\"Chinea\"+NOT+subtitle:\"Chinea\""
 
-    template=loader.get_template('rome_templates/prints.html')
     context=std_context(title="The Theater that was Rome - Prints")
     context['page_documentation']='Browse the prints in the Theater that was Rome collection. Click on "View" to explore a print further.'
     context['curr_page']=page
@@ -366,7 +364,7 @@ def prints(request):
         current_print['pid']=pid.split(":")[1]
         print_list.append(current_print)
 
-    
+
     print_list=sorted(print_list,key=itemgetter(sort_by,'authors','title','date'))
     for i, Print in enumerate(print_list):
         Print['number_in_list']=i+1
@@ -387,8 +385,8 @@ def prints(request):
     c=RequestContext(request,context)
     return HttpResponse(template.render(c))
 
-def specific_print(request, print_pid):
-    template = loader.get_template('rome_templates/page.html')
+def print_detail(request, print_pid):
+    template = loader.get_template('rome_templates/page_detail.html')
     context = std_context()
 
     prints_list_page = request.GET.get('prints_list_page', None)
@@ -426,8 +424,8 @@ def specific_print(request, print_pid):
             context['date']=print_json['dateCreated'][0:4]
         except:
             context['date']="n.d."
-            
-    
+
+
     # annotations/metadata
     annotations=print_json['relations']['hasAnnotation']
     context['has_annotations']=len(annotations)
@@ -462,13 +460,13 @@ def specific_print(request, print_pid):
                 curr_note.append("text: "+note.text)
             curr_annot['notes'].append(curr_note)
         context['annotations'].append(curr_annot)
-    
+
 
     c=RequestContext(request,context)
     #raise 404 if a certain print does not exist
     return HttpResponse(template.render(c))
 
-def person_detail_db(request, trp_id):
+def biography_detail(request, trp_id):
     #view that pull bio information from the db, instead of the BDR
     trp_id = "%04d" % int(trp_id)
     try:
@@ -477,7 +475,7 @@ def person_detail_db(request, trp_id):
         return HttpResponseNotFound('Person %s Not Found' % trp_id)
     context = std_context(title="The Theater that was Rome - Biography")
     context = RequestContext(request, context)
-    template = loader.get_template('rome_templates/person_detail_db.html')
+    template = loader.get_template('rome_templates/biography_detail.html')
     context['bio'] = bio
     context['trp_id'] = trp_id
     context['books'] = _books_for_person([bio.name])
@@ -614,8 +612,8 @@ def _get_book_pid_from_page_pid(page_pid):
 def filter_bios(fq, bio_list):
     return [b for b in bio_list if fq in b.roles]
 
-def people_db(request):
-    template = loader.get_template('rome_templates/people_db.html')
+def biography_list(request):
+    template = loader.get_template('rome_templates/biography_list.html')
     fq = request.GET.get('filter', 'all')
 
     bio_list = Biography.objects.all()
@@ -657,17 +655,17 @@ def about(request):
     context=std_context(style="rome/css/links.css")
     c=RequestContext(request,context)
     #raise 404 if a certain book does not exist
-    return HttpResponse(template.render(c)) 
+    return HttpResponse(template.render(c))
 
 def links(request):
     template=loader.get_template('rome_templates/links.html')
     context=std_context(style="rome/css/links.css")
 
     c=RequestContext(request,context)
-    return HttpResponse(template.render(c)) 
+    return HttpResponse(template.render(c))
 
-def essays(request):
-    template=loader.get_template('rome_templates/essays.html')
+def essay_list(request):
+    template=loader.get_template('rome_templates/essay_list.html')
     context=std_context(style="rome/css/links.css")
     context['page_documentation']='Listed below are essays on topics that relate to the Theater that was Rome collection of books and engravings. The majority of the essays were written by students in Brown University classes that used this material, and edited by Prof. Evelyn Lincoln.'
     c=RequestContext(request,context)
@@ -676,12 +674,12 @@ def essays(request):
     return HttpResponse(template.render(c))
 
 
-def specific_essay_db(request, essay_slug):
+def essay_detail(request, essay_slug):
     try:
         essay = Essay.objects.get(slug=essay_slug)
     except ObjectDoesNotExist:
         return HttpResponseNotFound('Essay %s Not Found' % essay_slug)
-    template=loader.get_template('rome_templates/specific_essay.html')
+    template=loader.get_template('rome_templates/essay_detail.html')
     context=std_context(style="rome/css/links.css")
     context['usr_essays_style']="rome/css/essays.css"
     context['essay_text'] = essay.text
