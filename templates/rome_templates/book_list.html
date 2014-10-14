@@ -1,57 +1,21 @@
 <head>
 <title>{{title}}</title>
 <script type="text/javascript">
-window.onload=load;
-var curr_page;
-function load()
-{
-    curr_page={{curr_page}};
-    show_page(curr_page);
-    show_sorting('{{ sorting }}');
-}
-function expand_title(page_num,num_on_page)
-{
-    var spans=document.getElementsByTagName("span");
-    var i;
-    for(i=0;i<spans.length;i++)
-    {
-        if(spans[i].getAttribute("num")==page_num+"_"+num_on_page)
-        {
-            spans[i].style.display="none";
-            break;
-        }
-    }
-    document.getElementById(page_num+"_"+num_on_page+"_full").style.display="inline";
-}
-function show_page(i)
-{
-    var old_page, new_page, buttons, max_num;
-    old_page=document.getElementById("page_"+curr_page);
-    old_page.style.display="none";
-    
-    new_page=document.getElementById("page_"+i);
-    new_page.style.display="block";
-    curr_page=i;
-    
-    buttons=document.getElementsByClassName("page_button");
-    for(var j=0;j<buttons.length;j++)
-        buttons[j].style.background="#aaaaaa"
-    buttons[parseInt(i)-1].style.background='#999999';
-
-    max_num = {{num_books}};
-    
-    document.getElementById("books_shown").innerHTML=((parseInt(i)-1)*{{ books_per_page }}+1)+"-"+(Math.min(parseInt(i)*{{ books_per_page }}, max_num));
-    
-    document.getElementById("curr_page_span").innerHTML=i;
-}
-function show_sorting(sorting)
-{
-    var links=document.getElementsByClassName("sort_link");
-    for(var i=0;i<links.length;i++)
-        links[i].style.fontWeight="normal";
-    document.getElementById("sort_"+sorting).style.fontWeight="bold";
-}
-</script>
+  function expand_title(page_num,num_on_page)
+  {
+      var spans=document.getElementsByTagName("span");
+      var i;
+      for(i=0;i<spans.length;i++)
+      {
+          if(spans[i].getAttribute("num")==page_num+"_"+num_on_page)
+          {
+              spans[i].style.display="none";
+              break;
+          }
+      }
+      document.getElementById(page_num+"_"+num_on_page+"_full").style.display="inline";
+  }
+  </script>
 </head>
 {% load static from staticfiles %}
 {% load url from future %}
@@ -66,10 +30,11 @@ function show_sorting(sorting)
             {{page_documentation}}
         </div>
         <div style="font-size:15px; margin-left:20px; padding-top:15px; padding-bottom:10px">
-            {% for i in page_range %}
-                <button id="page_button_{{i}}" class="page_button" onclick="show_page({{i}})">{{i}}</button>
+            {% for i in books.paginator.page_range %}
+                <a id="page_button_{{i}}" class="page_button" 
+                  href="{% url 'books' %}?page={{i}}&sort_by={{sorting}}">{{i}}</a>
             {% endfor %}
-            &nbsp showing <span id="books_shown"></span> of {{num_books}} books; on page <span id="curr_page_span">1</span>
+            &nbsp showing <span id="books_shown">{{books.start_index}} - {{books.end_index}}</span> of {{books.paginator.count}} books; on page <span id="curr_page_span">1</span>
             &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
             Sort by:&nbsp
             <a id="sort_authors" class="sort_link" href="{% url 'books' %}?sort_by=authors">Author</a> |
@@ -78,27 +43,29 @@ function show_sorting(sorting)
         </div>
     </div>
     <div id="page_body">
-        {% for page in page_list %}
-        <div id="page_{{forloop.counter}}" num="{{forloop.counter}}" style="display:none;">
             <ol>
-                {% for book in page %}
-                <li value={{book.number_in_list}}>
-                    <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}">
-                        <a href="{{ book.thumbnail_url }}?book_list_page={{forloop.parentloop.counter}}">
+                {% for book in books %}
+                {% if forloop.first %}
+                  <li value="{{books.start_index}}">
+                {% else %}
+                  <li>
+                {% endif %}
+                    <span id="{{books.number}}_{{forloop.counter}}">
+                        <a href="{{ book.thumbnail_url }}?book_list_page={{books.number}}">
                                 [View]&nbsp
                         </a>
                         <span class="dark">{{ book.authors }}</span><br />
                         <span class="dark">
-                            <span num="{{forloop.parentloop.counter}}_{{forloop.counter}}">
+                            <span num="{{books.number}}_{{forloop.counter}}">
                                 {{ book.short_title }}{% if not book.title_cut %},{% endif %}
                                 {% if book.title_cut %}
                                 <span class="more_button"
-                                        onclick="expand_title({{forloop.parentloop.counter}},{{forloop.counter}})">
+                                        onclick="expand_title({{books.number}},{{forloop.counter}})">
                                         [more],&nbsp
                                 </span>
                                 {% endif %}
                             </span>
-                            <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}_full" style="display:none;">
+                            <span id="{{books.number}}_{{forloop.counter}}_full" style="display:none;">
                                 {{ book.title }},&nbsp
                             </span>
                         </span>
@@ -112,8 +79,6 @@ function show_sorting(sorting)
                 </li>
                 {% endfor %}
             </ol>
-        </div>
-        {% endfor %}
     </div>
     <div id="footer">
 	    <span>&#169; {{cpydate}} Brown University</span>

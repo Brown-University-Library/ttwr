@@ -8,14 +8,15 @@ from django.core.urlresolvers import reverse
 import json
 import logging
 logger = logging.getLogger(__name__)
-from operator import itemgetter
+from operator import itemgetter, attrgetter, methodcaller
 import xml.etree.ElementTree as ET
 import re
 import requests
-from .models import Biography, Essay
+from .models import Biography, Essay, Book
+from .app_settings import BDR_SERVER
 
 
-BDR_SERVER = u'repository.library.brown.edu'
+#BDR_SERVER = u'repository.library.brown.edu'
 
 
 def std_context(style="rome/css/prints.css",title="The Theater that was Rome"):
@@ -33,86 +34,37 @@ def index(request):
     template=loader.get_template('rome_templates/index.html')
     context=std_context(style="rome/css/home.css")
     c=RequestContext(request,context)
-    #raise 404 if a certain book does not exist
     return HttpResponse(template.render(c))
 
 
-def book_list(request):
-    template=loader.get_template('rome_templates/book_list.html')
-    context=std_context()
-    page = request.GET.get('page', 1)
-    sort_by = request.GET.get('sort_by', 'authors')
-    context['curr_page']=page
-    context['page_documentation']='Click on "View" to see thumbnails of all the pages of a book. Click "BDR View" to see the default repository entry for a book.'
-    context['sorting']='authors'
-    if sort_by!='authors':
-        context['sorting']=sort_by
-    # load json for all books in the collection #
+def _get_book_set():
     num_books_estimate=6000 #should be plenty
     url1 = 'https://%s/api/pub/collections/621/?q=object_type:implicit-set&fl=*&fq=discover:BDR_PUBLIC&rows=%s' % (BDR_SERVER, num_books_estimate)
     books_json = json.loads(requests.get(url1).text)
     num_books = books_json['items']['numFound']
-    context['num_books'] = num_books
     if num_books>num_books_estimate: #only reload if we need to find more books
         url2 = 'https://%s/api/pub/collections/621/?q=object_type:implicit-set&fl=*&fq=discover:BDR_PUBLIC&rows=%s' % (BDR_SERVER, num_books)
         books_json = json.loads(requests.get(url2).text)
-    books_set = books_json['items']['docs']
-    book_list = []
+    book_set = books_json['items']['docs']
+    return book_set
 
-    # create list of books with information to display for each #
-    for i in range(num_books):
-        current_book={}
-        book=books_set[i]
-        title = _get_full_title(book)
-        pid=book['pid']
-        current_book['pid']=book['pid'].split(":")[1]
-        current_book['thumbnail_url'] = reverse('thumbnail_viewer', kwargs={'book_pid':current_book['pid']})
-        current_book['studio_uri']=book['uri']
-        short_title=title
-        current_book['title_cut']=0
-        cutoff=80
-        if len(title)>cutoff:
-            short_title=title[0:cutoff-3]+"..."
-            current_book['title_cut']=1
-        current_book['title']=title
-        current_book['short_title']=short_title
-        current_book['port_url']='https://%s/viewers/readers/portfolio/%s/' % (BDR_SERVER, pid)
-        current_book['book_url']='https://%s/viewers/readers/set/%s/' % (BDR_SERVER, pid)
-        try:
-            current_book['date']=book['dateCreated'][0:4]
-        except:
-            try:
-                current_book['date']=book['dateIssued'][0:4]
-            except:
-                current_book['date']="n.d."
-        try:
-            author_list=book['contributor_display']
-            authors=""
-            for i in range(len(author_list)):
-                if i==len(author_list)-1:
-                    authors+=author_list[i]
-                else:
-                    authors+=author_list[i]+"; "
-            current_book['authors']=authors
-        except:
-            current_book['authors']="contributor(s) not available"
-        book_list.append(current_book)
-    book_list=sorted(book_list,key=itemgetter(sort_by,'authors','title','date')) # sort alphabetically
-    for i, book in enumerate(book_list):
-        book['number_in_list']=i+1
-    context['book_list']=book_list
+def book_list(request):
+    BOOKS_PER_PAGE=20
+    template=loader.get_template('rome_templates/book_list.html')
+    context=std_context()
 
-    # pagination #
-    books_per_page=20
-    context['books_per_page']=books_per_page
-    PAGIN=Paginator(book_list,books_per_page);
-    context['num_pages']=PAGIN.num_pages
-    context['page_range']=PAGIN.page_range
-    context['PAGIN']=PAGIN
-    page_list=[]
-    for i in PAGIN.page_range:
-        page_list.append(PAGIN.page(i).object_list)
-    context['page_list']=page_list
+    context['page_documentation']='Click on "View" to see thumbnails of all the pages of a book. Click "BDR View" to see the default repository entry for a book.'
+
+    book_set = _get_book_set()
+    book_list = [ Book(book_data) for book_data in book_set]
+
+    sort_by = request.GET.get('sort_by', 'authors')
+    book_list=sorted(book_list,key=methodcaller(sort_by)) # sort alphabetically
+    context['sorting']=sort_by
+
+    page = request.GET.get('page', 1)
+    PAGIN=Paginator(book_list,BOOKS_PER_PAGE);
+    context['books']=PAGIN.page(page)
 
     # send to template #
     c=RequestContext(request,context)
