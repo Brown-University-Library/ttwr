@@ -10,7 +10,7 @@ from django.shortcuts import render
 import json
 import logging
 logger = logging.getLogger(__name__)
-from operator import itemgetter, attrgetter, methodcaller
+from operator import itemgetter, methodcaller
 import xml.etree.ElementTree as ET
 import re
 import requests
