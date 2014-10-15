@@ -59,6 +59,11 @@ class BDRObject(object):
     def title(self):
         return self._get_full_title()
 
+    def alt_titles(self):
+        if "mods_title_alt" in self.data:
+            return self.mods_title_alt
+        return []
+
     def date(self):
         if "dateCreated" in self.data:
             return self.dateCreated[0:4]
