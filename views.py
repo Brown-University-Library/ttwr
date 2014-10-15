@@ -16,9 +16,6 @@ from .models import Biography, Essay, Book
 from .app_settings import BDR_SERVER
 
 
-#BDR_SERVER = u'repository.library.brown.edu'
-
-
 def std_context(style="rome/css/prints.css",title="The Theater that was Rome"):
     context={}
     context['usr_style']=style
