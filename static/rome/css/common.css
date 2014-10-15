@@ -55,6 +55,8 @@ p {
 	width:35px;
 	height:25px;
 	color:black;
+  padding: 5px 10px;
+  font-size: 0.7rem;
 }
 .page_button:hover
 {

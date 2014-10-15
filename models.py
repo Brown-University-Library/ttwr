@@ -1,4 +1,7 @@
 from django.db import models
+from django.core.urlresolvers import reverse
+#from .app_settings import BDR_SERVER
+from .  import app_settings
 
 # Database Models
 class Biography(models.Model):
@@ -24,7 +27,74 @@ class Essay(models.Model):
     text = models.TextField()
 
 # Non-Database Models
-# BDRItem
+class BDRObject(object):
+    def __init__(self, data=None):
+        self.data= data or {}
+
+    def __nonzero__(self):
+        return bool(self.data)
+
+    def __getattr__(self, name):
+        if name in self.data:
+            return self.data.get(name)
+        else:
+            raise AttributeError
+
+    @property
+    def id(self):
+        return self.data.get('pid','').split(":")[-1]
+
+    def _get_full_title(self):
+        data = self.data
+        if 'nonsort' not in data:
+            return u'%s' % data['primary_title']
+        if data['nonsort'].endswith(u"'"):
+            return u'%s%s' % (data['nonsort'], data['primary_title'])
+        return u'%s %s' % (data['nonsort'], data['primary_title'])
+
+    @property
+    def studio_uri(self):
+        return self.uri
+
+    def title(self):
+        return self._get_full_title()
+
+    def date(self):
+        if "dateCreated" in self.data:
+            return self.dateCreated[0:4]
+        if "dateIssued" in self.data:
+            return self.dateIssued[0:4]
+        return "n.d"
+
+    def authors(self):
+        if "contributor_display" in self.data:
+            return "; ".join(self.contributor_display)
+        return "contributor(s) not available"
+
 # Book
+class Book(BDRObject):
+    CUTOFF = 80
+
+    @property
+    def thumbnail_url(self):
+        return  reverse('thumbnail_viewer', kwargs={'book_pid': self.id})
+
+    @property
+    def short_title(self):
+        if self.title_cut():
+            return self.title()[0:Book.CUTOFF-3]+"..."
+        return self.title()
+
+    def title_cut(self):
+        return bool(len(self.title()) > Book.CUTOFF)
+
+
+    def port_url(self):
+        return 'https://%s/viewers/readers/portfolio/%s/' % (app_settings.BDR_SERVER, self.pid)
+
+    def book_url(self):
+        return 'https://%s/viewers/readers/set/%s/' % (app_settings.BDR_SERVER, self.pid)
+
+
 # Page
 # Print

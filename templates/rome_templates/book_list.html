@@ -1,123 +1,81 @@
-<head>
-<title>{{title}}</title>
-<script type="text/javascript">
-window.onload=load;
-var curr_page;
-function load()
-{
-    curr_page={{curr_page}};
-    show_page(curr_page);
-    show_sorting('{{ sorting }}');
-}
-function expand_title(page_num,num_on_page)
-{
-    var spans=document.getElementsByTagName("span");
-    var i;
-    for(i=0;i<spans.length;i++)
+{% extends "rome_templates/base.html" %}
+
+{% block title %}The Theater that was Rome - Books{% endblock %}
+{% block page_title %}The Theater that was Rome - Books{% endblock %}
+
+{% block extra_js_head %}
+  <script type="text/javascript">
+    function expand_title(page_num,num_on_page)
     {
+      var spans=document.getElementsByTagName("span");
+      var i;
+      for(i=0;i<spans.length;i++)
+      {
         if(spans[i].getAttribute("num")==page_num+"_"+num_on_page)
-        {
+          {
             spans[i].style.display="none";
             break;
-        }
+          }
+      }
+      document.getElementById(page_num+"_"+num_on_page+"_full").style.display="inline";
     }
-    document.getElementById(page_num+"_"+num_on_page+"_full").style.display="inline";
-}
-function show_page(i)
-{
-    var old_page, new_page, buttons, max_num;
-    old_page=document.getElementById("page_"+curr_page);
-    old_page.style.display="none";
-    
-    new_page=document.getElementById("page_"+i);
-    new_page.style.display="block";
-    curr_page=i;
-    
-    buttons=document.getElementsByClassName("page_button");
-    for(var j=0;j<buttons.length;j++)
-        buttons[j].style.background="#aaaaaa"
-    buttons[parseInt(i)-1].style.background='#999999';
+  </script>
+{% endblock %}
 
-    max_num = {{num_books}};
-    
-    document.getElementById("books_shown").innerHTML=((parseInt(i)-1)*{{ books_per_page }}+1)+"-"+(Math.min(parseInt(i)*{{ books_per_page }}, max_num));
-    
-    document.getElementById("curr_page_span").innerHTML=i;
-}
-function show_sorting(sorting)
-{
-    var links=document.getElementsByClassName("sort_link");
-    for(var i=0;i<links.length;i++)
-        links[i].style.fontWeight="normal";
-    document.getElementById("sort_"+sorting).style.fontWeight="bold";
-}
-</script>
-</head>
-{% load static from staticfiles %}
-{% load url from future %}
-<link rel="stylesheet" href="{%static usr_style%}" type="text/css" media="screen" />
 
-<body>
-    <div id="page_head">
-        <h1>
-            <span class="repeatbg"><span class="leftcap"><a href="../">The Theater that was Rome - Books</a></span></span>
-        </h1>
-        <div style="font-size:15px; margin-left:20px; width:95%; padding-top:15px; padding-bottom:10px">
-            {{page_documentation}}
-        </div>
-        <div style="font-size:15px; margin-left:20px; padding-top:15px; padding-bottom:10px">
-            {% for i in page_range %}
-                <button id="page_button_{{i}}" class="page_button" onclick="show_page({{i}})">{{i}}</button>
+{% block intro %}
+  Click on "View" to see thumbnails of all the pages of a book. Click "BDR
+  View" to see the default repository entry for a book.
+{% endblock %}
+
+{% block pagination %}
+            {% for i in books.paginator.page_range %}
+                <a id="page_button_{{i}}" class="page_button" 
+                  href="{% url 'books' %}?page={{i}}&sort_by={{sorting}}">{{i}}</a>
             {% endfor %}
-            &nbsp showing <span id="books_shown"></span> of {{num_books}} books; on page <span id="curr_page_span">1</span>
+            &nbsp showing <span id="books_shown">{{books.start_index}} - {{books.end_index}}</span> of {{books.paginator.count}} books; on page <span id="curr_page_span">{{books.number}}</span>
             &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
             Sort by:&nbsp
             <a id="sort_authors" class="sort_link" href="{% url 'books' %}?sort_by=authors">Author</a> |
             <a id="sort_title"   class="sort_link" href="{% url 'books' %}?sort_by=title">Title</a> |
             <a id="sort_date"    class="sort_link" href="{% url 'books' %}?sort_by=date">Date</a>
-        </div>
-    </div>
-    <div id="page_body">
-        {% for page in page_list %}
-        <div id="page_{{forloop.counter}}" num="{{forloop.counter}}" style="display:none;">
-            <ol>
-                {% for book in page %}
-                <li value={{book.number_in_list}}>
-                    <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}">
-                        <a href="{{ book.thumbnail_url }}?book_list_page={{forloop.parentloop.counter}}">
-                                [View]&nbsp
-                        </a>
-                        <span class="dark">{{ book.authors }}</span><br />
-                        <span class="dark">
-                            <span num="{{forloop.parentloop.counter}}_{{forloop.counter}}">
-                                {{ book.short_title }}{% if not book.title_cut %},{% endif %}
-                                {% if book.title_cut %}
-                                <span class="more_button"
-                                        onclick="expand_title({{forloop.parentloop.counter}},{{forloop.counter}})">
-                                        [more],&nbsp
-                                </span>
-                                {% endif %}
-                            </span>
-                            <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}_full" style="display:none;">
-                                {{ book.title }},&nbsp
-                            </span>
-                        </span>
-                        <span class="dark">{{ book.date }}</span> <br />
-                        <a href={{ book.studio_uri }} target="_blank">[BDR View]</a>
-                        <br />
-                        Object ID: {{ book.pid }}
-                    </span>
-                    <br />
-                    <br />
-                </li>
-                {% endfor %}
-            </ol>
-        </div>
-        {% endfor %}
-    </div>
-    <div id="footer">
-	    <span>&#169; {{cpydate}} Brown University</span>
-	    <a href="http://www.brown.edu"><img src="{%static brown_image%}" alt="Brown University" /></a>
-	    <a href="http://www.stg.brown.edu"><img src="{%static stg_image%}" alt="Scholarly Technology Group" /></a>
-	</div>
-</body>
+{% endblock %}
+
+{% block content %}
+  <ol>
+    {% for book in books %}
+      {% if forloop.first %}
+        <li value="{{books.start_index}}">
+      {% else %}
+        <li>
+      {% endif %}
+      <span id="{{books.number}}_{{forloop.counter}}">
+        <a href="{{ book.thumbnail_url }}?book_list_page={{books.number}}">
+          [View]&nbsp
+        </a>
+        <span class="dark">{{ book.authors }}</span><br />
+        <span class="dark">
+          <span num="{{books.number}}_{{forloop.counter}}">
+            {{ book.short_title }}{% if not book.title_cut %},{% endif %}
+            {% if book.title_cut %}
+            <span class="more_button"
+              onclick="expand_title({{books.number}},{{forloop.counter}})">
+              [more],&nbsp
+            </span>
+            {% endif %}
+          </span>
+          <span id="{{books.number}}_{{forloop.counter}}_full" style="display:none;">
+            {{ book.title }},&nbsp
+          </span>
+        </span>
+        <span class="dark">{{ book.date }}</span> <br />
+        <a href={{ book.studio_uri }} target="_blank">[BDR View]</a>
+        <br />
+        Object ID: {{ book.id }}
+      </span>
+      <br />
+      <br />
+      </li>
+    {% endfor %}
+  </ol>
+{% endblock %}
