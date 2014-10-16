@@ -37,22 +37,12 @@ def index(request):
     return HttpResponse(template.render(c))
 
 
-def _get_book_set():
-    num_books_estimate=6000 #should be plenty
-    url1 = 'https://%s/api/pub/collections/621/?q=object_type:implicit-set&fl=*&fq=discover:BDR_PUBLIC&rows=%s' % (BDR_SERVER, num_books_estimate)
-    books_json = json.loads(requests.get(url1).text)
-    num_books = books_json['items']['numFound']
-    if num_books>num_books_estimate: #only reload if we need to find more books
-        url2 = 'https://%s/api/pub/collections/621/?q=object_type:implicit-set&fl=*&fq=discover:BDR_PUBLIC&rows=%s' % (BDR_SERVER, num_books)
-        books_json = json.loads(requests.get(url2).text)
-    book_set = books_json['items']['docs']
-    return book_set
-
 def book_list(request):
-    book_set = _get_book_set()
-    book_list = [ Book(book_data) for book_data in book_set]
+    book_list = Book.search()
 
     sort_by = request.GET.get('sort_by', 'authors')
+    sort_by = Book.SORT_OPTIONS.get(sort_by, 'authors')
+
     book_list=sorted(book_list,key=methodcaller(sort_by))
 
     page = request.GET.get('page', 1)
@@ -63,6 +53,7 @@ def book_list(request):
                   {
                       'books': PAGIN.page(page),
                       'sorting': sort_by,
+                      'sort_options': Book.SORT_OPTIONS,
                   }
                  )
 

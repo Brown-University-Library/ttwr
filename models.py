@@ -2,6 +2,8 @@ from django.db import models
 from django.core.urlresolvers import reverse
 #from .app_settings import BDR_SERVER
 from .  import app_settings
+import requests
+import json
 
 # Database Models
 class Biography(models.Model):
@@ -40,6 +42,16 @@ class BDRObject(object):
         else:
             raise AttributeError
 
+    OBJECT_TYPE = "*"
+    @classmethod
+    def search(cls, query="*", rows=6000):
+        url1 = 'https://%s/api/pub/collections/621/?q=%s&fq=object_type:%s&fl=*&fq=discover:BDR_PUBLIC&rows=%s' % (app_settings.BDR_SERVER, query, cls.OBJECT_TYPE, rows)
+        objects_json = json.loads(requests.get(url1).text)
+        num_objects = objects_json['items']['numFound']
+        if num_objects>rows: #only reload if we need to find more books
+            return cls.get_book_set(query, num_objects)
+        return [ cls(obj_data) for obj_data in objects_json['items']['docs'] ]
+
     @property
     def id(self):
         return self.data.get('pid','').split(":")[-1]
@@ -76,9 +88,16 @@ class BDRObject(object):
             return "; ".join(self.contributor_display)
         return "contributor(s) not available"
 
+from django.utils.datastructures import SortedDict
 # Book
 class Book(BDRObject):
+    OBJECT_TYPE = "implicit-set"
     CUTOFF = 80
+    SORT_OPTIONS = SortedDict([
+        ( 'authors', 'authors' ),
+        ( 'title', 'title' ),
+        ( 'date', 'date' ),
+    ])
 
     @property
     def thumbnail_url(self):
@@ -92,7 +111,6 @@ class Book(BDRObject):
 
     def title_cut(self):
         return bool(len(self.title()) > Book.CUTOFF)
-
 
     def port_url(self):
         return 'https://%s/viewers/readers/portfolio/%s/' % (app_settings.BDR_SERVER, self.pid)
