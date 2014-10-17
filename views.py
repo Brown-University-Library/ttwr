@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError
-from django.http import Http404
 from django.template import Context, loader, RequestContext
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
