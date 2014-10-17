@@ -32,6 +32,9 @@
 	 * SORT
 	 */
 	 
+.sort_active {
+	font-weight: bold;
+}
 ul#sort {
 	margin: -10px 10px 0;
 	padding: 0 0 55px;

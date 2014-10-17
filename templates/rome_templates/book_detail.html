@@ -1,68 +1,46 @@
-<head>
-<title>{{title}}</title>
-<script type="text/javascript">
-function expand_title(title,num)
-{
-    var spans=document.getElementsByTagName("span");
-    var i;
-    for(i=0;i<spans.length;i++)
-    {
-        if(spans[i].getAttribute("num")==num)
-        {
-            spans[i].innerHTML=title;
-            break;
-        }
-    }
-}
-</script>
-<style>
-.img_container_0:hover
-{
-    background:rgba(0,0,0,.1);
-}
-.img_container_1:hover
-{
-    background:rgba(0,255,0,.1);
-}
-</style>
-</head>
-{% load static from staticfiles %}
-<link rel="stylesheet" href="{%static usr_style%}" type="text/css" media="screen" />
+{% extends "rome_templates/base.html" %}
+{% block title %}{{book.title}}{% endblock %}
+{% block page_title %}The Theater that was Rome - Thumbnail Viewer{% endblock %}
 
-<body>
-    <div id="page_head">
-        <h1>
-            <span class="repeatbg"><span class="leftcap"><a href="../">The Theater that was Rome - Thumbnail Viewer</a></span></span>
-        </h1>
-        <div style="font-size:15px; margin-left:20px; width:95%; padding-top:15px; padding-bottom:10px">
-            {{page_documentation}}
-        </div>
-        <div id="cookietrail">
-            <ol>
-                <li>Book {{ pid }}</li><br />
-                <li>Title: {{ title }}</li><br />
-                <li>Author(s): {{ authors }}</li><br />
-                <li>Date: {{ date }}</li><br />
-                <li><a href="{{back_to_book_href}}">return to book list</a></li><br />
-            </ol>
-        </div>
+{% block extra_head %}
+  <style>
+    .img_container{
+      float:left;
+      margin-bottom:5px;
+      padding-bottom:5px;
+      text-align:center;
+    }
+    .img_container:hover {
+      background:rgba(0,0,0,.1);
+    }
+  </style>
+  
+{% endblock %}
+
+{% block intro %}
+  {{page_documentation}}
+  <div id="cookietrail">
+      <ol>
+          <li>Book {{ book.id }}</li><br />
+          <li>Title: <span class="dark">{{ book.title }}</span></li><br />
+          {% for atitle  in book.alt_titles %}
+            <li>Title (Alternative): <span class="dark">{{atitle}}</span></li><br />
+          {% endfor %}
+          <li>Author(s): <span class="dark">{{ book.authors }}</span></li><br />
+          <li>Date: <span class="dark">{{ book.date }}</span></li><br />
+          <li><a href="{{back_to_book_href}}">return to book list</a></li><br />
+      </ol>
+  </div>
+{% endblock %}
+
+{% block content %}
+  {% for page in book.pages %}
+    <div class="img_container">
+        <a href="{{ page.url }}" target="_blank">
+            <img src="{{ page.thumbnail_src }}" height="150px" style="margin:5px;padding-left:5px" />
+        </a>
+        <br />
+        Image {{forloop.counter}}
     </div>
-    <div id="page_body">
-        {% for thumbnail in thumbnails %}
-        <!-- <div class="img_container_{{thumbnail.has_metadata}}" style="float:left;margin-bottom:5px;padding-bottom:5px;text-align:center"> -->
-        <div class="img_container_0" style="float:left;margin-bottom:5px;padding-bottom:5px;text-align:center">
-            <a href={{ thumbnail.page_view }} target="_blank">
-                <!-- <img src={{ thumbnail.src }} height="150px" style="margin:5px;padding-left:5px" onerror="this.src='{{ thumbnail.src_alt }}'" /> -->
-                <img src={{ thumbnail.src }} height="150px" style="margin:5px;padding-left:5px" />
-            </a>
-            <br />
-            Image {{forloop.counter}}
-        </div>
-        {% endfor %}
-    </div>
-    <div id="footer">
-	    <span>&#169; {{cpydate}} Brown University</span>
-	    <a href="http://www.brown.edu"><img src="{%static brown_image%}" alt="Brown University" /></a>
-	    <a href="http://www.stg.brown.edu"><img src="{%static stg_image%}" alt="Scholarly Technology Group" /></a>
-	</div>
-</body>
+  {% endfor %}
+{% endblock %}

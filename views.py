@@ -37,22 +37,12 @@ def index(request):
     return HttpResponse(template.render(c))
 
 
-def _get_book_set():
-    num_books_estimate=6000 #should be plenty
-    url1 = 'https://%s/api/pub/collections/621/?q=object_type:implicit-set&fl=*&fq=discover:BDR_PUBLIC&rows=%s' % (BDR_SERVER, num_books_estimate)
-    books_json = json.loads(requests.get(url1).text)
-    num_books = books_json['items']['numFound']
-    if num_books>num_books_estimate: #only reload if we need to find more books
-        url2 = 'https://%s/api/pub/collections/621/?q=object_type:implicit-set&fl=*&fq=discover:BDR_PUBLIC&rows=%s' % (BDR_SERVER, num_books)
-        books_json = json.loads(requests.get(url2).text)
-    book_set = books_json['items']['docs']
-    return book_set
-
 def book_list(request):
-    book_set = _get_book_set()
-    book_list = [ Book(book_data) for book_data in book_set]
+    book_list = Book.search()
 
     sort_by = request.GET.get('sort_by', 'authors')
+    sort_by = Book.SORT_OPTIONS.get(sort_by, 'authors')
+
     book_list=sorted(book_list,key=methodcaller(sort_by))
 
     page = request.GET.get('page', 1)
@@ -63,59 +53,21 @@ def book_list(request):
                   {
                       'books': PAGIN.page(page),
                       'sorting': sort_by,
+                      'sort_options': Book.SORT_OPTIONS,
                   }
                  )
 
 
 def book_detail(request, book_pid):
-    book_list_page = request.GET.get('book_list_page', None)
-    template=loader.get_template('rome_templates/book_detail.html')
-    context=std_context()
-    if book_list_page:
-        context['back_to_book_href'] = u'%s?page=%s' % (reverse('books'), book_list_page)
-    else:
-        context['back_to_book_href'] = reverse('books')
-    context['page_documentation']='Browse through the pages in this book. Click on an image to explore the page further.'
-    context['pid']=book_pid
-    thumbnails=[]
-    json_uri='https://%s/api/pub/items/bdr:%s/?q=*&fl=*' % (BDR_SERVER, str(book_pid))
-    book_json = json.loads(requests.get(json_uri).text)
-    context['short_title']=book_json['brief']['title']
-    context['title'] = _get_full_title(book_json)
-    try:
-        author_list=book_json['contributor_display']
-        authors=""
-        for i in range(len(author_list)):
-            if i==len(author_list)-1:
-                authors+=author_list[i]
-            else:
-                authors+=author_list[i]+"; "
-        context['authors']=authors
-    except:
-        context['authors']="contributor(s) not available"
-    try:
-        context['date']=book_json['dateIssued'][0:4]
-    except:
-        try:
-            context['date']=book_json['dateCreated'][0:4]
-        except:
-            context['date']="n.d."
-    pages=book_json['relations']['hasPart']
-    for page in pages:
-        curr_thumb={}
-        curr_thumb['src']='https://%s/viewers/image/thumbnail/%s/' % (BDR_SERVER, page['pid'])
-        curr_thumb['det_img_view']='https://%s/viewers/image/zoom/bdr:%s/' % (BDR_SERVER, page['pid'])
-        curr_pid=page['pid'].split(":")[1]
-        if book_list_page:
-            curr_thumb['page_view'] = u'%s?book_list_page=%s' % (reverse('book_page_viewer', args=[book_pid, curr_pid]), book_list_page)
-        else:
-            curr_thumb['page_view'] = reverse('book_page_viewer', args=[book_pid, curr_pid])
-        thumbnails.append(curr_thumb)
-    context['thumbnails']=thumbnails
+    book_list_page = request.GET.get('book_list_page', 1)
+    return render(request,
+                  'rome_templates/book_detail.html',
+                  {
+                    'back_to_book_href': u'%s?page=%s' % (reverse('books'), book_list_page),
+                    'book': Book.get_or_404(pid="bdr:%s" % book_pid),
+                  }
+                 )
 
-    c=RequestContext(request,context)
-    #raise 404 if a certain book does not exist
-    return HttpResponse(template.render(c))
 
 def page_detail(request, page_pid, book_pid=None):
     #note: page_pid does not include 'bdr:'
