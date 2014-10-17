@@ -1,3 +1,4 @@
+from django.http import Http404
 from django.db import models
 from django.core.urlresolvers import reverse
 #from .app_settings import BDR_SERVER
@@ -50,7 +51,7 @@ class BDRObject(object):
         objects_json = json.loads(requests.get(url1).text)
         num_objects = objects_json['items']['numFound']
         if num_objects>rows: #only reload if we need to find more books
-            return cls.get_book_set(query, num_objects)
+            return cls.search(query, num_objects)
         return [ cls(obj_data) for obj_data in objects_json['items']['docs'] ]
 
 
@@ -59,8 +60,15 @@ class BDRObject(object):
         json_uri='https://%s/api/pub/items/%s/?q=*&fl=*' % (app_settings.BDR_SERVER, pid)
         resp = requests.get(json_uri)
         if not resp.ok:
-            raise Exception
-        return cls(json.loads(resp.text))
+             return cls()
+        return cls(data=json.loads(resp.text))
+
+    @classmethod
+    def get_or_404(cls, pid):
+        obj = cls.get(pid)
+        if not obj:
+            raise Http404
+        return obj
 
 
     @property

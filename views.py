@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError
+from django.http import Http404
 from django.template import Context, loader, RequestContext
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
@@ -64,7 +65,7 @@ def book_detail(request, book_pid):
                   'rome_templates/book_detail.html',
                   {
                     'back_to_book_href': u'%s?page=%s' % (reverse('books'), book_list_page),
-                    'book': Book.get(pid="bdr:%s" % book_pid),
+                    'book': Book.get_or_404(pid="bdr:%s" % book_pid),
                   }
                  )
 
