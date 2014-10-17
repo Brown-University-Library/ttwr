@@ -139,13 +139,12 @@ class Book(BDRObject):
 
 # Page
 class Page(BDRObject):
-    OBJECT_TYPE = "implicit-set"
+    OBJECT_TYPE = "implicit-set" #TODO change to something more page appropriate
 
     def embedded_viewer_src(self):
         return 'https://%s/viewers/image/zoom/%s/' % (app_settings.BDR_SERVER, self.pid)
 
     def url(self):
-        return reverse('book_page_viewer', args=[self.parent.pid, self.pid])
+        return reverse('book_page_viewer', args=[self.parent.id, self.id])
 
-        # TODO: write code...
 # Print

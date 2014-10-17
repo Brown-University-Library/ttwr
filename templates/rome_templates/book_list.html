@@ -30,17 +30,18 @@
     {% for book in books %}
       <li {% if forloop.first %}value="{{books.start_index}}"{% endif %}>
         <span id="{{books.number}}_{{forloop.counter}}">
+          Book {{ book.id }}
           <a href="{{ book.thumbnail_url }}?book_list_page={{books.number}}">
             [View]&nbsp
-          </a> <!--<br />-->
-          Author(s): <span class="dark">{{ book.authors }}</span><br />
+          </a> 
+          <br />
           Title: <span class="dark">{{ book.title }}</span><br />
+          Author(s): <span class="dark">{{ book.authors }}</span><br />
           {% for atitle  in book.alt_titles %}
-          Title (Alternative): {{atitle}} <br />
+          Title (Alternative): {{atitle}}<br />
           {% endfor %}
           Date: <span class="dark">{{ book.date }}</span><br />
           <a href={{ book.studio_uri }} target="_blank">[BDR View]</a><br />
-          Object ID: {{ book.id }}
         </span>
         <br />
         <br />

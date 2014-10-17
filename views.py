@@ -59,42 +59,15 @@ def book_list(request):
 
 
 def book_detail(request, book_pid):
-    book_list_page = request.GET.get('book_list_page', None)
-    template=loader.get_template('rome_templates/book_detail.html')
-    context=std_context()
-    if book_list_page:
-        context['back_to_book_href'] = u'%s?page=%s' % (reverse('books'), book_list_page)
-    else:
-        context['back_to_book_href'] = reverse('books')
-    context['page_documentation']='Browse through the pages in this book. Click on an image to explore the page further.'
-    context['pid']=book_pid
-    thumbnails=[]
-    #GET THE BOOK
-    book = Book.get(pid="bdr:%s" % book_pid)
-    book_json = book.data
-    #json_uri='https://%s/api/pub/items/bdr:%s/?q=*&fl=*' % (BDR_SERVER, str(book_pid))
-    #book_json = json.loads(requests.get(json_uri).text)
+    book_list_page = request.GET.get('book_list_page', 1)
+    return render(request,
+                  'rome_templates/book_detail.html',
+                  {
+                    'back_to_book_href': u'%s?page=%s' % (reverse('books'), book_list_page),
+                    'book': Book.get(pid="bdr:%s" % book_pid),
+                  }
+                 )
 
-    #Constuct info from book
-    context['book'] = book
-
-    #Construct info on Pages/thumbnails
-    pages=book_json['relations']['hasPart']
-    for page in pages:
-        curr_thumb={}
-        curr_thumb['src']='https://%s/viewers/image/thumbnail/%s/' % (BDR_SERVER, page['pid'])
-        curr_thumb['det_img_view']='https://%s/viewers/image/zoom/bdr:%s/' % (BDR_SERVER, page['pid'])
-        curr_pid=page['pid'].split(":")[1]
-        if book_list_page:
-            curr_thumb['page_view'] = u'%s?book_list_page=%s' % (reverse('book_page_viewer', args=[book_pid, curr_pid]), book_list_page)
-        else:
-            curr_thumb['page_view'] = reverse('book_page_viewer', args=[book_pid, curr_pid])
-        thumbnails.append(curr_thumb)
-    context['thumbnails']=thumbnails
-
-    c=RequestContext(request,context)
-    #raise 404 if a certain book does not exist
-    return HttpResponse(template.render(c))
 
 def page_detail(request, page_pid, book_pid=None):
     #note: page_pid does not include 'bdr:'
