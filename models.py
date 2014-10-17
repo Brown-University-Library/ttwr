@@ -30,8 +30,9 @@ class Essay(models.Model):
 
 # Non-Database Models
 class BDRObject(object):
-    def __init__(self, data=None):
+    def __init__(self, data=None, parent=None):
         self.data= data or {}
+        self.parent= parent
 
     def __nonzero__(self):
         return bool(self.data)
@@ -51,6 +52,16 @@ class BDRObject(object):
         if num_objects>rows: #only reload if we need to find more books
             return cls.get_book_set(query, num_objects)
         return [ cls(obj_data) for obj_data in objects_json['items']['docs'] ]
+
+
+    @classmethod
+    def get(cls, pid):
+        json_uri='https://%s/api/pub/items/%s/?q=*&fl=*' % (app_settings.BDR_SERVER, pid)
+        resp = requests.get(json_uri)
+        if not resp.ok:
+            raise Exception
+        return cls(json.loads(resp.text))
+
 
     @property
     def id(self):
@@ -88,6 +99,10 @@ class BDRObject(object):
             return "; ".join(self.contributor_display)
         return "contributor(s) not available"
 
+    @property
+    def thumbnail_src(self):
+        return 'https://%s/viewers/image/thumbnail/%s/' % (app_settings.BDR_SERVER, self.pid)
+
 from django.utils.datastructures import SortedDict
 # Book
 class Book(BDRObject):
@@ -118,6 +133,19 @@ class Book(BDRObject):
     def book_url(self):
         return 'https://%s/viewers/readers/set/%s/' % (app_settings.BDR_SERVER, self.pid)
 
+    def pages(self):
+        return [ Page(data=page_data, parent=self) for page_data in self.relations['hasPart'] ]
+
 
 # Page
+class Page(BDRObject):
+    OBJECT_TYPE = "implicit-set"
+
+    def embedded_viewer_src(self):
+        return 'https://%s/viewers/image/zoom/%s/' % (app_settings.BDR_SERVER, self.pid)
+
+    def url(self):
+        return reverse('book_page_viewer', args=[self.parent.pid, self.pid])
+
+        # TODO: write code...
 # Print

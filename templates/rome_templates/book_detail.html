@@ -1,5 +1,5 @@
 <head>
-<title>{{title}}</title>
+<title>{{book.title}}</title>
 <script type="text/javascript">
 function expand_title(title,num)
 {
@@ -39,21 +39,20 @@ function expand_title(title,num)
         </div>
         <div id="cookietrail">
             <ol>
-                <li>Book {{ pid }}</li><br />
-                <li>Title: {{ title }}</li><br />
-                <li>Author(s): {{ authors }}</li><br />
-                <li>Date: {{ date }}</li><br />
+                <li>Book {{ book.id }}</li><br />
+                <li>Title: {{ book.title }}</li><br />
+                <li>Author(s): {{ book.authors }}</li><br />
+                <li>Date: {{ book.date }}</li><br />
                 <li><a href="{{back_to_book_href}}">return to book list</a></li><br />
             </ol>
         </div>
     </div>
     <div id="page_body">
-        {% for thumbnail in thumbnails %}
-        <!-- <div class="img_container_{{thumbnail.has_metadata}}" style="float:left;margin-bottom:5px;padding-bottom:5px;text-align:center"> -->
+      
+        {% for page in book.pages %}
         <div class="img_container_0" style="float:left;margin-bottom:5px;padding-bottom:5px;text-align:center">
-            <a href={{ thumbnail.page_view }} target="_blank">
-                <!-- <img src={{ thumbnail.src }} height="150px" style="margin:5px;padding-left:5px" onerror="this.src='{{ thumbnail.src_alt }}'" /> -->
-                <img src={{ thumbnail.src }} height="150px" style="margin:5px;padding-left:5px" />
+            <a href={{ page.url }} target="_blank">
+                <img src={{ page.thumbnail_src }} height="150px" style="margin:5px;padding-left:5px" />
             </a>
             <br />
             Image {{forloop.counter}}

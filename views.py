@@ -69,28 +69,16 @@ def book_detail(request, book_pid):
     context['page_documentation']='Browse through the pages in this book. Click on an image to explore the page further.'
     context['pid']=book_pid
     thumbnails=[]
-    json_uri='https://%s/api/pub/items/bdr:%s/?q=*&fl=*' % (BDR_SERVER, str(book_pid))
-    book_json = json.loads(requests.get(json_uri).text)
-    context['short_title']=book_json['brief']['title']
-    context['title'] = _get_full_title(book_json)
-    try:
-        author_list=book_json['contributor_display']
-        authors=""
-        for i in range(len(author_list)):
-            if i==len(author_list)-1:
-                authors+=author_list[i]
-            else:
-                authors+=author_list[i]+"; "
-        context['authors']=authors
-    except:
-        context['authors']="contributor(s) not available"
-    try:
-        context['date']=book_json['dateIssued'][0:4]
-    except:
-        try:
-            context['date']=book_json['dateCreated'][0:4]
-        except:
-            context['date']="n.d."
+    #GET THE BOOK
+    book = Book.get(pid="bdr:%s" % book_pid)
+    book_json = book.data
+    #json_uri='https://%s/api/pub/items/bdr:%s/?q=*&fl=*' % (BDR_SERVER, str(book_pid))
+    #book_json = json.loads(requests.get(json_uri).text)
+
+    #Constuct info from book
+    context['book'] = book
+
+    #Construct info on Pages/thumbnails
     pages=book_json['relations']['hasPart']
     for page in pages:
         curr_thumb={}
