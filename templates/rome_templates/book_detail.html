@@ -22,11 +22,14 @@
   <div id="cookietrail">
       <ol>
           <li>Book {{ book.id }}</li><br />
+          <li>Author(s): <span class="dark">{{ book.authors }}</span></li><br />
           <li>Title: <span class="dark">{{ book.title }}</span></li><br />
           {% for atitle  in book.alt_titles %}
-            <li>Title (Alternative): <span class="dark">{{atitle}}</span></li><br />
+            {% if forloop.first %}
+            <li>Alternative Title(s):</li><br />
+            {% endif %}
+            <li>&nbsp;&nbsp;&nbsp;&nbsp;<span class="dark">{{atitle}}</span></li><br />
           {% endfor %}
-          <li>Author(s): <span class="dark">{{ book.authors }}</span></li><br />
           <li>Date: <span class="dark">{{ book.date }}</span></li><br />
           <li><a href="{{back_to_book_href}}">return to book list</a></li><br />
       </ol>

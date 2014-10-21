@@ -35,10 +35,13 @@
             [View]&nbsp
           </a> 
           <br />
-          Title: <span class="dark">{{ book.title }}</span><br />
           Author(s): <span class="dark">{{ book.authors }}</span><br />
+          Title: <span class="dark">{{ book.title }}</span><br />
           {% for atitle  in book.alt_titles %}
-          Title (Alternative): {{atitle}}<br />
+            {% if forloop.first %}
+            Alternative Title(s):<br />
+            {% endif %}
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="dark">{{atitle}}</span><br />
           {% endfor %}
           Date: <span class="dark">{{ book.date }}</span><br />
           <a href={{ book.studio_uri }} target="_blank">[BDR View]</a><br />
