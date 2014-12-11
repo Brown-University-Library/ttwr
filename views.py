@@ -379,7 +379,7 @@ def biography_detail(request, trp_id):
     context['bio'] = bio
     context['trp_id'] = trp_id
     context['books'] = bio.books()
-    context['prints'] = _prints_for_person([bio.name])
+    context['prints'] = bio.prints()
     context['pages_books'] = _pages_for_person([bio.name])
     return HttpResponse(template.render(context))
 
@@ -403,26 +403,6 @@ def _get_info_from_trp_id(trp_id):
         if data['response']['numFound'] > 0:
             return (data['response']['docs'][0]['pid'], data['response']['docs'][0]['name'])
     return None, None
-
-
-def _books_for_person(name):
-    num_books_estimate = 6000
-    query_uri = 'https://%s/api/pub/collections/621/?q=object_type:implicit-set+AND+name:"%s"&fl=*&rows=%s' % (BDR_SERVER, name[0], num_books_estimate)
-    books_json = json.loads(requests.get(query_uri).text)
-    books_set = books_json['items']['docs']
-    for book in books_set:
-        book['title'] = _get_full_title(book)
-    return books_set
-
-
-def _prints_for_person(name):
-    num_prints_estimate = 6000
-    query_uri = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:image-compound+AND+contributor:"%s"&rows=%s' % (BDR_SERVER, name[0], num_prints_estimate)
-    prints_json = json.loads(requests.get(query_uri).text)
-    prints_set = prints_json['response']['docs']
-    for p in prints_set:
-        p['title'] = _get_full_title(p)
-    return prints_set
 
 
 def _pages_for_person(name, group_amount=50):

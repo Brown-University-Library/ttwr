@@ -26,6 +26,9 @@ class Biography(models.Model):
     def books(self):
         return Book.search(query='name:"%s"' % self.name )
 
+    def prints(self):
+        return Print.search(query='contributor:"%s"' % self.name )
+
 class Essay(models.Model):
 
     slug = models.SlugField(max_length=254)
@@ -162,3 +165,6 @@ class Page(BDRObject):
 # Print
 class Print(Page):
     OBJECT_TYPE = "image-compound"
+
+    def url(self):
+        return reverse('specific_print', args=[self.id,])
