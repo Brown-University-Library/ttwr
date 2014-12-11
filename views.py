@@ -378,7 +378,7 @@ def biography_detail(request, trp_id):
     template = loader.get_template('rome_templates/biography_detail.html')
     context['bio'] = bio
     context['trp_id'] = trp_id
-    context['books'] = _books_for_person([bio.name])
+    context['books'] = bio.books()
     context['prints'] = _prints_for_person([bio.name])
     context['pages_books'] = _pages_for_person([bio.name])
     return HttpResponse(template.render(context))
