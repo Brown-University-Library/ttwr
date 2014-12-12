@@ -22,6 +22,13 @@ class Biography(models.Model):
         verbose_name_plural = 'biographies'
         ordering = ['name']
 
+
+    def books(self):
+        return Book.search(query='name:"%s"' % self.name )
+
+    def prints(self):
+        return Print.search(query='contributor:"%s"' % self.name )
+
 class Essay(models.Model):
 
     slug = models.SlugField(max_length=254)
@@ -50,9 +57,9 @@ class BDRObject(object):
         url1 = 'https://%s/api/pub/collections/621/?q=%s&fq=object_type:%s&fl=*&fq=discover:BDR_PUBLIC&rows=%s' % (app_settings.BDR_SERVER, query, cls.OBJECT_TYPE, rows)
         objects_json = json.loads(requests.get(url1).text)
         num_objects = objects_json['items']['numFound']
-        if num_objects>rows: #only reload if we need to find more books
+        if num_objects>rows: #only reload if we need to find more bdr_objects
             return cls.search(query, num_objects)
-        return [ cls(obj_data) for obj_data in objects_json['items']['docs'] ]
+        return [ cls(data=obj_data) for obj_data in objects_json['items']['docs'] ]
 
 
     @classmethod
@@ -156,3 +163,8 @@ class Page(BDRObject):
         return reverse('book_page_viewer', args=[self.parent.id, self.id])
 
 # Print
+class Print(Page):
+    OBJECT_TYPE = "image-compound"
+
+    def url(self):
+        return reverse('specific_print', args=[self.id,])
