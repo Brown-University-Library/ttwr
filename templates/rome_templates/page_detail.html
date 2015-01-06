@@ -49,7 +49,6 @@ function expand_title(title,num)
         </div>
     </div>
     <br />
-    {% if book_mode %}
     <div>
         <div id="image_span" style="float:left;padding-left:20px;width:60%;margin-bottom:20px;">
         <!--<a href="{{det_img_view_src}}"><img src={{ lowres_url }} width="100%"/></a>-->
@@ -112,15 +111,6 @@ function expand_title(title,num)
         </div>
         
     </div>
-    {% endif %}
-    {% if print_mode %}
-    <div id="page_body">
-        <!-- <span id="image_span" style="float:left;padding-left:20px;padding-right:20px;width:60%">
-        <a href="{{det_img_view_src}}"><img src="{{ lowres_url }}" width="100%"/></a>
-        </span> -->
-        <iframe src={{ det_img_view_src}} width="80%" height="800" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-    </div>
-    {% endif %}
     
     <div id="footer">
 	    <span>&#169; {{cpydate}} Brown University</span>

@@ -15,8 +15,7 @@ import xml.etree.ElementTree as ET
 import re
 import requests
 from .models import Biography, Essay, Book
-from .app_settings import BDR_SERVER
-import app_settings
+from .app_settings import BDR_SERVER, BOOKS_PER_PAGE
 
 
 def std_context(style="rome/css/prints.css",title="The Theater that was Rome"):
@@ -46,7 +45,7 @@ def book_list(request):
     book_list=sorted(book_list,key=methodcaller(sort_by))
 
     page = request.GET.get('page', 1)
-    PAGIN=Paginator(book_list, app_settings.BOOKS_PER_PAGE);
+    PAGIN=Paginator(book_list, BOOKS_PER_PAGE);
 
     return render(request,
                   'rome_templates/book_list.html',
@@ -135,62 +134,64 @@ def page_detail(request, page_pid, book_pid=None):
     context['has_annotations']=len(annotations)
     context['annotation_uris']=[]
     context['annotations']=[]
-    for i in range(len(annotations)):
-        annot_pid=annotations[i]['pid']
-        annot_studio_uri=annotations[i]['uri']
-        annot_xml_uri='https://%s/services/getMods/%s/' % (BDR_SERVER, annot_pid)
+    for annotation in annotations:
+        annot_xml_uri='https://%s/services/getMods/%s/' % (BDR_SERVER, annotation['pid'])
         context['annotation_uris'].append(annot_xml_uri)
-        curr_annot={}
-        curr_annot['xml_uri']=annot_xml_uri
-        curr_annot['has_elements'] = {'inscriptions':0, 'annotations':0, 'annotator':0, 'origin':0, 'title':0, 'abstract':0}
-
-        root = ET.fromstring(requests.get(annot_xml_uri).content)
-        for title in root.getiterator('{http://www.loc.gov/mods/v3}titleInfo'):
-            if title.attrib['lang']=='en':
-                curr_annot['title']=title[0].text
-                curr_annot['has_elements']['title'] += 1
-            else:
-                curr_annot['orig_title']=title[0].text
-                curr_annot['has_elements']['title'] += 1
-
-        curr_annot['names']=[]
-        for name in root.getiterator('{http://www.loc.gov/mods/v3}name'):
-            curr_annot['names'].append({
-                'name':name[0].text,
-                'role':name[1][0].text.capitalize() if(name[1][0].text) else "Contributor",
-                'trp_id': "%04d" % int(name.attrib['{http://www.w3.org/1999/xlink}href']),
-            })
-        for abstract in root.getiterator('{http://www.loc.gov/mods/v3}abstract'):
-            curr_annot['abstract']=abstract.text
-            curr_annot['has_elements']['abstract']=1
-        for origin in root.getiterator('{http://www.loc.gov/mods/v3}originInfo'):
-            curr_annot['origin']=origin[0].text
-            curr_annot['has_elements']['origin']=1
-        curr_annot['notes']=[]
-        curr_annot['inscriptions']=[]
-        curr_annot['annotations']=[]
-        curr_annot['annotator']=""
-        for note in root.getiterator('{http://www.loc.gov/mods/v3}note'):
-            curr_note={}
-            for att in note.attrib:
-                curr_note[att]=note.attrib[att]
-            if note.text:
-                curr_note['text']=note.text
-            if curr_note['type'].lower()=='inscription' and note.text:
-                curr_annot['inscriptions'].append(curr_note['displayLabel']+": "+curr_note['text'])
-                curr_annot['has_elements']['inscriptions']=1
-            elif curr_note['type'].lower()=='annotation' and note.text:
-                curr_annot['annotations'].append(curr_note['displayLabel']+": "+curr_note['text'])
-                curr_annot['has_elements']['annotations']=1
-            elif curr_note['type'].lower()=='resp' and note.text:
-                curr_annot['annotator']=note.text
-                curr_annot['has_elements']['annotator']=1
-            #curr_annot['notes'].append(curr_note)
+        annotation['xml_uri'] = annot_xml_uri
+        curr_annot = get_annotation_detail(annotation)
         context['annotations'].append(curr_annot)
 
     c=RequestContext(request,context)
     #raise 404 if a certain book does not exist
     return HttpResponse(template.render(c))
+
+
+def get_annotation_detail(annotation):
+    curr_annot={}
+    curr_annot['xml_uri'] = annotation['xml_uri']
+    curr_annot['has_elements'] = {'inscriptions':0, 'annotations':0, 'annotator':0, 'origin':0, 'title':0, 'abstract':0}
+
+    root = ET.fromstring(requests.get(curr_annot['xml_uri']).content)
+    for title in root.getiterator('{http://www.loc.gov/mods/v3}titleInfo'):
+        if title.attrib['lang']=='en':
+            curr_annot['title']=title[0].text
+        else:
+            curr_annot['orig_title']=title[0].text
+        curr_annot['has_elements']['title'] += 1
+
+    curr_annot['names']=[]
+    for name in root.getiterator('{http://www.loc.gov/mods/v3}name'):
+        curr_annot['names'].append({
+            'name':name[0].text,
+            'role':name[1][0].text.capitalize() if(name[1][0].text) else "Contributor",
+            'trp_id': "%04d" % int(name.attrib['{http://www.w3.org/1999/xlink}href']),
+        })
+    for abstract in root.getiterator('{http://www.loc.gov/mods/v3}abstract'):
+        curr_annot['abstract']=abstract.text
+        curr_annot['has_elements']['abstract']=1
+    for origin in root.getiterator('{http://www.loc.gov/mods/v3}originInfo'):
+        curr_annot['origin']=origin[0].text
+        curr_annot['has_elements']['origin']=1
+    curr_annot['notes']=[]
+    curr_annot['inscriptions']=[]
+    curr_annot['annotations']=[]
+    curr_annot['annotator']=""
+    for note in root.getiterator('{http://www.loc.gov/mods/v3}note'):
+        curr_note={}
+        for att in note.attrib:
+            curr_note[att]=note.attrib[att]
+        if note.text:
+            curr_note['text']=note.text
+        if curr_note['type'].lower()=='inscription' and note.text:
+            curr_annot['inscriptions'].append(curr_note['displayLabel']+": "+curr_note['text'])
+            curr_annot['has_elements']['inscriptions']=1
+        elif curr_note['type'].lower()=='annotation' and note.text:
+            curr_annot['annotations'].append(curr_note['displayLabel']+": "+curr_note['text'])
+            curr_annot['has_elements']['annotations']=1
+        elif curr_note['type'].lower()=='resp' and note.text:
+            curr_annot['annotator']=note.text
+            curr_annot['has_elements']['annotator']=1
+    return curr_annot
 
 
 def print_list(request):
@@ -285,6 +286,7 @@ def print_list(request):
     c=RequestContext(request,context)
     return HttpResponse(template.render(c))
 
+
 def print_detail(request, print_pid):
     template = loader.get_template('rome_templates/page_detail.html')
     context = std_context()
@@ -325,42 +327,17 @@ def print_detail(request, print_pid):
         except:
             context['date']="n.d."
 
-
     # annotations/metadata
     annotations=print_json['relations']['hasAnnotation']
     context['has_annotations']=len(annotations)
     context['annotation_uris']=[]
     context['annotations']=[]
-    for i in range(len(annotations)):
-        annot_pid=annotations[i]['pid']
-        annot_studio_uri=annotations[i]['uri']
-        annot_xml_uri='https://repository.library.brown.edu/fedora/objects/'+annot_pid+'/datastreams/content/content'
+    for annotation in annotations:
+        annot_xml_uri='https://%s/services/getMods/%s/' % (BDR_SERVER, annotation['pid'])
         context['annotation_uris'].append(annot_xml_uri)
-        curr_annot={}
-        curr_annot['xml_uri']=annot_xml_uri
-
-        root = ET.fromstring(requets.get(annot_xml_uri).content)
-        for title in root.getiterator('{http://www.loc.gov/mods/v3}titleInfo'):
-            if title.attrib['lang']=='en':
-                curr_annot['title']=title[0].text
-                break
-        curr_annot['names']=[]
-        for name in root.getiterator('{http://www.loc.gov/mods/v3}name'):
-            curr_annot['names'].append({'name':name[0].text, 'role':name[1][0].text})
-        for abstract in root.getiterator('{http://www.loc.gov/mods/v3}abstract'):
-            curr_annot['abstract']=abstract.text
-        for origin in root.getiterator('{http://www.loc.gov/mods/v3}originInfo'):
-            curr_annot['origin']=origin[0].text
-        curr_annot['notes']=[]
-        for note in root.getiterator('{http://www.loc.gov/mods/v3}note'):
-            curr_note=[]
-            for att in note.attrib:
-                curr_note.append(att+": "+note.attrib[att])
-            if note.text:
-                curr_note.append("text: "+note.text)
-            curr_annot['notes'].append(curr_note)
+        annotation['xml_uri'] = annot_xml_uri
+        curr_annot = get_annotation_detail(annotation)
         context['annotations'].append(curr_annot)
-
 
     c=RequestContext(request,context)
     #raise 404 if a certain print does not exist
