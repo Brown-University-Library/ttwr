@@ -333,7 +333,7 @@ def print_detail(request, print_pid):
     for i in range(len(annotations)):
         annot_pid=annotations[i]['pid']
         annot_studio_uri=annotations[i]['uri']
-        annot_xml_uri='https://repository.library.brown.edu/fedora/objects/'+annot_pid+'/datastreams/content/content'
+        annot_xml_uri='https://%s/services/getMods/%s/' % (BDR_SERVER, annot_pid)
         context['annotation_uris'].append(annot_xml_uri)
         curr_annot={}
         curr_annot['xml_uri']=annot_xml_uri
