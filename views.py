@@ -15,8 +15,7 @@ import xml.etree.ElementTree as ET
 import re
 import requests
 from .models import Biography, Essay, Book
-from .app_settings import BDR_SERVER
-import app_settings
+from .app_settings import BDR_SERVER, BOOKS_PER_PAGE
 
 
 def std_context(style="rome/css/prints.css",title="The Theater that was Rome"):
@@ -46,7 +45,7 @@ def book_list(request):
     book_list=sorted(book_list,key=methodcaller(sort_by))
 
     page = request.GET.get('page', 1)
-    PAGIN=Paginator(book_list, app_settings.BOOKS_PER_PAGE);
+    PAGIN=Paginator(book_list, BOOKS_PER_PAGE);
 
     return render(request,
                   'rome_templates/book_list.html',
