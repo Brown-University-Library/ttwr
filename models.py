@@ -172,8 +172,8 @@ class Print(Page):
 
 class Annotation(object):
 
-    def __init__(self, page_id, valid_form_data=None, mods_obj=None):
-        self._page_pid = u'bdr:%s' % page_id
+    def __init__(self, page_pid, valid_form_data=None, mods_obj=None):
+        self._page_pid = page_pid
         self._form_data = valid_form_data
         self._mods_obj = mods_obj
 

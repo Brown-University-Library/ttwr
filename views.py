@@ -524,7 +524,8 @@ def essay_detail(request, essay_slug):
     c=RequestContext(request,context)
     return HttpResponse(template.render(c))
 
-def new_annotation(request, page_pid):
+def new_annotation(request, book_id, page_id):
+    page_pid = '%s:%s' % (PID_PREFIX, page_id)
     from .forms import AnnotationForm
     if request.method == 'POST':
         form_data = request.POST.dict()
@@ -532,7 +533,7 @@ def new_annotation(request, page_pid):
         if form.is_valid():
             annotation = Annotation(page_pid, valid_form_data=form.cleaned_data)
             annotation.save_to_bdr()
-            return HttpResponseRedirect(reverse('page_viewer', kwargs={'page_pid': page_pid}))
+            return HttpResponseRedirect(reverse('book_page_viewer', kwargs={'book_id': book_id, 'page_id': page_id}))
     else:
         form = AnnotationForm()
 
