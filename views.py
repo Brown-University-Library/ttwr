@@ -14,7 +14,7 @@ from operator import itemgetter, methodcaller
 import xml.etree.ElementTree as ET
 import re
 import requests
-from .models import Biography, Essay, Book
+from .models import Biography, Essay, Book, Annotation
 from .app_settings import BDR_SERVER, BOOKS_PER_PAGE, PID_PREFIX
 
 
@@ -530,8 +530,8 @@ def new_annotation(request, page_pid):
         form_data = request.POST.dict()
         form = AnnotationForm(form_data)
         if form.is_valid():
-            #serialize out form data and post to BDR
-            print(form.to_mods_xml())
+            annotation = Annotation(page_pid, valid_form_data=form.cleaned_data)
+            annotation.save_to_bdr()
             return HttpResponseRedirect(reverse('page_viewer', kwargs={'page_pid': page_pid}))
     else:
         form = AnnotationForm()

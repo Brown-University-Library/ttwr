@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 from .  import app_settings
 import requests
 import json
+from bdrxml import mods
 
 # Database Models
 class Biography(models.Model):
@@ -167,3 +168,31 @@ class Print(Page):
 
     def url(self):
         return reverse('specific_print', args=[self.id,])
+
+
+class Annotation(object):
+
+    def __init__(self, page_id, valid_form_data=None, mods_obj=None):
+        self._page_pid = u'bdr:%s' % page_id
+        self._form_data = valid_form_data
+        self._mods_obj = mods_obj
+
+    def get_mods_obj(self):
+        if not self._mods_obj:
+            self._mods_obj = mods.make_mods()
+            self._mods_obj.title = self._form_data['title_orig']
+        return self._mods_obj
+
+    def to_mods_xml(self):
+        return self.get_mods_obj().serialize()
+
+    def _get_params(self):
+        params = {}
+        params['mods'] = json.dumps({u'xml_data': self.to_mods_xml()})
+        params['rels'] = json.dumps({u'isAnnotationOf': self._page_pid})
+        return params
+
+    def save_to_bdr(self):
+        params = self._get_params()
+        print(params)
+
