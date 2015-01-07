@@ -1,7 +1,6 @@
 from django.http import Http404
 from django.db import models
 from django.core.urlresolvers import reverse
-#from .app_settings import BDR_SERVER
 from .  import app_settings
 import requests
 import json
@@ -131,7 +130,7 @@ class Book(BDRObject):
 
     @property
     def thumbnail_url(self):
-        return  reverse('thumbnail_viewer', kwargs={'book_pid': self.id})
+        return  reverse('thumbnail_viewer', kwargs={'book_id': self.id})
 
     @property
     def short_title(self):
