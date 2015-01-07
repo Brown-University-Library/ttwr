@@ -156,10 +156,13 @@ def get_annotation_detail(annotation):
 
     root = ET.fromstring(requests.get(curr_annot['xml_uri']).content)
     for title in root.getiterator('{http://www.loc.gov/mods/v3}titleInfo'):
-        if title.attrib['lang']=='en':
-            curr_annot['title']=title[0].text
-        else:
-            curr_annot['orig_title']=title[0].text
+        try:
+            if title.attrib['lang']=='en':
+                curr_annot['title']=title[0].text
+            else:
+                curr_annot['orig_title']=title[0].text
+        except KeyError:
+            curr_annot['orig_title'] = title[0].text
         curr_annot['has_elements']['title'] += 1
 
     curr_annot['names']=[]
@@ -532,8 +535,13 @@ def new_annotation(request, book_id, page_id):
         form = AnnotationForm(form_data)
         if form.is_valid():
             annotation = Annotation(page_pid, valid_form_data=form.cleaned_data)
-            annotation.save_to_bdr()
-            return HttpResponseRedirect(reverse('book_page_viewer', kwargs={'book_id': book_id, 'page_id': page_id}))
+            try:
+                response = annotation.save_to_bdr()
+                logger.info('%s annotation added for %s' % (response['pid'], page_id))
+                return HttpResponseRedirect(reverse('book_page_viewer', kwargs={'book_id': book_id, 'page_id': page_id}))
+            except Exception as e:
+                logger.error('%s' % e)
+                return HttpResponseServerError('Internal server error. Check log.')
     else:
         form = AnnotationForm()
 

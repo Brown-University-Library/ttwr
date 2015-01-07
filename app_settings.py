@@ -11,3 +11,7 @@ def get_env_setting(setting):
 BDR_SERVER = get_env_setting('ROME_BDR_SERVER')
 PID_PREFIX = get_env_setting('ROME_PID_PREFIX')
 BOOKS_PER_PAGE = 20
+BDR_ADMIN = 'BROWN:DEPARTMENT:LIBRARY:REPOSITORY'
+BDR_IDENTITY = get_env_setting('ROME_BDR_IDENTITY')
+BDR_AUTH_CODE = get_env_setting('ROME_BDR_AUTH_CODE')
+BDR_POST_URL = 'https://%s/api/items/v1/' % BDR_SERVER

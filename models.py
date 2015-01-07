@@ -187,12 +187,18 @@ class Annotation(object):
         return self.get_mods_obj().serialize()
 
     def _get_params(self):
-        params = {}
+        params = {'identity': app_settings.BDR_IDENTITY, 'authorization_code': app_settings.BDR_AUTH_CODE}
         params['mods'] = json.dumps({u'xml_data': self.to_mods_xml()})
         params['rels'] = json.dumps({u'isAnnotationOf': self._page_pid})
+        params['rights'] = json.dumps({'parameters': {'owner_id': app_settings.BDR_ADMIN, 'additional_rights': '%s#modify+BDR_PUBLIC#discover,display' % app_settings.BDR_IDENTITY}})
+        params['content_model'] = 'Annotation'
         return params
 
     def save_to_bdr(self):
         params = self._get_params()
-        print(params)
+        r = requests.post(app_settings.BDR_POST_URL, data=params)
+        if r.ok:
+            return {'pid': json.loads(r.text)['pid']}
+        else:
+            raise Exception('error posting new annotation for %s: %s - %s' % (self._page_pid, r.status_code, r.content))
 
