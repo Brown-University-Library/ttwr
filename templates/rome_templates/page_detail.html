@@ -31,12 +31,12 @@ function expand_title(title,num)
                 <li>Author(s): <span class="dark">{{ authors }}</span></li><br />
                 <li>Date: <span class="dark">{{ date }}</span></li><br />
                 {% if book_mode %}
-                    <li>Book ID: <span class="dark">{{ pid }}</span></li><br />
+                    <li>Book ID: <span class="dark">{{ book_id }}</span></li><br />
                 {% endif %}
                 {% if print_mode %}
-                    <li>Print ID: <span class="dark">{{ pid }}</span></li><br />
+                    <li>Print ID: <span class="dark">{{ print_id }}</span></li><br />
                 {% endif %}
-                <li><a href="https://repository.library.brown.edu/studio/item/bdr:{{ pid }}/" target="_blank">[BDR View]</a></li><br />
+                <li><a href="{{ studio_url }}" target="_blank">[BDR View]</a></li><br />
                 {% if book_mode %}
                     <li><a href="{{back_to_thumbnail_href}}">return to thumbnail viewer</a></li><br />
                     <li><a href="{{back_to_book_href}}">return to book list</a></li><br />
@@ -51,7 +51,6 @@ function expand_title(title,num)
     <br />
     <div>
         <div id="image_span" style="float:left;padding-left:20px;width:60%;margin-bottom:20px;">
-        <!--<a href="{{det_img_view_src}}"><img src={{ lowres_url }} width="100%"/></a>-->
         <iframe src={{ det_img_view_src}} width="100%" height="800" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
         </div>
         <div id="metadata" style="float:left;width:36%">
@@ -69,7 +68,7 @@ function expand_title(title,num)
                 {% endif %}
                 
                 {% for name in annotation.names %}
-								<div style="margin-bottom:5px"><b>{{ name.role }}:</b> <a href="{% url 'person_detail' name.trp_id %}">{{ name.name }}</a></div>
+                    <div style="margin-bottom:5px"><b>{{ name.role }}:</b> <a href="{% url 'person_detail' name.trp_id %}">{{ name.name }}</a></div>
                 {% endfor %}
                 
                 {% if annotation.has_elements.abstract %}
