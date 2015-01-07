@@ -15,7 +15,7 @@ import xml.etree.ElementTree as ET
 import re
 import requests
 from .models import Biography, Essay, Book
-from .app_settings import BDR_SERVER, BOOKS_PER_PAGE
+from .app_settings import BDR_SERVER, BOOKS_PER_PAGE, PID_PREFIX
 
 
 def std_context(style="rome/css/prints.css",title="The Theater that was Rome"):

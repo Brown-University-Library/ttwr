@@ -16,9 +16,9 @@ urlpatterns = patterns('',
 
     #books, prints, and essays
     url(r'^books/$', views.book_list, name='books'),
-    url(r'^books/(?P<book_pid>\d+)/$', views.book_detail, name='thumbnail_viewer'),
-    url(r'^books/(?P<book_pid>\d+)/(?P<page_pid>\d+)/$', views.page_detail, name='book_page_viewer'),
-    url(r'^pages/(?P<page_pid>\d+)/$', views.page_detail, name='page_viewer'),
+    url(r'^books/(?P<book_id>\d+)/$', views.book_detail, name='thumbnail_viewer'),
+    url(r'^books/(?P<book_id>\d+)/(?P<page_id>\d+)/$', views.page_detail, name='book_page_viewer'),
+    url(r'^pages/(?P<page_id>\d+)/$', views.page_detail, name='page_viewer'),
     url(r'^pages/$', views.book_list, name='page_back_link'),
     url(r'^prints/$', views.print_list, name='prints'),
     url(r'^prints/(?P<print_id>\d+)/$', views.print_detail, name='specific_print'),
