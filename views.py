@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError, HttpResponseRedirect
 from django.template import Context, loader, RequestContext
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
@@ -175,7 +175,6 @@ def get_annotation_detail(annotation):
     for origin in root.getiterator('{http://www.loc.gov/mods/v3}originInfo'):
         curr_annot['origin']=origin[0].text
         curr_annot['has_elements']['origin']=1
-    curr_annot['notes']=[]
     curr_annot['inscriptions']=[]
     curr_annot['annotations']=[]
     curr_annot['annotator']=""
@@ -524,4 +523,18 @@ def essay_detail(request, essay_slug):
     context['essay_text'] = essay.text
     c=RequestContext(request,context)
     return HttpResponse(template.render(c))
+
+def new_annotation(request, page_pid):
+    from .forms import AnnotationForm
+    if request.method == 'POST':
+        form_data = request.POST.dict()
+        form = AnnotationForm(form_data)
+        if form.is_valid():
+            #serialize out form data and post to BDR
+            print(form.to_mods_xml())
+            return HttpResponseRedirect(reverse('page_viewer', kwargs={'page_pid': page_pid}))
+    else:
+        form = AnnotationForm()
+
+    return render(request, 'rome_templates/new_annotation.html', {'form': form})
 
