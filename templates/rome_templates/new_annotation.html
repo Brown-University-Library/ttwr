@@ -1,3 +1,4 @@
+{% load static %}
 <html>
   <head>
     <style>
@@ -18,9 +19,28 @@
     <div id="form_data">
       <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
        {{ form.as_p }}
-       {{ person_formset }}
+       <div id="person_formset">
+       <table>
+       {{ person_formset.as_table }}
+       </table>
+       </div>
+       <input type="button" value="Add Another Person" id="add_more">
        <p><input type="submit" value="Submit" /></p>
       </form>
     </div>
+    <div id="empty_form" style="display:none">
+      <table>
+        {{ person_formset.empty_form.as_table }}
+      </table>
+    </div>
+  <script src="{% static 'rome/js/jquery-1.11.1.min.js' %}" type="text/javascript"></script>
+  <script>
+    //modified from here: http://stackoverflow.com/questions/501719/dynamically-adding-a-form-to-a-django-formset-with-ajax
+    $('#add_more').click(function() {
+        var form_idx = $('#id_form-TOTAL_FORMS').val();
+        $('#person_formset').append($('#empty_form').html().replace(/__prefix__/g, form_idx));
+        $('#id_form-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+    });
+  </script>
   </body>
 </html>
