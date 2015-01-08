@@ -17,6 +17,7 @@ BDR_ADMIN = 'BROWN:DEPARTMENT:LIBRARY:REPOSITORY'
 BDR_IDENTITY = get_env_setting('ROME_BDR_IDENTITY')
 BDR_AUTH_CODE = get_env_setting('ROME_BDR_AUTH_CODE')
 BDR_POST_URL = 'https://%s/api/items/v1/' % BDR_SERVER
+XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink'
 
 def setup_logger(filename):
     '''Configures a logger to write to console & <filename>.'''

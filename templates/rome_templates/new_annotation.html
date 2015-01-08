@@ -18,7 +18,8 @@
     <div id="form_data">
       <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
        {{ form.as_p }}
-       <input type="submit" value="Submit" />
+       {{ person_formset }}
+       <p><input type="submit" value="Submit" /></p>
       </form>
     </div>
   </body>

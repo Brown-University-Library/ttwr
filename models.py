@@ -172,15 +172,30 @@ class Print(Page):
 
 class Annotation(object):
 
-    def __init__(self, page_pid, valid_form_data=None, mods_obj=None):
+    @classmethod
+    def from_form_data(cls, page_pid, form_data, person_formset_data):
+        return cls(page_pid, form_data=form_data, person_formset_data=person_formset_data)
+
+    def __init__(self, page_pid, form_data=None, person_formset_data=None, mods_obj=None):
         self._page_pid = page_pid
-        self._form_data = valid_form_data
+        self._form_data = form_data
+        self._person_formset_data = [p for p in person_formset_data if p]
         self._mods_obj = mods_obj
 
     def get_mods_obj(self):
         if not self._mods_obj:
             self._mods_obj = mods.make_mods()
             self._mods_obj.title = self._form_data['title_orig']
+            if self._person_formset_data:
+                for p in self._person_formset_data:
+                    name = mods.Name()
+                    np = mods.NamePart(text=p['name'])
+                    name.name_parts.append(np)
+                    role = mods.Role(text=p['role'])
+                    name.roles.append(role)
+                    href = '{%s}href' % app_settings.XLINK_NAMESPACE
+                    name.node.set(href, p['trp_id'])
+                    self._mods_obj.names.append(name)
         return self._mods_obj
 
     def to_mods_xml(self):

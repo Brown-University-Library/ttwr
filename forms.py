@@ -17,10 +17,15 @@ class EssayModelForm(forms.ModelForm):
         model = Essay
 
 
+class PersonForm(forms.Form):
+    name = forms.CharField()
+    role = forms.CharField()
+    trp_id = forms.CharField()
+
+
 class AnnotationForm(forms.Form):
     title_orig = forms.CharField()
     title_orig_lang = forms.CharField(required=False)
     title_english = forms.CharField(required=False)
     abstract = forms.CharField(required=False)
-    people = forms.ModelMultipleChoiceField(queryset=Biography.objects, required=False)
 
