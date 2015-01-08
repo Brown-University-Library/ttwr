@@ -1,4 +1,6 @@
 import os
+import logging
+import logging.handlers
 
 from django.core.exceptions import ImproperlyConfigured
 def get_env_setting(setting):
@@ -15,3 +17,17 @@ BDR_ADMIN = 'BROWN:DEPARTMENT:LIBRARY:REPOSITORY'
 BDR_IDENTITY = get_env_setting('ROME_BDR_IDENTITY')
 BDR_AUTH_CODE = get_env_setting('ROME_BDR_AUTH_CODE')
 BDR_POST_URL = 'https://%s/api/items/v1/' % BDR_SERVER
+
+def setup_logger(filename):
+    '''Configures a logger to write to console & <filename>.'''
+    formatter = logging.Formatter(u'%(asctime)s - %(levelname)s - %(message)s')
+    logger = logging.getLogger(u'logger')
+    logger.setLevel(logging.DEBUG)
+    file_handler = logging.handlers.RotatingFileHandler(filename, maxBytes=5000000, backupCount=5)
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+    return logger
+
+app_dir = os.path.dirname(os.path.abspath(__file__))
+logger = setup_logger(os.path.join(app_dir, 'ttwr.log'))
+

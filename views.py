@@ -8,14 +8,12 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render
 
 import json
-import logging
-logger = logging.getLogger(__name__)
 from operator import itemgetter, methodcaller
 import xml.etree.ElementTree as ET
 import re
 import requests
 from .models import Biography, Essay, Book, Annotation
-from .app_settings import BDR_SERVER, BOOKS_PER_PAGE, PID_PREFIX
+from .app_settings import BDR_SERVER, BOOKS_PER_PAGE, PID_PREFIX, logger
 
 
 def std_context(style="rome/css/prints.css",title="The Theater that was Rome"):
