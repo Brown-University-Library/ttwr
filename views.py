@@ -528,13 +528,15 @@ def essay_detail(request, essay_slug):
 
 def new_annotation(request, book_id, page_id):
     page_pid = '%s:%s' % (PID_PREFIX, page_id)
-    from .forms import AnnotationForm, PersonForm
+    from .forms import AnnotationForm, PersonForm, InscriptionForm
     PersonFormSet = formset_factory(PersonForm)
+    InscriptionFormSet = formset_factory(InscriptionForm)
     if request.method == 'POST':
         form = AnnotationForm(request.POST)
         person_formset = PersonFormSet(request.POST)
-        if form.is_valid() and person_formset.is_valid():
-            annotation = Annotation.from_form_data(page_pid, form.cleaned_data, person_formset.cleaned_data)
+        inscription_formset = InscriptionFormSet(request.POST)
+        if form.is_valid() and person_formset.is_valid() and inscription_formset.is_valid():
+            annotation = Annotation.from_form_data(page_pid, form.cleaned_data, person_formset.cleaned_data, inscription_formset.cleaned_data)
             try:
                 response = annotation.save_to_bdr()
                 logger.info('%s annotation added for %s' % (response['pid'], page_id))
@@ -543,9 +545,11 @@ def new_annotation(request, book_id, page_id):
                 logger.error('%s' % e)
                 return HttpResponseServerError('Internal server error. Check log.')
     else:
+        inscription_formset = InscriptionFormSet()
         person_formset = PersonFormSet()
         form = AnnotationForm()
 
     image_link = 'https://%s/viewers/image/zoom/%s' % (BDR_SERVER, page_pid)
-    return render(request, 'rome_templates/new_annotation.html', {'form': form, 'person_formset': person_formset, 'image_link': image_link})
+    return render(request, 'rome_templates/new_annotation.html',
+            {'form': form, 'person_formset': person_formset, 'inscription_formset': inscription_formset, 'image_link': image_link})
 

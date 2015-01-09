@@ -22,9 +22,15 @@ class PersonForm(forms.Form):
     role = forms.CharField()
 
 
+class InscriptionForm(forms.Form):
+    location = forms.CharField()
+    text = forms.CharField()
+
+
 class AnnotationForm(forms.Form):
     title_orig = forms.CharField()
     title_orig_lang = forms.CharField(required=False)
     title_english = forms.CharField(required=False)
-    abstract = forms.CharField(required=False)
+    genre = forms.CharField(required=False)
+    abstract = forms.CharField(required=False, widget=forms.Textarea)
 

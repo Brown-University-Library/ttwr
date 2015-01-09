@@ -176,13 +176,14 @@ class Print(Page):
 class Annotation(object):
 
     @classmethod
-    def from_form_data(cls, page_pid, form_data, person_formset_data):
-        return cls(page_pid, form_data=form_data, person_formset_data=person_formset_data)
+    def from_form_data(cls, page_pid, form_data, person_formset_data, inscription_formset_data):
+        return cls(page_pid, form_data=form_data, person_formset_data=person_formset_data, inscription_formset_data=inscription_formset_data)
 
-    def __init__(self, page_pid, form_data=None, person_formset_data=None, mods_obj=None):
+    def __init__(self, page_pid, form_data=None, person_formset_data=None, inscription_formset_data=None, mods_obj=None):
         self._page_pid = page_pid
         self._form_data = form_data
         self._person_formset_data = [p for p in person_formset_data if p]
+        self._inscription_formset_data = [i for i in inscription_formset_data if i]
         self._mods_obj = mods_obj
 
     def get_mods_obj(self):
@@ -199,6 +200,12 @@ class Annotation(object):
                     href = '{%s}href' % app_settings.XLINK_NAMESPACE
                     name.node.set(href, p['person'].trp_id)
                     self._mods_obj.names.append(name)
+            if self._inscription_formset_data:
+                for i in self._inscription_formset_data:
+                    note = mods.Note(text=i['text'])
+                    note.type = 'inscription'
+                    note.label = i['location']
+                    self._mods_obj.notes.append(note)
         return self._mods_obj
 
     def to_mods_xml(self):
