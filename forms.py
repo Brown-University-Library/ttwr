@@ -18,9 +18,8 @@ class EssayModelForm(forms.ModelForm):
 
 
 class PersonForm(forms.Form):
-    name = forms.CharField()
+    person = forms.ModelChoiceField(queryset=Biography.objects)
     role = forms.CharField()
-    trp_id = forms.CharField()
 
 
 class AnnotationForm(forms.Form):

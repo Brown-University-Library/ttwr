@@ -29,6 +29,9 @@ class Biography(models.Model):
     def prints(self):
         return Print.search(query='contributor:"%s"' % self.name )
 
+    def __unicode__(self):
+        return u'%s' % self.name
+
 class Essay(models.Model):
 
     slug = models.SlugField(max_length=254)
@@ -189,12 +192,12 @@ class Annotation(object):
             if self._person_formset_data:
                 for p in self._person_formset_data:
                     name = mods.Name()
-                    np = mods.NamePart(text=p['name'])
+                    np = mods.NamePart(text=p['person'].name)
                     name.name_parts.append(np)
                     role = mods.Role(text=p['role'])
                     name.roles.append(role)
                     href = '{%s}href' % app_settings.XLINK_NAMESPACE
-                    name.node.set(href, p['trp_id'])
+                    name.node.set(href, p['person'].trp_id)
                     self._mods_obj.names.append(name)
         return self._mods_obj
 
