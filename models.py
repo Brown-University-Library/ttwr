@@ -32,12 +32,22 @@ class Biography(models.Model):
     def __unicode__(self):
         return u'%s' % self.name
 
+
 class Essay(models.Model):
 
     slug = models.SlugField(max_length=254)
     author = models.CharField(max_length=254)
     title = models.CharField(max_length=254)
     text = models.TextField()
+
+
+class Genre(models.Model):
+    text = models.CharField(max_length=50, unique=True)
+    external_id = models.CharField(max_length=50, blank=True)
+
+    def __unicode__(self):
+        return unicode(self.text)
+
 
 # Non-Database Models
 class BDRObject(object):
