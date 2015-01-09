@@ -199,7 +199,21 @@ class Annotation(object):
     def get_mods_obj(self):
         if not self._mods_obj:
             self._mods_obj = mods.make_mods()
-            self._mods_obj.title = self._form_data['title_orig']
+            original_title = mods.TitleInfo()
+            original_title.title = self._form_data['original_title']
+            if self._form_data['original_title_language']:
+                original_title.node.set('lang', self._form_data['original_title_language'])
+            self._mods_obj.title_info_list.append(original_title)
+            if self._form_data['english_title']:
+                english_title = mods.TitleInfo()
+                english_title.title = self._form_data['english_title']
+                english_title.node.set('lang', 'en')
+                self._mods_obj.title_info_list.append(english_title)
+            if self._form_data['genre']:
+                self._mods_obj.genres.append(mods.Genre(text=self._form_data['genre'].text))
+            if self._form_data['abstract']:
+                self._mods_obj.create_abstract()
+                self._mods_obj.abstract.text = self._form_data['abstract']
             if self._person_formset_data:
                 for p in self._person_formset_data:
                     name = mods.Name()
