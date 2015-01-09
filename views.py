@@ -7,6 +7,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
+from django.template.response import SimpleTemplateResponse
+from django.utils.html import escape, escapejs
 
 import json
 from operator import itemgetter, methodcaller
@@ -552,4 +554,19 @@ def new_annotation(request, book_id, page_id):
     image_link = 'https://%s/viewers/image/zoom/%s' % (BDR_SERVER, page_pid)
     return render(request, 'rome_templates/new_annotation.html',
             {'form': form, 'person_formset': person_formset, 'inscription_formset': inscription_formset, 'image_link': image_link})
+
+def new_genre(request):
+    from .forms import NewGenreForm
+    if request.method == 'POST':
+        form = NewGenreForm(request.POST)
+        if form.is_valid():
+            genre = form.save()
+            return SimpleTemplateResponse('rome_templates/popup_response.html', {
+                            'pk_value': escape(genre._get_pk_val()),
+                            'value': escape(genre.serializable_value(genre._meta.pk.attname)),
+                            'obj': escapejs(genre)})
+    else:
+        form = NewGenreForm()
+
+    return render(request, 'rome_templates/new_genre.html', {'form': form})
 

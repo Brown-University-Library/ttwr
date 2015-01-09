@@ -26,4 +26,6 @@ urlpatterns = patterns('',
     url(r'^people/$', views.biography_list, name='people'),
     url(r'^people/(?P<trp_id>\d+)/$', views.biography_detail, name='person_detail'),
     url(r'^people/(?P<trp_id>\d+)/TEI/$', views.person_detail_tei, name='person_detail_tei'),
+
+    url(r'^genres/new/$', views.new_genre, name='new_genre'),
 )

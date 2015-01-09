@@ -1,6 +1,7 @@
 from django import forms
 from pagedown.widgets import AdminPagedownWidget
 from .models import Biography, Essay, Genre
+from .widgets import AddAnotherWidgetWrapper
 
 
 class BiographyModelForm(forms.ModelForm):
@@ -31,6 +32,12 @@ class AnnotationForm(forms.Form):
     original_title = forms.CharField()
     original_title_language = forms.CharField(required=False)
     english_title = forms.CharField(required=False)
-    genre = forms.ModelChoiceField(required=False, queryset=Genre.objects)
+    genre = forms.ModelChoiceField(required=False, queryset=Genre.objects.all().order_by('text'),
+            widget=AddAnotherWidgetWrapper(forms.Select(), Genre))
     abstract = forms.CharField(required=False, widget=forms.Textarea)
+
+
+class NewGenreForm(forms.ModelForm):
+    class Meta:
+        model = Genre
 
