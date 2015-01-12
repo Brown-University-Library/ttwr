@@ -74,7 +74,6 @@ def page_detail(request, page_id, book_id=None):
     page_pid = u'%s:%s' % (PID_PREFIX, page_id)
     template=loader.get_template('rome_templates/page_detail.html')
     context=std_context()
-
     if book_id:
         book_pid = '%s:%s' % (PID_PREFIX, book_id)
     else:
@@ -82,6 +81,10 @@ def page_detail(request, page_id, book_id=None):
         book_id = book_pid.split(':')[-1]
     if not book_id:
         return HttpResponseNotFound('Book for this page not found.')
+
+    context['user'] = request.user
+    if request.user.is_authenticated():
+        context['create_annotation_link'] = reverse('new_annotation', kwargs={'book_id':book_id, 'page_id':page_id})
 
     book_list_page = request.GET.get('book_list_page', None)
 
