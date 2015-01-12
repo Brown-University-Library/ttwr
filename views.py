@@ -540,7 +540,11 @@ def new_annotation(request, book_id, page_id):
         person_formset = PersonFormSet(request.POST)
         inscription_formset = InscriptionFormSet(request.POST)
         if form.is_valid() and person_formset.is_valid() and inscription_formset.is_valid():
-            annotation = Annotation.from_form_data(page_pid, form.cleaned_data, person_formset.cleaned_data, inscription_formset.cleaned_data)
+            if request.user.first_name:
+                annotator = u'%s %s' % (request.user.first_name, request.user.last_name)
+            else:
+                annotator = u'%s' % request.user.username
+            annotation = Annotation.from_form_data(page_pid, annotator, form.cleaned_data, person_formset.cleaned_data, inscription_formset.cleaned_data)
             try:
                 response = annotation.save_to_bdr()
                 logger.info('%s annotation added for %s' % (response['pid'], page_id))
