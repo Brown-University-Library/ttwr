@@ -16,6 +16,7 @@ from operator import itemgetter, methodcaller
 import xml.etree.ElementTree as ET
 import re
 import requests
+import pycountry
 from .models import Biography, Essay, Book, Annotation
 from .app_settings import BDR_SERVER, BOOKS_PER_PAGE, PID_PREFIX, logger
 
@@ -576,4 +577,18 @@ def new_genre(request):
         form = NewGenreForm()
 
     return render(request, 'rome_templates/new_genre.html', {'form': form})
+
+
+def languages(request):
+    #json list of all the language names and codes
+    #(try to use the 2-letter code, but fall back to 3-letter if needed)
+    langs = []
+    for language in pycountry.languages:
+        l = {'name': language.name}
+        try:
+            l['code'] = language.alpha2
+        except AttributeError:
+            l['code'] = language.bibliographic
+        langs.append(l)
+    return HttpResponse(json.dumps(langs), content_type='application/json')
 
