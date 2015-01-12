@@ -5,10 +5,11 @@ from django.forms.formsets import formset_factory
 from django.template import Context, loader, RequestContext
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.shortcuts import render
 from django.template.response import SimpleTemplateResponse
 from django.utils.html import escape, escapejs
+from django.contrib.auth.decorators import login_required
 
 import json
 from operator import itemgetter, methodcaller
@@ -528,6 +529,7 @@ def essay_detail(request, essay_slug):
     c=RequestContext(request,context)
     return HttpResponse(template.render(c))
 
+@login_required(login_url=reverse_lazy('rome_login'))
 def new_annotation(request, book_id, page_id):
     page_pid = '%s:%s' % (PID_PREFIX, page_id)
     from .forms import AnnotationForm, PersonForm, InscriptionForm
@@ -555,6 +557,7 @@ def new_annotation(request, book_id, page_id):
     return render(request, 'rome_templates/new_annotation.html',
             {'form': form, 'person_formset': person_formset, 'inscription_formset': inscription_formset, 'image_link': image_link})
 
+@login_required(login_url=reverse_lazy('rome_login'))
 def new_genre(request):
     from .forms import NewGenreForm
     if request.method == 'POST':

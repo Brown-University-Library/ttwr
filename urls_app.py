@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 
 from django.conf.urls.defaults import patterns, include, url
-from rome_app import views
 from django.contrib import admin
+from django.contrib.auth.views import login
+from rome_app import views
 
 
 urlpatterns = patterns('',
-    #admin
+    #admin/user
     url(r'^admin/', include(admin.site.urls), name='admin'),
+    url(r'^login/$', login, {'template_name': 'rome_templates/login.html'}, name='rome_login'),
 
     #index and static
     url(r'^$', views.index, name='index'),
