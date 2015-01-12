@@ -243,7 +243,7 @@ class Annotation(object):
         params = {'identity': app_settings.BDR_IDENTITY, 'authorization_code': app_settings.BDR_AUTH_CODE}
         params['mods'] = json.dumps({u'xml_data': self.to_mods_xml()})
         params['rels'] = json.dumps({u'isAnnotationOf': self._page_pid})
-        params['rights'] = json.dumps({'parameters': {'owner_id': app_settings.BDR_ADMIN, 'additional_rights': '%s#modify+BDR_PUBLIC#discover,display' % app_settings.BDR_IDENTITY}})
+        params['rights'] = json.dumps({'parameters': {'owner_id': app_settings.BDR_IDENTITY, 'additional_rights': 'BDR_PUBLIC#display'}})
         params['content_model'] = 'Annotation'
         return params
 
