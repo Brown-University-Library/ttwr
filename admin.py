@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
-from .models import Biography, Essay
+from .models import Biography, Essay, Genre
 from .forms import BiographyModelForm, EssayModelForm
 
 class BiographyAdmin(admin.ModelAdmin):
@@ -11,6 +11,10 @@ class EssayAdmin(admin.ModelAdmin):
     list_display = ['id', 'author', 'title']
     form = EssayModelForm
 
+class GenreAdmin(admin.ModelAdmin):
+    list_display = ['id', 'text', 'external_id']
+
 admin.site.register(Biography, BiographyAdmin)
 admin.site.register(Essay, EssayAdmin)
+admin.site.register(Genre, GenreAdmin)
 

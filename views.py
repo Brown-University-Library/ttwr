@@ -1,21 +1,23 @@
 # -*- coding: utf-8 -*-
 
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError, HttpResponseRedirect
+from django.forms.formsets import formset_factory
 from django.template import Context, loader, RequestContext
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.shortcuts import render
+from django.template.response import SimpleTemplateResponse
+from django.utils.html import escape, escapejs
+from django.contrib.auth.decorators import login_required
 
 import json
-import logging
-logger = logging.getLogger(__name__)
 from operator import itemgetter, methodcaller
 import xml.etree.ElementTree as ET
 import re
 import requests
-from .models import Biography, Essay, Book
-from .app_settings import BDR_SERVER, BOOKS_PER_PAGE, PID_PREFIX
+from .models import Biography, Essay, Book, Annotation
+from .app_settings import BDR_SERVER, BOOKS_PER_PAGE, PID_PREFIX, logger
 
 
 def std_context(style="rome/css/prints.css",title="The Theater that was Rome"):
@@ -156,10 +158,13 @@ def get_annotation_detail(annotation):
 
     root = ET.fromstring(requests.get(curr_annot['xml_uri']).content)
     for title in root.getiterator('{http://www.loc.gov/mods/v3}titleInfo'):
-        if title.attrib['lang']=='en':
-            curr_annot['title']=title[0].text
-        else:
-            curr_annot['orig_title']=title[0].text
+        try:
+            if title.attrib['lang']=='en':
+                curr_annot['title']=title[0].text
+            else:
+                curr_annot['orig_title']=title[0].text
+        except KeyError:
+            curr_annot['orig_title'] = title[0].text
         curr_annot['has_elements']['title'] += 1
 
     curr_annot['names']=[]
@@ -175,7 +180,6 @@ def get_annotation_detail(annotation):
     for origin in root.getiterator('{http://www.loc.gov/mods/v3}originInfo'):
         curr_annot['origin']=origin[0].text
         curr_annot['has_elements']['origin']=1
-    curr_annot['notes']=[]
     curr_annot['inscriptions']=[]
     curr_annot['annotations']=[]
     curr_annot['annotator']=""
@@ -524,4 +528,52 @@ def essay_detail(request, essay_slug):
     context['essay_text'] = essay.text
     c=RequestContext(request,context)
     return HttpResponse(template.render(c))
+
+@login_required(login_url=reverse_lazy('rome_login'))
+def new_annotation(request, book_id, page_id):
+    page_pid = '%s:%s' % (PID_PREFIX, page_id)
+    from .forms import AnnotationForm, PersonForm, InscriptionForm
+    PersonFormSet = formset_factory(PersonForm)
+    InscriptionFormSet = formset_factory(InscriptionForm)
+    if request.method == 'POST':
+        form = AnnotationForm(request.POST)
+        person_formset = PersonFormSet(request.POST)
+        inscription_formset = InscriptionFormSet(request.POST)
+        if form.is_valid() and person_formset.is_valid() and inscription_formset.is_valid():
+            if request.user.first_name:
+                annotator = u'%s %s' % (request.user.first_name, request.user.last_name)
+            else:
+                annotator = u'%s' % request.user.username
+            annotation = Annotation.from_form_data(page_pid, annotator, form.cleaned_data, person_formset.cleaned_data, inscription_formset.cleaned_data)
+            try:
+                response = annotation.save_to_bdr()
+                logger.info('%s annotation added for %s' % (response['pid'], page_id))
+                return HttpResponseRedirect(reverse('book_page_viewer', kwargs={'book_id': book_id, 'page_id': page_id}))
+            except Exception as e:
+                logger.error('%s' % e)
+                return HttpResponseServerError('Internal server error. Check log.')
+    else:
+        inscription_formset = InscriptionFormSet()
+        person_formset = PersonFormSet()
+        form = AnnotationForm()
+
+    image_link = 'https://%s/viewers/image/zoom/%s' % (BDR_SERVER, page_pid)
+    return render(request, 'rome_templates/new_annotation.html',
+            {'form': form, 'person_formset': person_formset, 'inscription_formset': inscription_formset, 'image_link': image_link})
+
+@login_required(login_url=reverse_lazy('rome_login'))
+def new_genre(request):
+    from .forms import NewGenreForm
+    if request.method == 'POST':
+        form = NewGenreForm(request.POST)
+        if form.is_valid():
+            genre = form.save()
+            return SimpleTemplateResponse('rome_templates/popup_response.html', {
+                            'pk_value': escape(genre._get_pk_val()),
+                            'value': escape(genre.serializable_value(genre._meta.pk.attname)),
+                            'obj': escapejs(genre)})
+    else:
+        form = NewGenreForm()
+
+    return render(request, 'rome_templates/new_genre.html', {'form': form})
 

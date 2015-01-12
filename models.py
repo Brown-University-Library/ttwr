@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 from .  import app_settings
 import requests
 import json
+from bdrxml import mods
 
 # Database Models
 class Biography(models.Model):
@@ -28,12 +29,25 @@ class Biography(models.Model):
     def prints(self):
         return Print.search(query='contributor:"%s"' % self.name )
 
+    def __unicode__(self):
+        return u'%s' % self.name
+
+
 class Essay(models.Model):
 
     slug = models.SlugField(max_length=254)
     author = models.CharField(max_length=254)
     title = models.CharField(max_length=254)
     text = models.TextField()
+
+
+class Genre(models.Model):
+    text = models.CharField(max_length=50, unique=True)
+    external_id = models.CharField(max_length=50, blank=True)
+
+    def __unicode__(self):
+        return unicode(self.text)
+
 
 # Non-Database Models
 class BDRObject(object):
@@ -167,3 +181,77 @@ class Print(Page):
 
     def url(self):
         return reverse('specific_print', args=[self.id,])
+
+
+class Annotation(object):
+
+    @classmethod
+    def from_form_data(cls, page_pid, annotator, form_data, person_formset_data, inscription_formset_data):
+        return cls(page_pid, annotator, form_data=form_data, person_formset_data=person_formset_data, inscription_formset_data=inscription_formset_data)
+
+    def __init__(self, page_pid, annotator, form_data=None, person_formset_data=None, inscription_formset_data=None, mods_obj=None):
+        self._page_pid = page_pid
+        self._annotator = annotator
+        self._form_data = form_data
+        self._person_formset_data = [p for p in person_formset_data if p]
+        self._inscription_formset_data = [i for i in inscription_formset_data if i]
+        self._mods_obj = mods_obj
+
+    def get_mods_obj(self):
+        if not self._mods_obj:
+            self._mods_obj = mods.make_mods()
+            original_title = mods.TitleInfo()
+            original_title.title = self._form_data['original_title']
+            if self._form_data['original_title_language']:
+                original_title.node.set('lang', self._form_data['original_title_language'])
+            self._mods_obj.title_info_list.append(original_title)
+            if self._form_data['english_title']:
+                english_title = mods.TitleInfo()
+                english_title.title = self._form_data['english_title']
+                english_title.node.set('lang', 'en')
+                self._mods_obj.title_info_list.append(english_title)
+            if self._form_data['genre']:
+                self._mods_obj.genres.append(mods.Genre(text=self._form_data['genre'].text))
+            if self._form_data['abstract']:
+                self._mods_obj.create_abstract()
+                self._mods_obj.abstract.text = self._form_data['abstract']
+            if self._person_formset_data:
+                for p in self._person_formset_data:
+                    name = mods.Name()
+                    np = mods.NamePart(text=p['person'].name)
+                    name.name_parts.append(np)
+                    role = mods.Role(text=p['role'])
+                    name.roles.append(role)
+                    href = '{%s}href' % app_settings.XLINK_NAMESPACE
+                    name.node.set(href, p['person'].trp_id)
+                    self._mods_obj.names.append(name)
+            if self._inscription_formset_data:
+                for i in self._inscription_formset_data:
+                    note = mods.Note(text=i['text'])
+                    note.type = 'inscription'
+                    note.label = i['location']
+                    self._mods_obj.notes.append(note)
+            annotator_note = mods.Note(text=self._annotator)
+            annotator_note.type = 'resp'
+            self._mods_obj.notes.append(annotator_note)
+        return self._mods_obj
+
+    def to_mods_xml(self):
+        return self.get_mods_obj().serialize()
+
+    def _get_params(self):
+        params = {'identity': app_settings.BDR_IDENTITY, 'authorization_code': app_settings.BDR_AUTH_CODE}
+        params['mods'] = json.dumps({u'xml_data': self.to_mods_xml()})
+        params['rels'] = json.dumps({u'isAnnotationOf': self._page_pid})
+        params['rights'] = json.dumps({'parameters': {'owner_id': app_settings.BDR_IDENTITY, 'additional_rights': 'BDR_PUBLIC#display'}})
+        params['content_model'] = 'Annotation'
+        return params
+
+    def save_to_bdr(self):
+        params = self._get_params()
+        r = requests.post(app_settings.BDR_POST_URL, data=params)
+        if r.ok:
+            return {'pid': json.loads(r.text)['pid']}
+        else:
+            raise Exception('error posting new annotation for %s: %s - %s' % (self._page_pid, r.status_code, r.content))
+
