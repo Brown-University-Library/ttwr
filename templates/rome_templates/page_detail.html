@@ -55,7 +55,7 @@ function expand_title(title,num)
         </div>
         <div id="metadata" style="float:left;width:36%">
             {% if user.is_authenticated %}
-            <div class="new_annotation_link"><a href="{{ create_annotation_link }}">Create New Annotation</a></div>
+            <div class="new_annotation_link"><a href="{{ create_annotation_link }}" style="float:right;">Create New Annotation</a></div>
             {% endif %}
             <ul style="list-style:none">
             {% for annotation in annotations %}
