@@ -144,6 +144,10 @@ def page_detail(request, page_id, book_id=None):
     context['annotation_uris']=[]
     context['annotations']=[]
     for annotation in annotations:
+        anno_id = annotation['pid'].split(':')[-1]
+        if request.user.is_authenticated():
+            link = reverse('edit_annotation', kwargs={'book_id': book_id, 'page_id': page_id, 'anno_id': anno_id})
+            annotation['edit_link'] = link
         annot_xml_uri='https://%s/services/getMods/%s/' % (BDR_SERVER, annotation['pid'])
         context['annotation_uris'].append(annot_xml_uri)
         annotation['xml_uri'] = annot_xml_uri
@@ -157,6 +161,7 @@ def page_detail(request, page_id, book_id=None):
 def get_annotation_detail(annotation):
     curr_annot={}
     curr_annot['xml_uri'] = annotation['xml_uri']
+    curr_annot['edit_link'] = annotation['edit_link']
     curr_annot['has_elements'] = {'inscriptions':0, 'annotations':0, 'annotator':0, 'origin':0, 'title':0, 'abstract':0}
 
     root = ET.fromstring(requests.get(curr_annot['xml_uri']).content)
