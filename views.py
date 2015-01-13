@@ -580,3 +580,21 @@ def new_genre(request):
 
     return render(request, 'rome_templates/new_genre.html', {'form': form})
 
+
+@login_required(login_url=reverse_lazy('rome_login'))
+def new_role(request):
+    from .forms import NewRoleForm
+    if request.method == 'POST':
+        form = NewRoleForm(request.POST)
+        if form.is_valid():
+            role = form.save()
+            return SimpleTemplateResponse('rome_templates/popup_response.html', {
+                            'pk_value': escape(role._get_pk_val()),
+                            'value': escape(role.serializable_value(role._meta.pk.attname)),
+                            'obj': escapejs(role)})
+    else:
+        form = NewRoleForm()
+
+    #use the same template for genre and role
+    return render(request, 'rome_templates/new_genre.html', {'form': form})
+

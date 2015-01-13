@@ -1,7 +1,7 @@
 from django import forms
 import pycountry
 from pagedown.widgets import AdminPagedownWidget
-from .models import Biography, Essay, Genre
+from .models import Biography, Essay, Genre, Role
 from .widgets import AddAnotherWidgetWrapper
 
 
@@ -21,7 +21,8 @@ class EssayModelForm(forms.ModelForm):
 
 class PersonForm(forms.Form):
     person = forms.ModelChoiceField(queryset=Biography.objects)
-    role = forms.CharField()
+    role = forms.ModelChoiceField(required=False, queryset=Role.objects.all().order_by('text'),
+            widget=AddAnotherWidgetWrapper(forms.Select(), Role, 'new_role'))
 
 
 class InscriptionForm(forms.Form):
@@ -48,11 +49,16 @@ class AnnotationForm(forms.Form):
     original_title_language = forms.ChoiceField(required=False, choices=get_language_choices())
     english_title = forms.CharField(required=False)
     genre = forms.ModelChoiceField(required=False, queryset=Genre.objects.all().order_by('text'),
-            widget=AddAnotherWidgetWrapper(forms.Select(), Genre))
+            widget=AddAnotherWidgetWrapper(forms.Select(), Genre, 'new_genre'))
     abstract = forms.CharField(required=False, widget=forms.Textarea)
 
 
 class NewGenreForm(forms.ModelForm):
     class Meta:
         model = Genre
+
+
+class NewRoleForm(forms.ModelForm):
+    class Meta:
+        model = Role
 

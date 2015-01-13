@@ -49,6 +49,14 @@ class Genre(models.Model):
         return unicode(self.text)
 
 
+class Role(models.Model):
+    text = models.CharField(max_length=50, unique=True)
+    external_id = models.CharField(max_length=50, blank=True)
+
+    def __unicode__(self):
+        return unicode(self.text)
+
+
 # Non-Database Models
 class BDRObject(object):
     def __init__(self, data=None, parent=None):

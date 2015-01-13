@@ -1,7 +1,7 @@
 import copy
 from django import forms
-from django.core.urlresolvers import reverse
 from django.contrib.admin.templatetags.admin_static import static
+from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
@@ -12,13 +12,14 @@ class AddAnotherWidgetWrapper(forms.Widget):
     admin interface. Modeled after
     django.contrib.admin.widgets.RelatedFieldWidgetWrapper
     """
-    def __init__(self, widget, model):
+    def __init__(self, widget, model, related_url_name):
         self.is_hidden = widget.is_hidden
         self.needs_multipart_form = widget.needs_multipart_form
         self.attrs = widget.attrs
         self.choices = widget.choices
         self.widget = widget
         self.model = model
+        self.related_url_name = related_url_name
  
     def __deepcopy__(self, memo):
         obj = copy.copy(self)
@@ -36,7 +37,7 @@ class AddAnotherWidgetWrapper(forms.Widget):
         info = (model._meta.app_label, model._meta.object_name.lower())
         self.widget.choices = self.choices
         output = [self.widget.render(name, value, *args, **kwargs)]
-        related_url = reverse('new_genre')
+        related_url = reverse(self.related_url_name)
         output.append((' <a href="%s" class="add-another" id="add_id_%s" ' + 'onclick="return showAddAnotherPopup(this);">') % (related_url, name))
         output.append('<img src="%s" width="10" height="10" alt="%s"/></a>' % (static('admin/img/icon_addlink.gif'), _('Add Another')))
         return mark_safe(''.join(output))

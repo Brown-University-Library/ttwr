@@ -30,4 +30,5 @@ urlpatterns = patterns('',
     url(r'^people/(?P<trp_id>\d+)/TEI/$', views.person_detail_tei, name='person_detail_tei'),
 
     url(r'^genres/new/$', views.new_genre, name='new_genre'),
+    url(r'^roles/new/$', views.new_role, name='new_role'),
 )
