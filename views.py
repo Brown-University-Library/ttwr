@@ -307,6 +307,9 @@ def print_detail(request, print_id):
     template = loader.get_template('rome_templates/page_detail.html')
     context = std_context()
 
+    if request.user.is_authenticated():
+        context['create_annotation_link'] = reverse('new_print_annotation', kwargs={'print_id':print_id})
+
     prints_list_page = request.GET.get('prints_list_page', None)
     collection = request.GET.get('collection', None)
 
@@ -353,6 +356,10 @@ def print_detail(request, print_id):
         annot_xml_uri='https://%s/services/getMods/%s/' % (BDR_SERVER, annotation['pid'])
         context['annotation_uris'].append(annot_xml_uri)
         annotation['xml_uri'] = annot_xml_uri
+        anno_id = annotation['pid'].split(':')[-1]
+        if request.user.is_authenticated():
+            link = reverse('edit_print_annotation', kwargs={'print_id': print_id, 'anno_id': anno_id})
+            annotation['edit_link'] = link
         curr_annot = get_annotation_detail(annotation)
         context['annotations'].append(curr_annot)
 
@@ -571,6 +578,39 @@ def new_annotation(request, book_id, page_id):
 
 
 @login_required(login_url=reverse_lazy('rome_login'))
+def new_print_annotation(request, print_id):
+    print_pid = '%s:%s' % (PID_PREFIX, print_id)
+    from .forms import AnnotationForm, PersonForm, InscriptionForm
+    PersonFormSet = formset_factory(PersonForm)
+    InscriptionFormSet = formset_factory(InscriptionForm)
+    if request.method == 'POST':
+        form = AnnotationForm(request.POST)
+        person_formset = PersonFormSet(request.POST)
+        inscription_formset = InscriptionFormSet(request.POST)
+        if form.is_valid() and person_formset.is_valid() and inscription_formset.is_valid():
+            if request.user.first_name:
+                annotator = u'%s %s' % (request.user.first_name, request.user.last_name)
+            else:
+                annotator = u'%s' % request.user.username
+            annotation = Annotation.from_form_data(print_pid, annotator, form.cleaned_data, person_formset.cleaned_data, inscription_formset.cleaned_data)
+            try:
+                response = annotation.save_to_bdr()
+                logger.info('%s added annotation %s for %s' % (request.user.username, response['pid'], print_id))
+                return HttpResponseRedirect(reverse('specific_print', kwargs={'print_id': print_id}))
+            except Exception as e:
+                logger.error('%s' % e)
+                return HttpResponseServerError('Internal server error. Check log.')
+    else:
+        inscription_formset = InscriptionFormSet()
+        person_formset = PersonFormSet()
+        form = AnnotationForm()
+
+    image_link = 'https://%s/viewers/image/zoom/%s' % (BDR_SERVER, print_pid)
+    return render(request, 'rome_templates/new_annotation.html',
+            {'form': form, 'person_formset': person_formset, 'inscription_formset': inscription_formset, 'image_link': image_link})
+
+
+@login_required(login_url=reverse_lazy('rome_login'))
 def edit_annotation(request, book_id, page_id, anno_id):
     anno_pid = '%s:%s' % (PID_PREFIX, anno_id)
     page_pid = '%s:%s' % (PID_PREFIX, page_id)
@@ -606,6 +646,12 @@ def edit_annotation(request, book_id, page_id, anno_id):
     image_link = 'https://%s/viewers/image/zoom/%s' % (BDR_SERVER, page_pid)
     return render(request, 'rome_templates/new_annotation.html',
             {'form': form, 'person_formset': person_formset, 'inscription_formset': inscription_formset, 'image_link': image_link})
+
+
+@login_required(login_url=reverse_lazy('rome_login'))
+def edit_print_annotation(request, print_id, anno_id):
+    anno_pid = '%s:%s' % (PID_PREFIX, anno_id)
+    print_pid = '%s:%s' % (PID_PREFIX, print_id)
 
 
 @login_required(login_url=reverse_lazy('rome_login'))

@@ -195,8 +195,8 @@ class Print(Page):
 class Annotation(object):
 
     @classmethod
-    def from_form_data(cls, page_pid, annotator, form_data, person_formset_data, inscription_formset_data, pid=None):
-        return cls(page_pid=page_pid, annotator=annotator, pid=pid, form_data=form_data, person_formset_data=person_formset_data, inscription_formset_data=inscription_formset_data)
+    def from_form_data(cls, image_pid, annotator, form_data, person_formset_data, inscription_formset_data, pid=None):
+        return cls(image_pid=image_pid, annotator=annotator, pid=pid, form_data=form_data, person_formset_data=person_formset_data, inscription_formset_data=inscription_formset_data)
 
     @classmethod
     def from_pid(cls, pid):
@@ -206,8 +206,8 @@ class Annotation(object):
         mods_obj = load_xmlobject_from_string(r.content, mods.Mods)
         return cls(mods_obj=mods_obj)
 
-    def __init__(self, page_pid=None, annotator=None, pid=None, form_data=None, person_formset_data=[], inscription_formset_data=[], mods_obj=None):
-        self._page_pid = page_pid
+    def __init__(self, image_pid=None, annotator=None, pid=None, form_data=None, person_formset_data=[], inscription_formset_data=[], mods_obj=None):
+        self._image_pid = image_pid #pid of the object that we're adding the annotation for
         self._annotator = annotator
         self._form_data = form_data
         self._person_formset_data = [p for p in person_formset_data if p]
@@ -303,7 +303,7 @@ class Annotation(object):
     def _get_params(self):
         params = {'identity': app_settings.BDR_IDENTITY, 'authorization_code': app_settings.BDR_AUTH_CODE}
         params['mods'] = json.dumps({u'xml_data': self.to_mods_xml()})
-        params['rels'] = json.dumps({u'isAnnotationOf': self._page_pid})
+        params['rels'] = json.dumps({u'isAnnotationOf': self._image_pid})
         params['rights'] = json.dumps({'parameters': {'owner_id': app_settings.BDR_IDENTITY, 'additional_rights': 'BDR_PUBLIC#display'}})
         params['content_model'] = 'Annotation'
         return params
@@ -323,7 +323,7 @@ class Annotation(object):
         if r.ok:
             return {'pid': json.loads(r.text)['pid']}
         else:
-            raise Exception('error posting new annotation for %s: %s - %s' % (self._page_pid, r.status_code, r.content))
+            raise Exception('error posting new annotation for %s: %s - %s' % (self._image_pid, r.status_code, r.content))
 
     def update_in_bdr(self):
         params = self._get_update_params()
