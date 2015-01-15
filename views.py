@@ -186,8 +186,11 @@ def get_annotation_detail(annotation):
         curr_annot['abstract']=abstract.text
         curr_annot['has_elements']['abstract']=1
     for origin in root.getiterator('{http://www.loc.gov/mods/v3}originInfo'):
-        curr_annot['origin']=origin[0].text
-        curr_annot['has_elements']['origin']=1
+        try:
+            curr_annot['origin']=origin[0].date
+            curr_annot['has_elements']['origin']=1
+        except:
+            pass
     curr_annot['inscriptions']=[]
     curr_annot['annotations']=[]
     curr_annot['annotator']=""

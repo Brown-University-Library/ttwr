@@ -232,7 +232,9 @@ class Annotation(object):
                 self._form_data['genre'] = genre.id
             if self._mods_obj.abstract:
                 self._form_data['abstract'] = self._mods_obj.abstract.text
-            print('%s' % self._form_data)
+            if self._mods_obj.origin_info:
+                if self._mods_obj.origin_info.other:
+                    self._form_data['impression_date'] = self._mods_obj.origin_info.other[0].date
         return self._form_data
 
     def get_person_formset_data(self):
@@ -276,6 +278,11 @@ class Annotation(object):
             if self._form_data['abstract']:
                 self._mods_obj.create_abstract()
                 self._mods_obj.abstract.text = self._form_data['abstract']
+            if self._form_data['impression_date']:
+                self._mods_obj.create_origin_info()
+                date_other = mods.DateOther(date=self._form_data['impression_date'])
+                date_other.type = 'impression'
+                self._mods_obj.origin_info.other.append(date_other)
             if self._person_formset_data:
                 for p in self._person_formset_data:
                     name = mods.Name()

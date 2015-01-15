@@ -52,6 +52,7 @@ class AnnotationForm(forms.Form):
     genre = forms.ModelChoiceField(required=False, queryset=Genre.objects.all().order_by('text'),
             widget=AddAnotherWidgetWrapper(forms.Select(), Genre, 'new_genre'))
     abstract = forms.CharField(required=False, widget=forms.Textarea)
+    impression_date = forms.CharField(required=False)
 
 
 class NewGenreForm(forms.ModelForm):
