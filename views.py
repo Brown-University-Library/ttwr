@@ -484,8 +484,9 @@ def biography_list(request):
     role_set = set()
 
     for bio in bio_list:
-        bio.roles = [role.strip(" ") for role in bio.roles.split(';') if role.strip(" ") != '']
-        role_set |= set(bio.roles)
+        if bio.roles:
+            bio.roles = [role.strip(" ") for role in bio.roles.split(';') if role.strip(" ") != '']
+            role_set |= set(bio.roles)
 
     if fq != 'all':
         bio_list = filter_bios(fq, bio_list)

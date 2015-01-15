@@ -31,7 +31,7 @@ class Biography(models.Model):
         return Print.search(query='contributor:"%s"' % self.name )
 
     def __unicode__(self):
-        return u'%s' % self.name
+        return u'%s (%s)' % (self.name, self.trp_id)
 
 
 class Essay(models.Model):
