@@ -644,7 +644,6 @@ def edit_annotation(request, book_id, page_id, anno_id):
         inscription_formset = InscriptionFormSet(initial=annotation.get_inscription_formset_data())
         form = AnnotationForm(annotation.get_form_data())
 
-    print('form: %s, %s' % (form.is_bound, form.is_valid()))
     image_link = 'https://%s/viewers/image/zoom/%s' % (BDR_SERVER, page_pid)
     return render(request, 'rome_templates/new_annotation.html',
             {'form': form, 'person_formset': person_formset, 'inscription_formset': inscription_formset, 'image_link': image_link})
@@ -654,6 +653,37 @@ def edit_annotation(request, book_id, page_id, anno_id):
 def edit_print_annotation(request, print_id, anno_id):
     anno_pid = '%s:%s' % (PID_PREFIX, anno_id)
     print_pid = '%s:%s' % (PID_PREFIX, print_id)
+    from .forms import AnnotationForm, PersonForm, InscriptionForm
+    PersonFormSet = formset_factory(PersonForm)
+    InscriptionFormSet = formset_factory(InscriptionForm)
+    if request.method == 'POST':
+        #this part here is similar to posting a new annotation
+        form = AnnotationForm(request.POST)
+        person_formset = PersonFormSet(request.POST)
+        inscription_formset = InscriptionFormSet(request.POST)
+        if form.is_valid() and person_formset.is_valid() and inscription_formset.is_valid():
+            #update the annotator to be the person making this edit
+            if request.user.first_name:
+                annotator = u'%s %s' % (request.user.first_name, request.user.last_name)
+            else:
+                annotator = u'%s' % request.user.username
+            annotation = Annotation.from_form_data(print_pid, annotator, form.cleaned_data, person_formset.cleaned_data, inscription_formset.cleaned_data, pid=anno_pid)
+            try:
+                response = annotation.update_in_bdr()
+                logger.info('%s edited print annotation %s' % (request.user.username, anno_pid))
+                return HttpResponseRedirect(reverse('specific_print', kwargs={'print_id': print_id}))
+            except Exception as e:
+                logger.error('%s' % e)
+                return HttpResponseServerError('Internal server error. Check log.')
+    else:
+        annotation = Annotation.from_pid(anno_pid)
+        person_formset = PersonFormSet(initial=annotation.get_person_formset_data())
+        inscription_formset = InscriptionFormSet(initial=annotation.get_inscription_formset_data())
+        form = AnnotationForm(annotation.get_form_data())
+
+    image_link = 'https://%s/viewers/image/zoom/%s' % (BDR_SERVER, print_pid)
+    return render(request, 'rome_templates/new_annotation.html',
+            {'form': form, 'person_formset': person_formset, 'inscription_formset': inscription_formset, 'image_link': image_link})
 
 
 @login_required(login_url=reverse_lazy('rome_login'))
