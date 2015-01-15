@@ -274,7 +274,9 @@ class Annotation(object):
                 english_title.node.set('lang', 'en')
                 self._mods_obj.title_info_list.append(english_title)
             if self._form_data['genre']:
-                self._mods_obj.genres.append(mods.Genre(text=self._form_data['genre'].text))
+                genre = mods.Genre(text=self._form_data['genre'].text)
+                genre.authority = 'aat'
+                self._mods_obj.genres.append(genre)
             if self._form_data['abstract']:
                 self._mods_obj.create_abstract()
                 self._mods_obj.abstract.text = self._form_data['abstract']
