@@ -682,7 +682,7 @@ def new_genre(request):
     else:
         form = NewGenreForm()
 
-    return render(request, 'rome_templates/new_genre.html', {'form': form})
+    return render(request, 'rome_templates/new_record.html', {'form': form})
 
 
 @login_required(login_url=reverse_lazy('rome_login'))
@@ -700,5 +700,23 @@ def new_role(request):
         form = NewRoleForm()
 
     #use the same template for genre and role
-    return render(request, 'rome_templates/new_genre.html', {'form': form})
+    return render(request, 'rome_templates/new_record.html', {'form': form})
+
+
+@login_required(login_url=reverse_lazy('rome_login'))
+def new_biography(request):
+    from .forms import NewBiographyForm
+    if request.method == 'POST':
+        form = NewBiographyForm(request.POST)
+        if form.is_valid():
+            bio = form.save()
+            return SimpleTemplateResponse('rome_templates/popup_response.html', {
+                            'pk_value': escape(bio._get_pk_val()),
+                            'value': escape(bio.serializable_value(bio._meta.pk.attname)),
+                            'obj': escapejs(bio)})
+    else:
+        form = NewBiographyForm()
+
+    #use the same template for genre and role
+    return render(request, 'rome_templates/new_record.html', {'form': form})
 

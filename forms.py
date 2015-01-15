@@ -20,8 +20,9 @@ class EssayModelForm(forms.ModelForm):
 
 
 class PersonForm(forms.Form):
-    person = forms.ModelChoiceField(queryset=Biography.objects)
-    role = forms.ModelChoiceField(required=False, queryset=Role.objects.all().order_by('text'),
+    person = forms.ModelChoiceField(queryset=Biography.objects.all().order_by('name'),
+            widget=AddAnotherWidgetWrapper(forms.Select(), Biography, 'new_biography'))
+    role = forms.ModelChoiceField(queryset=Role.objects.all().order_by('text'),
             widget=AddAnotherWidgetWrapper(forms.Select(), Role, 'new_role'))
 
 
@@ -61,4 +62,9 @@ class NewGenreForm(forms.ModelForm):
 class NewRoleForm(forms.ModelForm):
     class Meta:
         model = Role
+
+class NewBiographyForm(forms.ModelForm):
+    class Meta:
+        fields = ('name', 'trp_id')
+        model = Biography
 
