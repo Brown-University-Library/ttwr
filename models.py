@@ -221,10 +221,10 @@ class Annotation(object):
             if not self._mods_obj:
                 raise Exception('no form data or mods obj')
             title1 = self._mods_obj.title_info_list[0]
-            self._form_data['original_title'] = title1.title
+            self._form_data['title'] = title1.title
             title1_lang = title1.node.get('lang')
             if title1_lang:
-                self._form_data['original_title_language'] = title1_lang
+                self._form_data['title_language'] = title1_lang
             if len(self._mods_obj.title_info_list) > 1:
                 self._form_data['english_title'] = self._mods_obj.title_info_list[1].title
             if self._mods_obj.genres:
@@ -261,11 +261,11 @@ class Annotation(object):
     def get_mods_obj(self):
         if not self._mods_obj:
             self._mods_obj = mods.make_mods()
-            original_title = mods.TitleInfo()
-            original_title.title = self._form_data['original_title']
-            if self._form_data['original_title_language']:
-                original_title.node.set('lang', self._form_data['original_title_language'])
-            self._mods_obj.title_info_list.append(original_title)
+            title = mods.TitleInfo()
+            title.title = self._form_data['title']
+            if self._form_data['title_language']:
+                title.node.set('lang', self._form_data['title_language'])
+            self._mods_obj.title_info_list.append(title)
             if self._form_data['english_title']:
                 english_title = mods.TitleInfo()
                 english_title.title = self._form_data['english_title']

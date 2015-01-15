@@ -45,8 +45,8 @@ def get_language_choices():
 
 
 class AnnotationForm(forms.Form):
-    original_title = forms.CharField()
-    original_title_language = forms.ChoiceField(required=False, choices=get_language_choices())
+    title = forms.CharField()
+    title_language = forms.ChoiceField(required=False, choices=get_language_choices())
     english_title = forms.CharField(required=False)
     genre = forms.ModelChoiceField(required=False, queryset=Genre.objects.all().order_by('text'),
             widget=AddAnotherWidgetWrapper(forms.Select(), Genre, 'new_genre'))
