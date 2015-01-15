@@ -447,6 +447,8 @@ def _pages_for_person(name, group_amount=50):
     return books
 
 def _get_full_title(data):
+    if 'primary_title' not in data:
+        return 'No Title'
     if 'nonsort' in data:
         if data['nonsort'].endswith(u"'"):
             return u'%s%s' % (data['nonsort'], data['primary_title'])
