@@ -616,8 +616,7 @@ def new_print_annotation(request, print_id):
             {'form': form, 'person_formset': person_formset, 'inscription_formset': inscription_formset, 'image_link': image_link})
 
 
-def get_bound_edit_forms(anno_pid, AnnotationForm, PersonFormSet, InscriptionFormSet):
-    annotation = Annotation.from_pid(anno_pid)
+def get_bound_edit_forms(annotation, AnnotationForm, PersonFormSet, InscriptionFormSet):
     person_formset = PersonFormSet(initial=annotation.get_person_formset_data())
     inscription_formset = InscriptionFormSet(initial=annotation.get_inscription_formset_data())
     form = AnnotationForm(annotation.get_form_data())
@@ -629,6 +628,7 @@ def edit_annotation_base(request, image_pid, anno_pid, redirect_url):
     PersonFormSet = formset_factory(PersonForm)
     InscriptionFormSet = formset_factory(InscriptionForm)
     context_data = {}
+    annotation = Annotation.from_pid(anno_pid)
     if request.method == 'POST':
         #this part here is similar to posting a new annotation
         form = AnnotationForm(request.POST)
@@ -640,7 +640,7 @@ def edit_annotation_base(request, image_pid, anno_pid, redirect_url):
                 annotator = u'%s %s' % (request.user.first_name, request.user.last_name)
             else:
                 annotator = u'%s' % request.user.username
-            annotation = Annotation.from_form_data(image_pid, annotator, form.cleaned_data, person_formset.cleaned_data, inscription_formset.cleaned_data, pid=anno_pid)
+            annotation.add_form_data(annotator, form.cleaned_data, person_formset.cleaned_data, inscription_formset.cleaned_data)
             try:
                 response = annotation.update_in_bdr()
                 logger.info('%s edited annotation %s' % (request.user.username, anno_pid))
@@ -651,7 +651,7 @@ def edit_annotation_base(request, image_pid, anno_pid, redirect_url):
         else:
             context_data.update({'form': form, 'person_formset': person_formset, 'inscription_formset': inscription_formset})
     else:
-        context_data.update(get_bound_edit_forms(anno_pid, AnnotationForm, PersonFormSet, InscriptionFormSet))
+        context_data.update(get_bound_edit_forms(annotation, AnnotationForm, PersonFormSet, InscriptionFormSet))
 
     image_link = 'https://%s/viewers/image/zoom/%s' % (BDR_SERVER, image_pid)
     context_data.update({'image_link': image_link})
