@@ -213,7 +213,7 @@ class Annotation(object):
         if not r.ok:
             raise Exception('error retrieving annotation data for %s: %s - %s' % (pid, r.status_code, r.content))
         mods_obj = load_xmlobject_from_string(r.content, mods.Mods)
-        return cls(mods_obj=mods_obj)
+        return cls(pid=pid, mods_obj=mods_obj)
 
     def __init__(self, image_pid=None, annotator=None, pid=None, form_data=None, person_formset_data=[], inscription_formset_data=[], mods_obj=None):
         self._image_pid = image_pid #pid of the object that we're adding the annotation for
@@ -223,6 +223,13 @@ class Annotation(object):
         self._inscription_formset_data = [i for i in inscription_formset_data if i]
         self._mods_obj = mods_obj
         self._pid = pid
+
+    def add_form_data(self, annotator, form_data, person_formset_data, inscription_formset_data):
+        #this is for adding the new form data when updating an annotation
+        self._annotator = annotator
+        self._form_data = form_data
+        self._person_formset_data = [p for p in person_formset_data if p]
+        self._inscription_formset_data = [i for i in inscription_formset_data if i]
 
     def get_form_data(self):
         if not self._form_data:
@@ -269,54 +276,70 @@ class Annotation(object):
             self._inscription_formset_data = [{'text': note.text, 'location': note.label} for note in self._mods_obj.notes if note.type=='inscription']
         return self._inscription_formset_data
 
-    def get_mods_obj(self):
-        if not self._mods_obj:
+    def get_mods_obj(self, update=False):
+        if self._mods_obj:
+            #if we have mods already, and we're not updating, just return it
+            if not update:
+                return self._mods_obj
+        else: #no self._mods_obj
+            if update:
+                raise Exception('no mods obj - can\'t update')
             self._mods_obj = mods.make_mods()
-            title = mods.TitleInfo()
-            title.title = self._form_data['title']
-            if self._form_data['title_language']:
-                title.node.set('lang', self._form_data['title_language'])
-            self._mods_obj.title_info_list.append(title)
-            if self._form_data['english_title']:
-                english_title = mods.TitleInfo()
-                english_title.title = self._form_data['english_title']
-                english_title.node.set('lang', 'en')
-                self._mods_obj.title_info_list.append(english_title)
-            if self._form_data['genre']:
-                genre = mods.Genre(text=self._form_data['genre'].text)
-                genre.authority = 'aat'
-                self._mods_obj.genres.append(genre)
-            if self._form_data['abstract']:
+        #at this point, we want to put the form data into the mods obj (could be update or new)
+        self._mods_obj.title_info_list = [] #clear out any old titles
+        title = mods.TitleInfo()
+        title.title = self._form_data['title']
+        if self._form_data['title_language']:
+            title.node.set('lang', self._form_data['title_language'])
+        self._mods_obj.title_info_list.append(title)
+        if self._form_data['english_title']:
+            english_title = mods.TitleInfo()
+            english_title.title = self._form_data['english_title']
+            english_title.node.set('lang', 'en')
+            self._mods_obj.title_info_list.append(english_title)
+        if self._form_data['genre']:
+            self._mods_obj.genres = [] #clear out any old genres
+            genre = mods.Genre(text=self._form_data['genre'].text)
+            genre.authority = 'aat'
+            self._mods_obj.genres.append(genre)
+        if self._form_data['abstract']:
+            if not self._mods_obj.abstract:
                 self._mods_obj.create_abstract()
-                self._mods_obj.abstract.text = self._form_data['abstract']
-            if self._form_data['impression_date']:
+            self._mods_obj.abstract.text = self._form_data['abstract'] #overwrites old abstract if present
+        if self._form_data['impression_date']:
+            #clear out old dateOther data, or create originInfo if needed
+            if self._mods_obj.origin_info:
+                self._mods_obj.origin_info.other = []
+            else:
                 self._mods_obj.create_origin_info()
-                date_other = mods.DateOther(date=self._form_data['impression_date'])
-                date_other.type = 'impression'
-                self._mods_obj.origin_info.other.append(date_other)
-            if self._person_formset_data:
-                for p in self._person_formset_data:
-                    name = mods.Name()
-                    np = mods.NamePart(text=p['person'].name)
-                    name.name_parts.append(np)
-                    role = mods.Role(text=p['role'].text)
-                    name.roles.append(role)
-                    href = '{%s}href' % app_settings.XLINK_NAMESPACE
-                    name.node.set(href, p['person'].trp_id)
-                    self._mods_obj.names.append(name)
-            if self._inscription_formset_data:
-                for i in self._inscription_formset_data:
-                    note = mods.Note(text=i['text'])
-                    note.type = 'inscription'
-                    note.label = i['location']
-                    self._mods_obj.notes.append(note)
-            annotator_note = mods.Note(text=self._annotator)
-            annotator_note.type = 'resp'
-            self._mods_obj.notes.append(annotator_note)
+            date_other = mods.DateOther(date=self._form_data['impression_date'])
+            date_other.type = 'impression'
+            self._mods_obj.origin_info.other.append(date_other)
+        if self._person_formset_data:
+            self._mods_obj.names = [] #clear out any old names
+            for p in self._person_formset_data:
+                name = mods.Name()
+                np = mods.NamePart(text=p['person'].name)
+                name.name_parts.append(np)
+                role = mods.Role(text=p['role'].text)
+                name.roles.append(role)
+                href = '{%s}href' % app_settings.XLINK_NAMESPACE
+                name.node.set(href, p['person'].trp_id)
+                self._mods_obj.names.append(name)
+        if self._inscription_formset_data:
+            self._mods_obj.notes = [] #clear out any old notes data
+            for i in self._inscription_formset_data:
+                note = mods.Note(text=i['text'])
+                note.type = 'inscription'
+                note.label = i['location']
+                self._mods_obj.notes.append(note)
+        annotator_note = mods.Note(text=self._annotator)
+        annotator_note.type = 'resp'
+        self._mods_obj.notes.append(annotator_note)
         return self._mods_obj
 
-    def to_mods_xml(self):
-        return self.get_mods_obj().serialize()
+    def to_mods_xml(self, update=False):
+        return self.get_mods_obj(update).serialize()
 
     def _get_params(self):
         params = {'identity': app_settings.BDR_IDENTITY, 'authorization_code': app_settings.BDR_AUTH_CODE}
@@ -328,7 +351,7 @@ class Annotation(object):
 
     def _get_update_params(self):
         params = {'identity': app_settings.BDR_IDENTITY, 'authorization_code': app_settings.BDR_AUTH_CODE}
-        params['mods'] = json.dumps({u'xml_data': self.to_mods_xml()})
+        params['mods'] = json.dumps({u'xml_data': self.to_mods_xml(update=True)})
         if self._pid:
             params['pid'] = self._pid
         else:
