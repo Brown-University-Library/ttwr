@@ -1,5 +1,7 @@
 from django import forms
 from pagedown.widgets import AdminPagedownWidget
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout
 from .models import Biography, Essay, Genre, Role
 from .widgets import AddAnotherWidgetWrapper
 
@@ -53,6 +55,21 @@ class AnnotationForm(forms.Form):
             widget=AddAnotherWidgetWrapper(forms.Select(), Genre, 'new_genre'))
     abstract = forms.CharField(required=False, widget=forms.Textarea)
     impression_date = forms.CharField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(AnnotationForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.label_class = 'col-xs-4'
+        self.helper.field_class = 'col-xs-8'
+        self.helper.layout = Layout(
+                'title',
+                'title_language',
+                'english_title',
+                'genre',
+                'abstract',
+                'impression_data'
+                )
 
 
 class NewGenreForm(forms.ModelForm):

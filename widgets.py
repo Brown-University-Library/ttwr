@@ -38,8 +38,8 @@ class AddAnotherWidgetWrapper(forms.Widget):
         self.widget.choices = self.choices
         output = [self.widget.render(name, value, *args, **kwargs)]
         related_url = reverse(self.related_url_name)
-        output.append((' <a href="%s" class="add-another" id="add_id_%s" ' + 'onclick="return showAddAnotherPopup(this);">') % (related_url, name))
-        output.append('<img src="%s" width="10" height="10" alt="%s"/></a>' % (static('admin/img/icon_addlink.gif'), _('Add Another')))
+        output.append(('<a href="%s" class="add-another" id="add_id_%s" ' + 'onclick="return showAddAnotherPopup(this);">') % (related_url, name))
+        output.append('<img src="%s" width="15" height="15" alt="%s"/></a>' % (static('admin/img/icon_addlink.gif'), _('Add Another')))
         return mark_safe(''.join(output))
  
     def build_attrs(self, extra_attrs=None, **kwargs):
