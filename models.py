@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 from .  import app_settings
 import requests
 import json
+from eulxml.xmlmap import load_xmlobject_from_string
 from bdrxml import mods
 
 # Database Models
@@ -30,7 +31,7 @@ class Biography(models.Model):
         return Print.search(query='contributor:"%s"' % self.name )
 
     def __unicode__(self):
-        return u'%s' % self.name
+        return u'%s (%s)' % (self.name, self.trp_id)
 
 
 class Essay(models.Model):
@@ -194,41 +195,102 @@ class Print(Page):
 class Annotation(object):
 
     @classmethod
-    def from_form_data(cls, page_pid, annotator, form_data, person_formset_data, inscription_formset_data):
-        return cls(page_pid, annotator, form_data=form_data, person_formset_data=person_formset_data, inscription_formset_data=inscription_formset_data)
+    def from_form_data(cls, image_pid, annotator, form_data, person_formset_data, inscription_formset_data, pid=None):
+        return cls(image_pid=image_pid, annotator=annotator, pid=pid, form_data=form_data, person_formset_data=person_formset_data, inscription_formset_data=inscription_formset_data)
 
-    def __init__(self, page_pid, annotator, form_data=None, person_formset_data=None, inscription_formset_data=None, mods_obj=None):
-        self._page_pid = page_pid
+    @classmethod
+    def from_pid(cls, pid):
+        r = requests.get('%s%s/' % (app_settings.BDR_ANNOTATION_URL, pid))
+        if not r.ok:
+            raise Exception('error retrieving annotation data for %s: %s - %s' % (pid, r.status_code, r.content))
+        mods_obj = load_xmlobject_from_string(r.content, mods.Mods)
+        return cls(mods_obj=mods_obj)
+
+    def __init__(self, image_pid=None, annotator=None, pid=None, form_data=None, person_formset_data=[], inscription_formset_data=[], mods_obj=None):
+        self._image_pid = image_pid #pid of the object that we're adding the annotation for
         self._annotator = annotator
         self._form_data = form_data
         self._person_formset_data = [p for p in person_formset_data if p]
         self._inscription_formset_data = [i for i in inscription_formset_data if i]
         self._mods_obj = mods_obj
+        self._pid = pid
+
+    def get_form_data(self):
+        if not self._form_data:
+            self._form_data = {}
+            if not self._mods_obj:
+                raise Exception('no form data or mods obj')
+            title1 = self._mods_obj.title_info_list[0]
+            self._form_data['title'] = title1.title
+            title1_lang = title1.node.get('lang')
+            if title1_lang:
+                self._form_data['title_language'] = title1_lang
+            if len(self._mods_obj.title_info_list) > 1:
+                self._form_data['english_title'] = self._mods_obj.title_info_list[1].title
+            if self._mods_obj.genres:
+                genre = Genre.objects.get(text=self._mods_obj.genres[0].text)
+                self._form_data['genre'] = genre.id
+            if self._mods_obj.abstract:
+                self._form_data['abstract'] = self._mods_obj.abstract.text
+            if self._mods_obj.origin_info:
+                if self._mods_obj.origin_info.other:
+                    self._form_data['impression_date'] = self._mods_obj.origin_info.other[0].date
+        return self._form_data
+
+    def get_person_formset_data(self):
+        if not self._person_formset_data:
+            if not self._mods_obj:
+                raise Exception('no person formset data or mods obj')
+            self._person_formset_data = []
+            for name in self._mods_obj.names:
+                p = {}
+                trp_id = name.node.get('{%s}href' % app_settings.XLINK_NAMESPACE)
+                person = Biography.objects.get(trp_id=trp_id)
+                p['person'] = person
+                role_text = name.roles[0].text
+                role = Role.objects.get(text=role_text)
+                p['role'] = role
+                self._person_formset_data.append(p)
+        return self._person_formset_data
+
+    def get_inscription_formset_data(self):
+        if not self._inscription_formset_data:
+            if not self._mods_obj:
+                raise Exception('no inscription formset data or mods obj')
+            self._inscription_formset_data = [{'text': note.text, 'location': note.label} for note in self._mods_obj.notes if note.type=='inscription']
+        return self._inscription_formset_data
 
     def get_mods_obj(self):
         if not self._mods_obj:
             self._mods_obj = mods.make_mods()
-            original_title = mods.TitleInfo()
-            original_title.title = self._form_data['original_title']
-            if self._form_data['original_title_language']:
-                original_title.node.set('lang', self._form_data['original_title_language'])
-            self._mods_obj.title_info_list.append(original_title)
+            title = mods.TitleInfo()
+            title.title = self._form_data['title']
+            if self._form_data['title_language']:
+                title.node.set('lang', self._form_data['title_language'])
+            self._mods_obj.title_info_list.append(title)
             if self._form_data['english_title']:
                 english_title = mods.TitleInfo()
                 english_title.title = self._form_data['english_title']
                 english_title.node.set('lang', 'en')
                 self._mods_obj.title_info_list.append(english_title)
             if self._form_data['genre']:
-                self._mods_obj.genres.append(mods.Genre(text=self._form_data['genre'].text))
+                genre = mods.Genre(text=self._form_data['genre'].text)
+                genre.authority = 'aat'
+                self._mods_obj.genres.append(genre)
             if self._form_data['abstract']:
                 self._mods_obj.create_abstract()
                 self._mods_obj.abstract.text = self._form_data['abstract']
+            if self._form_data['impression_date']:
+                self._mods_obj.create_origin_info()
+                date_other = mods.DateOther(date=self._form_data['impression_date'])
+                date_other.type = 'impression'
+                self._mods_obj.origin_info.other.append(date_other)
             if self._person_formset_data:
                 for p in self._person_formset_data:
                     name = mods.Name()
                     np = mods.NamePart(text=p['person'].name)
                     name.name_parts.append(np)
-                    role = mods.Role(text=p['role'])
+                    role = mods.Role(text=p['role'].text)
                     name.roles.append(role)
                     href = '{%s}href' % app_settings.XLINK_NAMESPACE
                     name.node.set(href, p['person'].trp_id)
@@ -250,9 +312,18 @@ class Annotation(object):
     def _get_params(self):
         params = {'identity': app_settings.BDR_IDENTITY, 'authorization_code': app_settings.BDR_AUTH_CODE}
         params['mods'] = json.dumps({u'xml_data': self.to_mods_xml()})
-        params['rels'] = json.dumps({u'isAnnotationOf': self._page_pid})
+        params['rels'] = json.dumps({u'isAnnotationOf': self._image_pid})
         params['rights'] = json.dumps({'parameters': {'owner_id': app_settings.BDR_IDENTITY, 'additional_rights': 'BDR_PUBLIC#display'}})
         params['content_model'] = 'Annotation'
+        return params
+
+    def _get_update_params(self):
+        params = {'identity': app_settings.BDR_IDENTITY, 'authorization_code': app_settings.BDR_AUTH_CODE}
+        params['mods'] = json.dumps({u'xml_data': self.to_mods_xml()})
+        if self._pid:
+            params['pid'] = self._pid
+        else:
+            raise Exception('no pid for annotation update')
         return params
 
     def save_to_bdr(self):
@@ -261,5 +332,13 @@ class Annotation(object):
         if r.ok:
             return {'pid': json.loads(r.text)['pid']}
         else:
-            raise Exception('error posting new annotation for %s: %s - %s' % (self._page_pid, r.status_code, r.content))
+            raise Exception('error posting new annotation for %s: %s - %s' % (self._image_pid, r.status_code, r.content))
+
+    def update_in_bdr(self):
+        params = self._get_update_params()
+        r = requests.put(app_settings.BDR_POST_URL, data=params)
+        if r.ok:
+            return {'status': 'success'}
+        else:
+            raise Exception('error putting update to %s: %s - %s' % (self._pid, r.status_code, r.content))
 

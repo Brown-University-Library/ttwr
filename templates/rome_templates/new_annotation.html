@@ -10,6 +10,17 @@
           float:left;
           padding-left:10px;
       }
+      #id_original_title {
+          width: 500px;
+      }
+      #id_english_title {
+          width: 500px;
+      }
+      #id_abstract {
+          vertical-align: top;
+          width: 350px;
+          height: 100px;
+      }
     </style>
     <script src="{% static 'rome/js/RelatedObjectLookups.js' %}"></script>
     <script src="{% static 'rome/js/jquery-1.11.1.min.js' %}" type="text/javascript"></script>
@@ -33,7 +44,8 @@
           </table>
         </div>
         <input type="button" value="Add Another Inscription" id="add_inscription">
-        <p><input type="submit" value="Submit Annotation" /></p>
+        <p><input type="submit" value="Submit Annotation" /><br />
+        Note: please only click submit once, and allow 5-10 seconds for the new annotation to be processed.</p>
       </form>
     </div>
     <div id="person_empty_form" style="display:none">

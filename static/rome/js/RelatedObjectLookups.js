@@ -68,18 +68,23 @@ function dismissAddAnotherPopup(win, newId, newRepr) {
     var name = windowname_to_id(win.name);
     var elem = document.getElementById(name);
     var o;
-    var role_re = /^.*role$/
+    var role_re = /^.*role$/;
+    var person_re = /^.*person$/;
     if (elem) {
         var elemName = elem.nodeName.toUpperCase();
         if (elemName == 'SELECT') {
             o = new Option(newRepr, newId);
             elem.options[elem.options.length] = o;
             o.selected = true;
-            //we're adding a role, so add the new role to the empty form as well
+            //we're adding a special field, so add the new option to the empty form as well
             if (role_re.test(name)) {
                 o1 = new Option(newRepr, newId);
                 empty_role_elem = document.getElementById('id_form-__prefix__-role');
                 empty_role_elem.options[empty_role_elem.options.length] = o1;
+            } else if (person_re.test(name)) {
+                o2 = new Option(newRepr, newId);
+                empty_person_elem = document.getElementById('id_form-__prefix__-person');
+                empty_person_elem.options[empty_person_elem.options.length] = o2;
             }
         } else if (elemName == 'INPUT') {
             if (elem.className.indexOf('vManyToManyRawIdAdminField') != -1 && elem.value) {

@@ -144,6 +144,10 @@ def page_detail(request, page_id, book_id=None):
     context['annotation_uris']=[]
     context['annotations']=[]
     for annotation in annotations:
+        anno_id = annotation['pid'].split(':')[-1]
+        if request.user.is_authenticated():
+            link = reverse('edit_annotation', kwargs={'book_id': book_id, 'page_id': page_id, 'anno_id': anno_id})
+            annotation['edit_link'] = link
         annot_xml_uri='https://%s/services/getMods/%s/' % (BDR_SERVER, annotation['pid'])
         context['annotation_uris'].append(annot_xml_uri)
         annotation['xml_uri'] = annot_xml_uri
@@ -157,6 +161,7 @@ def page_detail(request, page_id, book_id=None):
 def get_annotation_detail(annotation):
     curr_annot={}
     curr_annot['xml_uri'] = annotation['xml_uri']
+    curr_annot['edit_link'] = annotation['edit_link']
     curr_annot['has_elements'] = {'inscriptions':0, 'annotations':0, 'annotator':0, 'origin':0, 'title':0, 'abstract':0}
 
     root = ET.fromstring(requests.get(curr_annot['xml_uri']).content)
@@ -181,8 +186,11 @@ def get_annotation_detail(annotation):
         curr_annot['abstract']=abstract.text
         curr_annot['has_elements']['abstract']=1
     for origin in root.getiterator('{http://www.loc.gov/mods/v3}originInfo'):
-        curr_annot['origin']=origin[0].text
-        curr_annot['has_elements']['origin']=1
+        try:
+            curr_annot['origin']=origin[0].date
+            curr_annot['has_elements']['origin']=1
+        except:
+            pass
     curr_annot['inscriptions']=[]
     curr_annot['annotations']=[]
     curr_annot['annotator']=""
@@ -302,6 +310,9 @@ def print_detail(request, print_id):
     template = loader.get_template('rome_templates/page_detail.html')
     context = std_context()
 
+    if request.user.is_authenticated():
+        context['create_annotation_link'] = reverse('new_print_annotation', kwargs={'print_id':print_id})
+
     prints_list_page = request.GET.get('prints_list_page', None)
     collection = request.GET.get('collection', None)
 
@@ -348,6 +359,10 @@ def print_detail(request, print_id):
         annot_xml_uri='https://%s/services/getMods/%s/' % (BDR_SERVER, annotation['pid'])
         context['annotation_uris'].append(annot_xml_uri)
         annotation['xml_uri'] = annot_xml_uri
+        anno_id = annotation['pid'].split(':')[-1]
+        if request.user.is_authenticated():
+            link = reverse('edit_print_annotation', kwargs={'print_id': print_id, 'anno_id': anno_id})
+            annotation['edit_link'] = link
         curr_annot = get_annotation_detail(annotation)
         context['annotations'].append(curr_annot)
 
@@ -435,6 +450,8 @@ def _pages_for_person(name, group_amount=50):
     return books
 
 def _get_full_title(data):
+    if 'primary_title' not in data:
+        return 'No Title'
     if 'nonsort' in data:
         if data['nonsort'].endswith(u"'"):
             return u'%s%s' % (data['nonsort'], data['primary_title'])
@@ -467,8 +484,9 @@ def biography_list(request):
     role_set = set()
 
     for bio in bio_list:
-        bio.roles = [role.strip(" ") for role in bio.roles.split(';') if role.strip(" ") != '']
-        role_set |= set(bio.roles)
+        if bio.roles:
+            bio.roles = [role.strip(" ") for role in bio.roles.split(';') if role.strip(" ") != '']
+            role_set |= set(bio.roles)
 
     if fq != 'all':
         bio_list = filter_bios(fq, bio_list)
@@ -550,7 +568,7 @@ def new_annotation(request, book_id, page_id):
             annotation = Annotation.from_form_data(page_pid, annotator, form.cleaned_data, person_formset.cleaned_data, inscription_formset.cleaned_data)
             try:
                 response = annotation.save_to_bdr()
-                logger.info('%s annotation added for %s' % (response['pid'], page_id))
+                logger.info('%s added annotation %s for %s' % (request.user.username, response['pid'], page_id))
                 return HttpResponseRedirect(reverse('book_page_viewer', kwargs={'book_id': book_id, 'page_id': page_id}))
             except Exception as e:
                 logger.error('%s' % e)
@@ -563,6 +581,96 @@ def new_annotation(request, book_id, page_id):
     image_link = 'https://%s/viewers/image/zoom/%s' % (BDR_SERVER, page_pid)
     return render(request, 'rome_templates/new_annotation.html',
             {'form': form, 'person_formset': person_formset, 'inscription_formset': inscription_formset, 'image_link': image_link})
+
+
+@login_required(login_url=reverse_lazy('rome_login'))
+def new_print_annotation(request, print_id):
+    print_pid = '%s:%s' % (PID_PREFIX, print_id)
+    from .forms import AnnotationForm, PersonForm, InscriptionForm
+    PersonFormSet = formset_factory(PersonForm)
+    InscriptionFormSet = formset_factory(InscriptionForm)
+    if request.method == 'POST':
+        form = AnnotationForm(request.POST)
+        person_formset = PersonFormSet(request.POST)
+        inscription_formset = InscriptionFormSet(request.POST)
+        if form.is_valid() and person_formset.is_valid() and inscription_formset.is_valid():
+            if request.user.first_name:
+                annotator = u'%s %s' % (request.user.first_name, request.user.last_name)
+            else:
+                annotator = u'%s' % request.user.username
+            annotation = Annotation.from_form_data(print_pid, annotator, form.cleaned_data, person_formset.cleaned_data, inscription_formset.cleaned_data)
+            try:
+                response = annotation.save_to_bdr()
+                logger.info('%s added annotation %s for %s' % (request.user.username, response['pid'], print_id))
+                return HttpResponseRedirect(reverse('specific_print', kwargs={'print_id': print_id}))
+            except Exception as e:
+                logger.error('%s' % e)
+                return HttpResponseServerError('Internal server error. Check log.')
+    else:
+        inscription_formset = InscriptionFormSet()
+        person_formset = PersonFormSet()
+        form = AnnotationForm()
+
+    image_link = 'https://%s/viewers/image/zoom/%s' % (BDR_SERVER, print_pid)
+    return render(request, 'rome_templates/new_annotation.html',
+            {'form': form, 'person_formset': person_formset, 'inscription_formset': inscription_formset, 'image_link': image_link})
+
+
+def get_bound_edit_forms(anno_pid, AnnotationForm, PersonFormSet, InscriptionFormSet):
+    annotation = Annotation.from_pid(anno_pid)
+    person_formset = PersonFormSet(initial=annotation.get_person_formset_data())
+    inscription_formset = InscriptionFormSet(initial=annotation.get_inscription_formset_data())
+    form = AnnotationForm(annotation.get_form_data())
+    return {'form': form, 'person_formset': person_formset, 'inscription_formset': inscription_formset}
+
+
+def edit_annotation_base(request, image_pid, anno_pid, redirect_url):
+    from .forms import AnnotationForm, PersonForm, InscriptionForm
+    PersonFormSet = formset_factory(PersonForm)
+    InscriptionFormSet = formset_factory(InscriptionForm)
+    context_data = {}
+    if request.method == 'POST':
+        #this part here is similar to posting a new annotation
+        form = AnnotationForm(request.POST)
+        person_formset = PersonFormSet(request.POST)
+        inscription_formset = InscriptionFormSet(request.POST)
+        if form.is_valid() and person_formset.is_valid() and inscription_formset.is_valid():
+            #update the annotator to be the person making this edit
+            if request.user.first_name:
+                annotator = u'%s %s' % (request.user.first_name, request.user.last_name)
+            else:
+                annotator = u'%s' % request.user.username
+            annotation = Annotation.from_form_data(image_pid, annotator, form.cleaned_data, person_formset.cleaned_data, inscription_formset.cleaned_data, pid=anno_pid)
+            try:
+                response = annotation.update_in_bdr()
+                logger.info('%s edited annotation %s' % (request.user.username, anno_pid))
+                return HttpResponseRedirect(redirect_url)
+            except Exception as e:
+                logger.error('%s' % e)
+                return HttpResponseServerError('Internal server error. Check log.')
+        else:
+            context_data.update({'form': form, 'person_formset': person_formset, 'inscription_formset': inscription_formset})
+    else:
+        context_data.update(get_bound_edit_forms(anno_pid, AnnotationForm, PersonFormSet, InscriptionFormSet))
+
+    image_link = 'https://%s/viewers/image/zoom/%s' % (BDR_SERVER, image_pid)
+    context_data.update({'image_link': image_link})
+    return render(request, 'rome_templates/new_annotation.html', context_data)
+
+
+@login_required(login_url=reverse_lazy('rome_login'))
+def edit_annotation(request, book_id, page_id, anno_id):
+    anno_pid = '%s:%s' % (PID_PREFIX, anno_id)
+    page_pid = '%s:%s' % (PID_PREFIX, page_id)
+    return edit_annotation_base(request, page_pid, anno_pid, reverse('book_page_viewer', kwargs={'book_id': book_id, 'page_id': page_id}))
+
+
+@login_required(login_url=reverse_lazy('rome_login'))
+def edit_print_annotation(request, print_id, anno_id):
+    anno_pid = '%s:%s' % (PID_PREFIX, anno_id)
+    print_pid = '%s:%s' % (PID_PREFIX, print_id)
+    return edit_annotation_base(request, print_pid, anno_pid, reverse('specific_print', kwargs={'print_id': print_id}))
+
 
 @login_required(login_url=reverse_lazy('rome_login'))
 def new_genre(request):
@@ -578,7 +686,7 @@ def new_genre(request):
     else:
         form = NewGenreForm()
 
-    return render(request, 'rome_templates/new_genre.html', {'form': form})
+    return render(request, 'rome_templates/new_record.html', {'form': form})
 
 
 @login_required(login_url=reverse_lazy('rome_login'))
@@ -596,5 +704,23 @@ def new_role(request):
         form = NewRoleForm()
 
     #use the same template for genre and role
-    return render(request, 'rome_templates/new_genre.html', {'form': form})
+    return render(request, 'rome_templates/new_record.html', {'form': form})
+
+
+@login_required(login_url=reverse_lazy('rome_login'))
+def new_biography(request):
+    from .forms import NewBiographyForm
+    if request.method == 'POST':
+        form = NewBiographyForm(request.POST)
+        if form.is_valid():
+            bio = form.save()
+            return SimpleTemplateResponse('rome_templates/popup_response.html', {
+                            'pk_value': escape(bio._get_pk_val()),
+                            'value': escape(bio.serializable_value(bio._meta.pk.attname)),
+                            'obj': escapejs(bio)})
+    else:
+        form = NewBiographyForm()
+
+    #use the same template for genre and role
+    return render(request, 'rome_templates/new_record.html', {'form': form})
 
