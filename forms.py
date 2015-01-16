@@ -5,10 +5,18 @@ from .models import Biography, Essay, Genre, Role
 from .widgets import AddAnotherWidgetWrapper
 
 
-class BiographyModelForm(forms.ModelForm):
+class AdminBiographyForm(forms.ModelForm):
     bio = forms.CharField(widget=AdminPagedownWidget())
 
     class Meta:
+        model = Biography
+        exclude = ('trp_id',)
+
+
+class NewBiographyForm(forms.ModelForm):
+
+    class Meta:
+        fields = ('name',)
         model = Biography
 
 
@@ -63,9 +71,4 @@ class NewGenreForm(forms.ModelForm):
 class NewRoleForm(forms.ModelForm):
     class Meta:
         model = Role
-
-class NewBiographyForm(forms.ModelForm):
-    class Meta:
-        fields = ('name', 'trp_id')
-        model = Biography
 
