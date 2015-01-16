@@ -23,12 +23,21 @@ class Biography(models.Model):
         verbose_name_plural = 'biographies'
         ordering = ['name']
 
-
     def books(self):
         return Book.search(query='name:"%s"' % self.name )
 
     def prints(self):
         return Print.search(query='contributor:"%s"' % self.name )
+
+    def _get_trp_id(self):
+        last_bio = Biography.objects.order_by('-trp_id')[0]
+        last_trp_id = int(last_bio.trp_id)
+        new_trp_id = last_trp_id + 1
+        return '%04d' % new_trp_id
+
+    def save(self, *args, **kwargs):
+        self.trp_id = self._get_trp_id()
+        super(Biography, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return u'%s (%s)' % (self.name, self.trp_id)

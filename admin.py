@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
 from .models import Biography, Essay, Genre, Role
-from .forms import BiographyModelForm, EssayModelForm
+from .forms import AdminBiographyForm, EssayModelForm
 
 class BiographyAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'trp_id', 'external_id']
-    form = BiographyModelForm
+    form = AdminBiographyForm
 
 class EssayAdmin(admin.ModelAdmin):
     list_display = ['id', 'author', 'title']
