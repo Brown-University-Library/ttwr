@@ -1,5 +1,4 @@
 from django import forms
-import pycountry
 from pagedown.widgets import AdminPagedownWidget
 from .models import Biography, Essay, Genre, Role
 from .widgets import AddAnotherWidgetWrapper
@@ -40,16 +39,9 @@ class InscriptionForm(forms.Form):
 
 
 def get_language_choices():
-    #list of all the language names and codes
-    #(try to use the 2-letter code, but fall back to 3-letter if needed)
-    langs = [ ('', 'Select a Language'), ('it', 'Italian'), ('fr', 'French'), ('en', 'English') ]
-    for language in pycountry.languages:
-        try:
-            code = language.alpha2
-        except AttributeError:
-            code = language.bibliographic
-        if code not in ['en', 'fr', 'it']:
-            langs.append( (code, language.name) )
+    #selected language names and codes
+    langs = [('', 'Select a Language'), ('it', 'Italian'), ('fr', 'French'), ('en', 'English'),
+              ('la', 'Latin'), ('nl', 'Dutch'), ('de', 'German')]
     return langs
 
 
