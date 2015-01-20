@@ -1,5 +1,7 @@
 from django import forms
 from pagedown.widgets import AdminPagedownWidget
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout
 from .models import Biography, Essay, Genre, Role
 from .widgets import AddAnotherWidgetWrapper
 
@@ -32,10 +34,34 @@ class PersonForm(forms.Form):
     role = forms.ModelChoiceField(queryset=Role.objects.all().order_by('text'),
             widget=AddAnotherWidgetWrapper(forms.Select(), Role, 'new_role'))
 
+    def __init__(self, *args, **kwargs):
+        super(PersonForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.label_class = 'col-xs-2'
+        self.helper.field_class = 'col-xs-4'
+        self.helper.disable_csrf = True
+        self.helper.layout = Layout(
+                'person',
+                'role',
+                )
+
 
 class InscriptionForm(forms.Form):
     location = forms.CharField()
     text = forms.CharField()
+
+    def __init__(self, *args, **kwargs):
+        super(InscriptionForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.label_class = 'col-xs-2'
+        self.helper.field_class = 'col-xs-4'
+        self.helper.disable_csrf = True
+        self.helper.layout = Layout(
+                'location',
+                'text',
+                )
 
 
 def get_language_choices():
@@ -53,6 +79,21 @@ class AnnotationForm(forms.Form):
             widget=AddAnotherWidgetWrapper(forms.Select(), Genre, 'new_genre'))
     abstract = forms.CharField(required=False, widget=forms.Textarea)
     impression_date = forms.CharField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(AnnotationForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.label_class = 'col-xs-4'
+        self.helper.field_class = 'col-xs-8'
+        self.helper.layout = Layout(
+                'title',
+                'title_language',
+                'english_title',
+                'genre',
+                'abstract',
+                'impression_date'
+                )
 
 
 class NewGenreForm(forms.ModelForm):
