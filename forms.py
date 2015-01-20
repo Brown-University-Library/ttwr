@@ -34,15 +34,14 @@ class PersonForm(forms.Form):
     role = forms.ModelChoiceField(queryset=Role.objects.all().order_by('text'),
             widget=AddAnotherWidgetWrapper(forms.Select(), Role, 'new_role'))
 
-class PersonFormHelper(FormHelper):
-
     def __init__(self, *args, **kwargs):
-        super(PersonFormHelper, self).__init__(*args, **kwargs)
-        self.form_tag = False
-        self.label_class = 'col-xs-2'
-        self.field_class = 'col-xs-4'
-        self.disable_csrf = True
-        self.layout = Layout(
+        super(PersonForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.label_class = 'col-xs-2'
+        self.helper.field_class = 'col-xs-4'
+        self.helper.disable_csrf = True
+        self.helper.layout = Layout(
                 'person',
                 'role',
                 )
@@ -52,15 +51,14 @@ class InscriptionForm(forms.Form):
     location = forms.CharField()
     text = forms.CharField()
 
-class InscriptionFormHelper(FormHelper):
-
     def __init__(self, *args, **kwargs):
-        super(InscriptionFormHelper, self).__init__(*args, **kwargs)
-        self.form_tag = False
-        self.label_class = 'col-xs-2'
-        self.field_class = 'col-xs-4'
-        self.disable_csrf = True
-        self.layout = Layout(
+        super(InscriptionForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.label_class = 'col-xs-2'
+        self.helper.field_class = 'col-xs-4'
+        self.helper.disable_csrf = True
+        self.helper.layout = Layout(
                 'location',
                 'text',
                 )

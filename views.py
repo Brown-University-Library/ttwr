@@ -553,7 +553,7 @@ def essay_detail(request, essay_slug):
 @login_required(login_url=reverse_lazy('rome_login'))
 def new_annotation(request, book_id, page_id):
     page_pid = '%s:%s' % (PID_PREFIX, page_id)
-    from .forms import AnnotationForm, PersonForm, PersonFormHelper, InscriptionForm, InscriptionFormHelper
+    from .forms import AnnotationForm, PersonForm, InscriptionForm
     PersonFormSet = formset_factory(PersonForm)
     InscriptionFormSet = formset_factory(InscriptionForm)
     if request.method == 'POST':
@@ -579,11 +579,8 @@ def new_annotation(request, book_id, page_id):
         form = AnnotationForm()
 
     image_link = 'https://%s/viewers/image/zoom/%s' % (BDR_SERVER, page_pid)
-    person_helper = PersonFormHelper()
-    inscription_helper = InscriptionFormHelper()
     return render(request, 'rome_templates/new_annotation.html',
-            {'form': form, 'person_formset': person_formset, 'inscription_formset': inscription_formset, 'image_link': image_link,
-                'person_helper': person_helper, 'inscription_helper': inscription_helper})
+            {'form': form, 'person_formset': person_formset, 'inscription_formset': inscription_formset, 'image_link': image_link})
 
 
 @login_required(login_url=reverse_lazy('rome_login'))
@@ -627,7 +624,7 @@ def get_bound_edit_forms(annotation, AnnotationForm, PersonFormSet, InscriptionF
 
 
 def edit_annotation_base(request, image_pid, anno_pid, redirect_url):
-    from .forms import AnnotationForm, PersonForm, PersonFormHelper, InscriptionForm, InscriptionFormHelper
+    from .forms import AnnotationForm, PersonForm, InscriptionForm
     PersonFormSet = formset_factory(PersonForm)
     InscriptionFormSet = formset_factory(InscriptionForm)
     context_data = {}
@@ -657,9 +654,7 @@ def edit_annotation_base(request, image_pid, anno_pid, redirect_url):
         context_data.update(get_bound_edit_forms(annotation, AnnotationForm, PersonFormSet, InscriptionFormSet))
 
     image_link = 'https://%s/viewers/image/zoom/%s' % (BDR_SERVER, image_pid)
-    person_helper = PersonFormHelper()
-    inscription_helper = InscriptionFormHelper()
-    context_data.update({'image_link': image_link, 'person_helper': person_helper, 'inscription_helper': inscription_helper})
+    context_data.update({'image_link': image_link})
     return render(request, 'rome_templates/new_annotation.html', context_data)
 
 
