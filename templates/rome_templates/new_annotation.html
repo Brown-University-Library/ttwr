@@ -18,9 +18,18 @@
           display: none;
       }
       .add-another {
-          display:inline-block;
           padding-left:5px;
           vertical-align:middle;
+      }
+      .addanotherwidgetwrapper {
+          display:inline;
+          width:80%;
+      }
+      .submit {
+          margin-top: 20px;
+      }
+      .add_another_button {
+          margin-top: 5px;
       }
     </style>
   </head>
@@ -35,13 +44,13 @@
         <div id="person_formset">
             {% crispy person_formset person_helper %}
         </div>
-        <input type="button" value="Add Another Person" id="add_person">
+        <input class="add_another_button" type="button" value="Add Another Person" id="add_person">
         <h3>Inscriptions</h3>
         <div id="inscription_formset">
             {% crispy inscription_formset inscription_helper %}
         </div>
-        <input type="button" value="Add Another Inscription" id="add_inscription">
-        <p><input type="submit" value="Submit Annotation" /><br />
+        <input class="add_another_button" type="button" value="Add Another Inscription" id="add_inscription">
+        <p><input class="submit" type="submit" value="Submit Annotation" /><br />
         Note: please only submit once, and allow 5-10 seconds for the new annotation to be processed.</p>
       </form>
     </div>
