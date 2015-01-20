@@ -39,8 +39,8 @@ class PersonFormHelper(FormHelper):
     def __init__(self, *args, **kwargs):
         super(PersonFormHelper, self).__init__(*args, **kwargs)
         self.form_tag = False
-        self.label_class = 'col-xs-4'
-        self.field_class = 'col-xs-8'
+        self.label_class = 'col-xs-2'
+        self.field_class = 'col-xs-4'
         self.disable_csrf = True
         self.layout = Layout(
                 'person',
@@ -57,8 +57,8 @@ class InscriptionFormHelper(FormHelper):
     def __init__(self, *args, **kwargs):
         super(InscriptionFormHelper, self).__init__(*args, **kwargs)
         self.form_tag = False
-        self.label_class = 'col-xs-4'
-        self.field_class = 'col-xs-8'
+        self.label_class = 'col-xs-2'
+        self.field_class = 'col-xs-4'
         self.disable_csrf = True
         self.layout = Layout(
                 'location',
