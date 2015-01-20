@@ -33,12 +33,12 @@
         {% crispy form %}
         <h3>People</h3>
         <div id="person_formset">
-            {% crispy person_formset %}
+            {% crispy person_formset person_helper %}
         </div>
         <input type="button" value="Add Another Person" id="add_person">
         <h3>Inscriptions</h3>
         <div id="inscription_formset">
-            {% crispy inscription_formset %}
+            {% crispy inscription_formset inscription_helper %}
         </div>
         <input type="button" value="Add Another Inscription" id="add_inscription">
         <p><input type="submit" value="Submit Annotation" /><br />
@@ -46,10 +46,10 @@
       </form>
     </div>
     <div id="person_empty_form" style="display:none">
-        {{ person_formset.empty_form|crispy }}
+        {% crispy person_formset.empty_form person_helper %}
     </div>
     <div id="inscription_empty_form" style="display:none">
-        {{ inscription_formset.empty_form|crispy }}
+        {% crispy inscription_formset.empty_form inscription_helper %}
     </div>
     <script>
     //modified from here: http://stackoverflow.com/questions/501719/dynamically-adding-a-form-to-a-django-formset-with-ajax
