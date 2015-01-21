@@ -78,6 +78,10 @@ function expand_title(title,num)
                 <div style="margin-bottom:5px"><b>Abstract:</b> {{ annotation.abstract }} </div>
                 {% endif %}
                 
+                {% if annotation.has_elements.genre%}
+                <div style="margin-bottom:5px"><b>Genre:</b> {{ annotation.genre }} </div>
+                {% endif %}
+                
                 {% if annotation.has_elements.origin %}
                 <div style="margin-bottom:5px"><b>Origin:</b> {{ annotation.origin }} </div>
                 {% endif %}

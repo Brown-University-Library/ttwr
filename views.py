@@ -163,7 +163,7 @@ def get_annotation_detail(annotation):
     curr_annot['xml_uri'] = annotation['xml_uri']
     if 'edit_link' in annotation:
         curr_annot['edit_link'] = annotation['edit_link']
-    curr_annot['has_elements'] = {'inscriptions':0, 'annotations':0, 'annotator':0, 'origin':0, 'title':0, 'abstract':0}
+    curr_annot['has_elements'] = {'inscriptions':0, 'annotations':0, 'annotator':0, 'origin':0, 'title':0, 'abstract':0, 'genre':0}
 
     root = ET.fromstring(requests.get(curr_annot['xml_uri']).content)
     for title in root.getiterator('{http://www.loc.gov/mods/v3}titleInfo'):
@@ -186,6 +186,9 @@ def get_annotation_detail(annotation):
     for abstract in root.getiterator('{http://www.loc.gov/mods/v3}abstract'):
         curr_annot['abstract']=abstract.text
         curr_annot['has_elements']['abstract']=1
+    for genre in root.getiterator('{http://www.loc.gov/mods/v3}genre'):
+        curr_annot['genre'] = genre.text
+        curr_annot['has_elements']['genre']=1
     for origin in root.getiterator('{http://www.loc.gov/mods/v3}originInfo'):
         try:
             curr_annot['origin']=origin[0].date
