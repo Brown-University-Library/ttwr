@@ -475,7 +475,7 @@ def _get_book_pid_from_page_pid(page_pid):
             return None
 
 def filter_bios(fq, bio_list):
-    return [b for b in bio_list if fq in b.roles]
+    return [b for b in bio_list if (b.roles and fq in b.roles)]
 
 def biography_list(request):
     template = loader.get_template('rome_templates/biography_list.html')
