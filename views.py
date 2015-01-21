@@ -161,7 +161,8 @@ def page_detail(request, page_id, book_id=None):
 def get_annotation_detail(annotation):
     curr_annot={}
     curr_annot['xml_uri'] = annotation['xml_uri']
-    curr_annot['edit_link'] = annotation['edit_link']
+    if 'edit_link' in annotation:
+        curr_annot['edit_link'] = annotation['edit_link']
     curr_annot['has_elements'] = {'inscriptions':0, 'annotations':0, 'annotator':0, 'origin':0, 'title':0, 'abstract':0}
 
     root = ET.fromstring(requests.get(curr_annot['xml_uri']).content)
