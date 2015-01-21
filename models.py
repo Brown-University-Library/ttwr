@@ -333,6 +333,8 @@ class Annotation(object):
                 note.type = 'inscription'
                 note.label = i['location']
                 self._mods_obj.notes.append(note)
+        #clear out previous annotator notes
+        self._mods_obj.notes = [note for note in self._mods_obj.notes if note.type != 'resp']
         annotator_note = mods.Note(text=self._annotator)
         annotator_note.type = 'resp'
         self._mods_obj.notes.append(annotator_note)
