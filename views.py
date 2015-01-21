@@ -163,7 +163,7 @@ def get_annotation_detail(annotation):
     curr_annot['xml_uri'] = annotation['xml_uri']
     if 'edit_link' in annotation:
         curr_annot['edit_link'] = annotation['edit_link']
-    curr_annot['has_elements'] = {'inscriptions':0, 'annotations':0, 'annotator':0, 'origin':0, 'title':0, 'abstract':0}
+    curr_annot['has_elements'] = {'inscriptions':0, 'annotations':0, 'annotator':0, 'origin':0, 'title':0, 'abstract':0, 'genre':0}
 
     root = ET.fromstring(requests.get(curr_annot['xml_uri']).content)
     for title in root.getiterator('{http://www.loc.gov/mods/v3}titleInfo'):
@@ -186,6 +186,9 @@ def get_annotation_detail(annotation):
     for abstract in root.getiterator('{http://www.loc.gov/mods/v3}abstract'):
         curr_annot['abstract']=abstract.text
         curr_annot['has_elements']['abstract']=1
+    for genre in root.getiterator('{http://www.loc.gov/mods/v3}genre'):
+        curr_annot['genre'] = genre.text
+        curr_annot['has_elements']['genre']=1
     for origin in root.getiterator('{http://www.loc.gov/mods/v3}originInfo'):
         try:
             curr_annot['origin']=origin[0].date
@@ -475,7 +478,7 @@ def _get_book_pid_from_page_pid(page_pid):
             return None
 
 def filter_bios(fq, bio_list):
-    return [b for b in bio_list if fq in b.roles]
+    return [b for b in bio_list if (b.roles and fq in b.roles)]
 
 def biography_list(request):
     template = loader.get_template('rome_templates/biography_list.html')
@@ -559,8 +562,8 @@ def new_annotation(request, book_id, page_id):
     InscriptionFormSet = formset_factory(InscriptionForm)
     if request.method == 'POST':
         form = AnnotationForm(request.POST)
-        person_formset = PersonFormSet(request.POST)
-        inscription_formset = InscriptionFormSet(request.POST)
+        person_formset = PersonFormSet(request.POST, prefix='people')
+        inscription_formset = InscriptionFormSet(request.POST, prefix='inscriptions')
         if form.is_valid() and person_formset.is_valid() and inscription_formset.is_valid():
             if request.user.first_name:
                 annotator = u'%s %s' % (request.user.first_name, request.user.last_name)
@@ -575,8 +578,8 @@ def new_annotation(request, book_id, page_id):
                 logger.error('%s' % e)
                 return HttpResponseServerError('Internal server error. Check log.')
     else:
-        inscription_formset = InscriptionFormSet()
-        person_formset = PersonFormSet()
+        inscription_formset = InscriptionFormSet(prefix='inscriptions')
+        person_formset = PersonFormSet(prefix='people')
         form = AnnotationForm()
 
     image_link = 'https://%s/viewers/image/zoom/%s' % (BDR_SERVER, page_pid)
@@ -592,8 +595,8 @@ def new_print_annotation(request, print_id):
     InscriptionFormSet = formset_factory(InscriptionForm)
     if request.method == 'POST':
         form = AnnotationForm(request.POST)
-        person_formset = PersonFormSet(request.POST)
-        inscription_formset = InscriptionFormSet(request.POST)
+        person_formset = PersonFormSet(request.POST, prefix='people')
+        inscription_formset = InscriptionFormSet(request.POST, prefix='inscriptions')
         if form.is_valid() and person_formset.is_valid() and inscription_formset.is_valid():
             if request.user.first_name:
                 annotator = u'%s %s' % (request.user.first_name, request.user.last_name)
@@ -608,8 +611,8 @@ def new_print_annotation(request, print_id):
                 logger.error('%s' % e)
                 return HttpResponseServerError('Internal server error. Check log.')
     else:
-        inscription_formset = InscriptionFormSet()
-        person_formset = PersonFormSet()
+        inscription_formset = InscriptionFormSet(prefix='inscriptions')
+        person_formset = PersonFormSet(prefix='people')
         form = AnnotationForm()
 
     image_link = 'https://%s/viewers/image/zoom/%s' % (BDR_SERVER, print_pid)
@@ -618,8 +621,8 @@ def new_print_annotation(request, print_id):
 
 
 def get_bound_edit_forms(annotation, AnnotationForm, PersonFormSet, InscriptionFormSet):
-    person_formset = PersonFormSet(initial=annotation.get_person_formset_data())
-    inscription_formset = InscriptionFormSet(initial=annotation.get_inscription_formset_data())
+    person_formset = PersonFormSet(initial=annotation.get_person_formset_data(), prefix='people')
+    inscription_formset = InscriptionFormSet(initial=annotation.get_inscription_formset_data(), prefix='inscriptions')
     form = AnnotationForm(annotation.get_form_data())
     return {'form': form, 'person_formset': person_formset, 'inscription_formset': inscription_formset}
 
@@ -633,8 +636,8 @@ def edit_annotation_base(request, image_pid, anno_pid, redirect_url):
     if request.method == 'POST':
         #this part here is similar to posting a new annotation
         form = AnnotationForm(request.POST)
-        person_formset = PersonFormSet(request.POST)
-        inscription_formset = InscriptionFormSet(request.POST)
+        person_formset = PersonFormSet(request.POST, prefix='people')
+        inscription_formset = InscriptionFormSet(request.POST, prefix='inscriptions')
         if form.is_valid() and person_formset.is_valid() and inscription_formset.is_valid():
             #update the annotator to be the person making this edit
             if request.user.first_name:

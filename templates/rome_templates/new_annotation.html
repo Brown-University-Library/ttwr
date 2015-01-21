@@ -64,14 +64,14 @@
     <script>
     //modified from here: http://stackoverflow.com/questions/501719/dynamically-adding-a-form-to-a-django-formset-with-ajax
     $('#add_person').click(function() {
-        var p_form_idx = $('#person_formset').find('#id_form-TOTAL_FORMS').val();
+        var p_form_idx = $('#person_formset').find('#id_people-TOTAL_FORMS').val();
         $('#person_formset').append($('#person_empty_form').html().replace(/__prefix__/g, p_form_idx));
-        $('#person_formset').find('#id_form-TOTAL_FORMS').val(parseInt(p_form_idx) + 1);
+        $('#person_formset').find('#id_people-TOTAL_FORMS').val(parseInt(p_form_idx) + 1);
     });
     $('#add_inscription').click(function() {
-        var i_form_idx = $('#inscription_formset').find('#id_form-TOTAL_FORMS').val();
+        var i_form_idx = $('#inscription_formset').find('#id_inscriptions-TOTAL_FORMS').val();
         $('#inscription_formset').append($('#inscription_empty_form').html().replace(/__prefix__/g, i_form_idx));
-        $('#inscription_formset').find('#id_form-TOTAL_FORMS').val(parseInt(i_form_idx) + 1);
+        $('#inscription_formset').find('#id_inscriptions-TOTAL_FORMS').val(parseInt(i_form_idx) + 1);
     });
     </script>
   </body>
