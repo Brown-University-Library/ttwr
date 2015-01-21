@@ -655,7 +655,11 @@ def edit_annotation_base(request, image_pid, anno_pid, redirect_url):
         else:
             context_data.update({'form': form, 'person_formset': person_formset, 'inscription_formset': inscription_formset})
     else:
-        context_data.update(get_bound_edit_forms(annotation, AnnotationForm, PersonFormSet, InscriptionFormSet))
+        try:
+            context_data.update(get_bound_edit_forms(annotation, AnnotationForm, PersonFormSet, InscriptionFormSet))
+        except Exception as e:
+            logger.error(u'loading data to edit %s: %s' % (anno_pid, e))
+            return HttpResponseServerError('Internal server error.')
 
     image_link = 'https://%s/viewers/image/zoom/%s' % (BDR_SERVER, image_pid)
     context_data.update({'image_link': image_link})

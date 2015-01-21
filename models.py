@@ -261,7 +261,11 @@ class Annotation(object):
             for name in self._mods_obj.names:
                 p = {}
                 trp_id = name.node.get('{%s}href' % app_settings.XLINK_NAMESPACE)
-                person = Biography.objects.get(trp_id=trp_id)
+                trp_id = '%04d' % int(trp_id)
+                try:
+                    person = Biography.objects.get(trp_id=trp_id)
+                except:
+                    raise Exception('no person with trp_id %s' % trp_id)
                 p['person'] = person
                 role_text = name.roles[0].text
                 role = Role.objects.get(text=role_text)
