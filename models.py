@@ -220,8 +220,8 @@ class Annotation(object):
         self._image_pid = image_pid #pid of the object that we're adding the annotation for
         self._annotator = annotator
         self._form_data = form_data
-        self._person_formset_data = [p for p in person_formset_data if p]
-        self._inscription_formset_data = [i for i in inscription_formset_data if i]
+        self._person_formset_data = [p for p in person_formset_data if p and p['person']]
+        self._inscription_formset_data = [i for i in inscription_formset_data if i and i['text']]
         self._mods_obj = mods_obj
         self._pid = pid
 
@@ -229,8 +229,8 @@ class Annotation(object):
         #this is for adding the new form data when updating an annotation
         self._annotator = annotator
         self._form_data = form_data
-        self._person_formset_data = [p for p in person_formset_data if p]
-        self._inscription_formset_data = [i for i in inscription_formset_data if i]
+        self._person_formset_data = [p for p in person_formset_data if p and p['person']]
+        self._inscription_formset_data = [i for i in inscription_formset_data if i and i['text']]
 
     def get_form_data(self):
         if not self._form_data:
