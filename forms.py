@@ -11,7 +11,6 @@ class AdminBiographyForm(forms.ModelForm):
 
     class Meta:
         model = Biography
-        exclude = ('trp_id',)
 
 
 class NewBiographyForm(forms.ModelForm):
