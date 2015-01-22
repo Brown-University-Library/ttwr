@@ -79,11 +79,11 @@ function dismissAddAnotherPopup(win, newId, newRepr) {
             //we're adding a special field, so add the new option to the empty form as well
             if (role_re.test(name)) {
                 o1 = new Option(newRepr, newId);
-                empty_role_elem = document.getElementById('id_form-__prefix__-role');
+                empty_role_elem = document.getElementById('id_people-__prefix__-role');
                 empty_role_elem.options[empty_role_elem.options.length] = o1;
             } else if (person_re.test(name)) {
                 o2 = new Option(newRepr, newId);
-                empty_person_elem = document.getElementById('id_form-__prefix__-person');
+                empty_person_elem = document.getElementById('id_people-__prefix__-person');
                 empty_person_elem.options[empty_person_elem.options.length] = o2;
             }
         } else if (elemName == 'INPUT') {

@@ -11,7 +11,6 @@ class AdminBiographyForm(forms.ModelForm):
 
     class Meta:
         model = Biography
-        exclude = ('trp_id',)
 
 
 class NewBiographyForm(forms.ModelForm):
@@ -29,9 +28,9 @@ class EssayModelForm(forms.ModelForm):
 
 
 class PersonForm(forms.Form):
-    person = forms.ModelChoiceField(queryset=Biography.objects.all().order_by('name'),
+    person = forms.ModelChoiceField(queryset=Biography.objects.all().order_by('name'), required=False,
             widget=AddAnotherWidgetWrapper(forms.Select(), Biography, 'new_biography'))
-    role = forms.ModelChoiceField(queryset=Role.objects.all().order_by('text'),
+    role = forms.ModelChoiceField(queryset=Role.objects.all().order_by('text'), required=False,
             widget=AddAnotherWidgetWrapper(forms.Select(), Role, 'new_role'))
 
     def __init__(self, *args, **kwargs):
@@ -48,8 +47,8 @@ class PersonForm(forms.Form):
 
 
 class InscriptionForm(forms.Form):
-    location = forms.CharField()
-    text = forms.CharField()
+    location = forms.CharField(required=False)
+    text = forms.CharField(required=False)
 
     def __init__(self, *args, **kwargs):
         super(InscriptionForm, self).__init__(*args, **kwargs)
