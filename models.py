@@ -244,7 +244,7 @@ class Annotation(object):
                 self._form_data['title_language'] = title1_lang
             if len(self._mods_obj.title_info_list) > 1:
                 self._form_data['english_title'] = self._mods_obj.title_info_list[1].title
-            if self._mods_obj.genres:
+            if self._mods_obj.genres and self._mods_obj.genres[0].text:
                 genre = Genre.objects.get(text=self._mods_obj.genres[0].text)
                 self._form_data['genre'] = genre.id
             if self._mods_obj.abstract:
