@@ -321,26 +321,26 @@ class Annotation(object):
             date_other = mods.DateOther(date=self._form_data['impression_date'])
             date_other.type = 'impression'
             self._mods_obj.origin_info.other.append(date_other)
-        if self._person_formset_data:
-            self._mods_obj.names = [] #clear out any old names
-            for p in self._person_formset_data:
-                name = mods.Name()
-                np = mods.NamePart(text=p['person'].name)
-                name.name_parts.append(np)
-                role = mods.Role(text=p['role'].text)
-                name.roles.append(role)
-                href = '{%s}href' % app_settings.XLINK_NAMESPACE
-                name.node.set(href, p['person'].trp_id)
-                self._mods_obj.names.append(name)
-        if self._inscription_formset_data:
-            self._mods_obj.notes = [] #clear out any old notes data
-            for i in self._inscription_formset_data:
-                note = mods.Note(text=i['text'])
-                note.type = 'inscription'
-                note.label = i['location']
-                self._mods_obj.notes.append(note)
-        #clear out previous annotator notes
-        self._mods_obj.notes = [note for note in self._mods_obj.notes if note.type != 'resp']
+        #clear out any old names:
+        #   if this is a new object, there aren't any names anyway.
+        #   if this is an update, either the new names will be put in, or they don't want any names.
+        self._mods_obj.names = []
+        for p in self._person_formset_data:
+            name = mods.Name()
+            np = mods.NamePart(text=p['person'].name)
+            name.name_parts.append(np)
+            role = mods.Role(text=p['role'].text)
+            name.roles.append(role)
+            href = '{%s}href' % app_settings.XLINK_NAMESPACE
+            name.node.set(href, p['person'].trp_id)
+            self._mods_obj.names.append(name)
+        #clear out old notes data, preserving any annotor info
+        self._mods_obj.notes = [note for note in self._mods_obj.notes if note.type == 'resp']
+        for i in self._inscription_formset_data:
+            note = mods.Note(text=i['text'])
+            note.type = 'inscription'
+            note.label = i['location']
+            self._mods_obj.notes.append(note)
         annotator_note = mods.Note(text=self._annotator)
         annotator_note.type = 'resp'
         self._mods_obj.notes.append(annotator_note)
