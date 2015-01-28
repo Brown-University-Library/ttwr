@@ -195,9 +195,9 @@ def get_annotation_detail(annotation):
             curr_annot['has_elements']['origin']=1
         except:
             pass
-    curr_annot['inscriptions']=[]
-    curr_annot['annotations']=[]
-    curr_annot['annotator']=""
+    curr_annot['inscriptions'] = []
+    curr_annot['annotations'] = []
+    curr_annot['annotator'] = ""
     for note in root.getiterator('{http://www.loc.gov/mods/v3}note'):
         curr_note={}
         for att in note.attrib:
@@ -211,8 +211,10 @@ def get_annotation_detail(annotation):
             curr_annot['annotations'].append(curr_note['displayLabel']+": "+curr_note['text'])
             curr_annot['has_elements']['annotations']=1
         elif curr_note['type'].lower()=='resp' and note.text:
-            curr_annot['annotator']=note.text
-            curr_annot['has_elements']['annotator']=1
+            #display for the first annotator; ignore later annotators for now
+            if not curr_annot['annotator']:
+                curr_annot['annotator'] = note.text
+                curr_annot['has_elements']['annotator'] = 1
     return curr_annot
 
 
