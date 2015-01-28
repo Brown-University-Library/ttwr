@@ -99,7 +99,6 @@ class BDRObject(object):
         json_uri='https://%s/api/pub/items/%s/?q=*&fl=*' % (app_settings.BDR_SERVER, pid)
         resp = requests.get(json_uri)
         if not resp.ok:
-             return {"id": json_uri, "title":resp.status_code}
              return cls()
         return cls(data=json.loads(resp.text))
 
