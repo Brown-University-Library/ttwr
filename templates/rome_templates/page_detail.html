@@ -1,5 +1,8 @@
+{% load static from staticfiles %}
+
 <head>
 <title>{{title}}</title>
+<script src="{% static 'rome/js/jquery-1.11.1.min.js' %}" type="text/javascript"></script>
 <script type="text/javascript">
 function expand_title(title,num)
 {
@@ -14,7 +17,59 @@ function expand_title(title,num)
         }
     }
 }
+
+{% if book_mode %}
+var BDR_SERVER = "{{ server_url }}";
+var pid = "{{ print_id }}"
+
+$(document).ready(function() {
+    
+    var next_link = $("#next_page");
+    var prev_link = $("#prev_page");
+
+    var prev_pid = "{{ prev_pid }}";
+    var next_pid = "{{ next_pid }}";
+
+    if(prev_pid != "none") {
+        prev_link.attr("href", "{{ back_to_thumbnail_href }}" + prev_pid);
+        prev_link.html("Previous");
+    } else {
+        $("#prev_page").remove();
+    }
+
+    if(next_pid != "none") {
+        next_link.attr("href", "{{ back_to_thumbnail_href }}" + next_pid);
+        next_link.html("Next");
+    } else {
+        $("#next_page").remove();
+    }
+
+});
+
+{% endif %}
 </script>
+<style type="text/css">
+    a#prev_page {
+        display: block;
+        margin: 10px;
+        margin-left: 0.5in;
+        float:left;
+        font-size: 12pt;
+    }
+
+    a#next_page {
+        display: block;
+        margin:10px;
+        margin-left: 5.5in;
+        float:left;
+        font-size: 12pt;
+    }
+
+    div#prevnext {
+        margin: 5px;
+        height: 20px;
+    }
+</style>
 </head>
 {% load static from staticfiles %}
 {% load url from future %}
@@ -46,6 +101,11 @@ function expand_title(title,num)
                 {% endif %}
 
             </ol>
+        </div>
+
+        <div id="prevnext">
+            <a id="prev_page">Loading...</a>
+            <a id="next_page">Loading...</a>
         </div>
     </div>
     <br />
