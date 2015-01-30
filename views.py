@@ -154,6 +154,33 @@ def page_detail(request, page_id, book_id=None):
         curr_annot = get_annotation_detail(annotation)
         context['annotations'].append(curr_annot)
 
+    # Previous/next page links
+    pagenum = int(page_json['rel_has_pagination_ssim'][0])
+    context['pagenum'] = pagenum
+
+    # Initialize both to none
+    prev_pid = "none"
+    next_pid = "none"
+
+    # If the page numbers don't match the list indices, search for the correct page
+    if(book_json['relations']['hasPart'][pagenum - 1]['pid'] != page_pid):
+        for page in book_json['relations']['hasPart']:
+            if(int(page['rel_has_pagination_ssim']) == (pagenum-1)):
+                prev_pid = page['pid'].split(':')[-1]
+            if(int(page['rel_has_pagination_ssim']) == (pagenum+1)):
+                next_pid = page['pid'].split(':')[-1]
+    else:
+        
+        if(pagenum != 1):
+            prev_pid = book_json['relations']['hasPart'][pagenum - 2]['pid'].split(":")[-1]
+        try:
+            next_pid = book_json['relations']['hasPart'][pagenum]['pid'].split(":")[-1]
+        except IndexError:
+            next_pid = "none"
+
+    context['prev_pid'] = prev_pid
+    context['next_pid'] = next_pid
+
     c=RequestContext(request,context)
     return HttpResponse(template.render(c))
 
