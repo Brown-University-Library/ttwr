@@ -154,6 +154,39 @@ def page_detail(request, page_id, book_id=None):
         curr_annot = get_annotation_detail(annotation)
         context['annotations'].append(curr_annot)
 
+    # Previous/next page queries
+    pagenum = int(page_json['rel_has_pagination_ssim'][0])
+    base_url = "https://%s/api/pub/search/?q=ir_collection_id:621+AND+rel_is_part_of_ssim:\"%s\"+AND+%s+AND+display:BDR_PUBLIC&fl=pid,rel_has_pagination_ssim,rel_is_part_of_ssim"
+    full_url = base_url % (BDR_SERVER, book_pid, "(rel_has_pagination_ssim:%d+OR+rel_has_pagination_ssim:%d)" % (pagenum - 1, pagenum + 1))
+
+    r = requests.get(full_url, timeout=60)
+    if not r.ok:
+        logger.error(u'TTWR - error retrieving url %s' % full_url)
+        logger.error(u'TTWR - response: %s - %s' % (r.status_code, r.text))
+        return HttpResponseServerError('Error retrieving content.')
+
+    nextprev_json = json.loads(r.text)
+    pages = nextprev_json['response']['docs']
+    if(nextprev_json['response']['numFound'] == 2):
+        if(int(pages[0]['rel_has_pagination_ssim'][0]) == pagenum - 1):
+            context['prev_pid'] = pages[0]['pid'].split(':')[-1]
+            context['next_pid'] = pages[1]['pid'].split(':')[-1]
+        else:
+            context['prev_pid'] = pages[1]['pid'].split(':')[-1]
+            context['next_pid'] = pages[0]['pid'].split(':')[-1]
+    elif(nextprev_json['response']['numFound'] == 1):
+        if(int(pages[0]['rel_has_pagination_ssim'][0]) == pagenum - 1):
+            context['prev_pid'] = pages[0]['pid'].split(':')[-1]
+            context['next_pid'] = "none"
+        else:
+            context['prev_pid'] = "none"
+            context['next_pid'] = pages[0]['pid'].split(':')[-1]
+    else:
+        context['prev_pid'] = "none"
+        context['next_pid'] = "none"
+
+
+
     c=RequestContext(request,context)
     return HttpResponse(template.render(c))
 
