@@ -154,38 +154,32 @@ def page_detail(request, page_id, book_id=None):
         curr_annot = get_annotation_detail(annotation)
         context['annotations'].append(curr_annot)
 
-    # Previous/next page queries
+    # Previous/next page links
     pagenum = int(page_json['rel_has_pagination_ssim'][0])
-    base_url = "https://%s/api/pub/search/?q=ir_collection_id:621+AND+rel_is_part_of_ssim:\"%s\"+AND+%s+AND+display:BDR_PUBLIC&fl=pid,rel_has_pagination_ssim,rel_is_part_of_ssim"
-    full_url = base_url % (BDR_SERVER, book_pid, "(rel_has_pagination_ssim:%d+OR+rel_has_pagination_ssim:%d)" % (pagenum - 1, pagenum + 1))
+    context['pagenum'] = pagenum
 
-    r = requests.get(full_url, timeout=60)
-    if not r.ok:
-        logger.error(u'TTWR - error retrieving url %s' % full_url)
-        logger.error(u'TTWR - response: %s - %s' % (r.status_code, r.text))
-        return HttpResponseServerError('Error retrieving content.')
+    # Initialize both to none
+    prev_pid = "none"
+    next_pid = "none"
 
-    nextprev_json = json.loads(r.text)
-    pages = nextprev_json['response']['docs']
-    if(nextprev_json['response']['numFound'] == 2):
-        if(int(pages[0]['rel_has_pagination_ssim'][0]) == pagenum - 1):
-            context['prev_pid'] = pages[0]['pid'].split(':')[-1]
-            context['next_pid'] = pages[1]['pid'].split(':')[-1]
-        else:
-            context['prev_pid'] = pages[1]['pid'].split(':')[-1]
-            context['next_pid'] = pages[0]['pid'].split(':')[-1]
-    elif(nextprev_json['response']['numFound'] == 1):
-        if(int(pages[0]['rel_has_pagination_ssim'][0]) == pagenum - 1):
-            context['prev_pid'] = pages[0]['pid'].split(':')[-1]
-            context['next_pid'] = "none"
-        else:
-            context['prev_pid'] = "none"
-            context['next_pid'] = pages[0]['pid'].split(':')[-1]
+    # If the page numbers don't match the list indices, search for the correct page
+    if(book_json['relations']['hasPart'][pagenum - 1]['pid'] != page_pid):
+        for page in book_json['relations']['hasPart']:
+            if(int(page['rel_has_pagination_ssim']) == (pagenum-1)):
+                prev_pid = page['pid'].split(':')[-1]
+            if(int(page['rel_has_pagination_ssim']) == (pagenum+1)):
+                next_pid = page['pid'].split(':')[-1]
     else:
-        context['prev_pid'] = "none"
-        context['next_pid'] = "none"
+        
+        if(pagenum != 1):
+            prev_pid = book_json['relations']['hasPart'][pagenum - 2]['pid'].split(":")[-1]
+        try:
+            next_pid = book_json['relations']['hasPart'][pagenum]['pid'].split(":")[-1]
+        except IndexError:
+            next_pid = "none"
 
-
+    context['prev_pid'] = prev_pid
+    context['next_pid'] = next_pid
 
     c=RequestContext(request,context)
     return HttpResponse(template.render(c))
