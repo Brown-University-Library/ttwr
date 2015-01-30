@@ -351,6 +351,7 @@ class Annotation(object):
     def _get_params(self):
         params = {'identity': app_settings.BDR_IDENTITY, 'authorization_code': app_settings.BDR_AUTH_CODE}
         params['mods'] = json.dumps({u'xml_data': self.to_mods_xml()})
+        params['ir'] = json.dumps({'parameters': {'ir_collection_id': 621}})
         params['rels'] = json.dumps({u'isAnnotationOf': self._image_pid})
         params['rights'] = json.dumps({'parameters': {'owner_id': app_settings.BDR_IDENTITY, 'additional_rights': 'BDR_PUBLIC#display'}})
         params['content_model'] = 'Annotation'
