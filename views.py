@@ -416,13 +416,17 @@ def biography_detail(request, trp_id):
     context['bio'] = bio
     context['trp_id'] = trp_id
     context['books'] = bio.books()
-    context['prints'] = bio.prints()
+    prints_search = bio.prints()
 
     # Pages related to the person by annotation
-    # TODO: Refactor to use annotation objects and associated pages
-    context['pages_books'] = _pages_for_person([bio.name])
-    return HttpResponse(template.render(context))
+    (pages_books, prints_mentioned) = bio.annotations_by_books_and_prints()
+    context['pages_books'] = pages_books
+    # merge the two lists of prints
+    prints_merged = [x for x in prints_mentioned if x not in prints_search]
+    prints_merged[len(prints_merged):] = prints_search
 
+    context['prints'] = prints_merged
+    return HttpResponse(template.render(context))
 
 def person_detail_tei(request, trp_id):
     pid, name = _get_info_from_trp_id(trp_id)
@@ -452,6 +456,7 @@ def _pages_for_person(name, group_amount=50):
     pages_json = json.loads(requests.get(query_uri).text)
     pages = dict([(page['rel_is_annotation_of_ssim'][0].replace(u'bdr:', u''), page) for page in pages_json['response']['docs']])
     books = {}
+    prints = []
     pages_to_look_up = []
     for page_id in pages:
         page = pages[page_id]
@@ -465,22 +470,29 @@ def _pages_for_person(name, group_amount=50):
     while(i < num_pages):
         group = pages_to_look_up[i : i+group_amount]
         pids = "(pid:" + ("+OR+pid:".join(group)) + ")"
-        book_query = u"https://%s/api/pub/search/?q=%s+AND+display:BDR_PUBLIC&fl=pid,primary_title,nonsort,rel_is_part_of_ssim,rel_has_pagination_ssim&rows=%s" % (BDR_SERVER, pids, group_amount)
+        book_query = u"https://%s/api/pub/search/?q=%s+AND+display:BDR_PUBLIC&fl=pid,primary_title,nonsort,object_type,rel_is_part_of_ssim,rel_has_pagination_ssim&rows=%s" % (BDR_SERVER, pids, group_amount)
         data = json.loads(requests.get(book_query).text)
         book_response = data['response']['docs']
         for p in book_response:
-            pid = p['rel_is_part_of_ssim'][0].replace(u'bdr:', u'')
-            n = p['rel_has_pagination_ssim'][0]
-            if(pid not in books):
-                books[pid] = {}
-                books[pid]['title'] = _get_full_title(p)
-                books[pid]['pages'] = {}
-                books[pid]['pid'] = pid
-            books[pid]['pages'][int(n)] = pages[p['pid'].replace(u'bdr:', u'')]
+            if(p['object_type'] == "image-compound"):
+                pid = p['pid'].replace(u'bdr:',u'')
+                p_obj = {}
+                p_obj['title'] = _get_full_title(p)
+                p_obj['pid'] = p['pid']
+                prints.append(p_obj)
+            else:
+                pid = p['rel_is_part_of_ssim'][0].replace(u'bdr:', u'')
+                n = p['rel_has_pagination_ssim'][0]
+                if(pid not in books):
+                    books[pid] = {}
+                    books[pid]['title'] = _get_full_title(p)
+                    books[pid]['pages'] = {}
+                    books[pid]['pid'] = pid
+                books[pid]['pages'][int(n)] = pages[p['pid'].replace(u'bdr:', u'')]
 
         i += group_amount
 
-    return books
+    return books,prints
 
 def _get_full_title(data):
     if 'primary_title' not in data:
