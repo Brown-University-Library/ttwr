@@ -416,13 +416,17 @@ def biography_detail(request, trp_id):
     context['bio'] = bio
     context['trp_id'] = trp_id
     context['books'] = bio.books()
-    context['prints'] = bio.prints()
+    prints_search = bio.prints()
 
     # Pages related to the person by annotation
-    # TODO: Refactor to use annotation objects and associated pages
-    context['pages_books'] = _pages_for_person([bio.name])
-    return HttpResponse(template.render(context))
+    (pages_books, prints_mentioned) = bio.annotations_by_books_and_prints()
+    context['pages_books'] = pages_books
+    # merge the two lists of prints
+    prints_merged = [x for x in prints_mentioned if x not in prints_search]
+    prints_merged[len(prints_merged):] = prints_search
 
+    context['prints'] = prints_merged
+    return HttpResponse(template.render(context))
 
 def person_detail_tei(request, trp_id):
     pid, name = _get_info_from_trp_id(trp_id)
@@ -443,44 +447,6 @@ def _get_info_from_trp_id(trp_id):
         if data['response']['numFound'] > 0:
             return (data['response']['docs'][0]['pid'], data['response']['docs'][0]['name'])
     return None, None
-
-
-def _pages_for_person(name, group_amount=50):
-    # print >>sys.stderr, ("Retrieving pages for person %s" % name)
-    num_prints_estimate = 6000
-    query_uri = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:"annotation"+AND+contributor:"%s"+AND+display:BDR_PUBLIC&rows=%s&fl=rel_is_annotation_of_ssim,primary_title,pid,nonsort' % (BDR_SERVER, name[0], num_prints_estimate)
-    pages_json = json.loads(requests.get(query_uri).text)
-    pages = dict([(page['rel_is_annotation_of_ssim'][0].replace(u'bdr:', u''), page) for page in pages_json['response']['docs']])
-    books = {}
-    pages_to_look_up = []
-    for page_id in pages:
-        page = pages[page_id]
-        page['title'] = _get_full_title(page)
-        page['page_id'] = page_id
-        pages_to_look_up.append(page['rel_is_annotation_of_ssim'][0].replace(u':', u'\:'))
-        page['thumb'] = u"https://%s/viewers/image/thumbnail/%s/"  % (BDR_SERVER, page['rel_is_annotation_of_ssim'][0])
-
-    num_pages = len(pages_to_look_up)
-    i = 0
-    while(i < num_pages):
-        group = pages_to_look_up[i : i+group_amount]
-        pids = "(pid:" + ("+OR+pid:".join(group)) + ")"
-        book_query = u"https://%s/api/pub/search/?q=%s+AND+display:BDR_PUBLIC&fl=pid,primary_title,nonsort,rel_is_part_of_ssim,rel_has_pagination_ssim&rows=%s" % (BDR_SERVER, pids, group_amount)
-        data = json.loads(requests.get(book_query).text)
-        book_response = data['response']['docs']
-        for p in book_response:
-            pid = p['rel_is_part_of_ssim'][0].replace(u'bdr:', u'')
-            n = p['rel_has_pagination_ssim'][0]
-            if(pid not in books):
-                books[pid] = {}
-                books[pid]['title'] = _get_full_title(p)
-                books[pid]['pages'] = {}
-                books[pid]['pid'] = pid
-            books[pid]['pages'][int(n)] = pages[p['pid'].replace(u'bdr:', u'')]
-
-        i += group_amount
-
-    return books
 
 def _get_full_title(data):
     if 'primary_title' not in data:
