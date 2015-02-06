@@ -29,6 +29,54 @@ class Biography(models.Model):
     def prints(self):
         return Print.search(query='contributor:"%s"' % self.name )
 
+    def annotations_by_books_and_prints(self, group_amount=50):
+        # TODO: this could use some cleaning up
+        num_prints_estimate = 6000
+        query_uri = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:"annotation"+AND+contributor:"%s"+AND+display:BDR_PUBLIC&rows=%s&fl=rel_is_annotation_of_ssim,primary_title,pid,nonsort' % (app_settings.BDR_SERVER, self.name, num_prints_estimate)
+        annotations = json.loads(requests.get(query_uri).text)['response']['docs']
+        # annotations = BDRAnnotation.search(query="contributor:%s+AND+display:BDR_PUBLIC" % self.name)
+        pages = dict([(page['rel_is_annotation_of_ssim'][0].replace(u'bdr:', u''), page) for page in annotations])
+        books = {}
+        prints = []
+        pages_to_look_up = []
+        for page_id in pages:
+            page = pages[page_id]
+            page['title'] = get_full_title_static(page)
+            page['page_id'] = page_id
+            pages_to_look_up.append(pages[page_id]['rel_is_annotation_of_ssim'][0].replace(u':', u'\:'))
+            page['thumb'] = u"https://%s/viewers/image/thumbnail/%s/"  % (app_settings.BDR_SERVER, page['rel_is_annotation_of_ssim'][0])
+
+        num_pages = len(pages_to_look_up)
+        i = 0
+        while(i < num_pages):
+            group = pages_to_look_up[i : i+group_amount]
+            pids = "(pid:" + ("+OR+pid:".join(group)) + ")"
+            book_query = u"https://%s/api/pub/search/?q=%s+AND+display:BDR_PUBLIC&fl=pid,primary_title,nonsort,object_type,rel_is_part_of_ssim,rel_has_pagination_ssim&rows=%s" % (app_settings.BDR_SERVER, pids, group_amount)
+            data = json.loads(requests.get(book_query).text)
+            book_response = data['response']['docs']
+            for p in book_response:
+                try:
+                    pid = p['rel_is_part_of_ssim'][0].replace(u'bdr:', u'')
+                    n = int(p['rel_has_pagination_ssim'][0])
+                    
+                    if(pid not in books):
+                        books[pid] = {}
+                        books[pid]['title'] = get_full_title_static(p)
+                        books[pid]['pages'] = {}
+                        books[pid]['pid'] = pid
+                    books[pid]['pages'][n] = pages[p['pid'].split(":")[-1]]
+                except KeyError:
+                    pid = p['pid'].replace(u'bdr:',u'')
+                    p_obj = {}
+                    p_obj['primary_title'] = get_full_title_static(p)
+                    p_obj['pid'] = p['pid']
+                    prints.append(Print(data=p_obj))
+
+            i += group_amount
+
+        return (books,prints)
+
+
     def _get_trp_id(self):
         last_bio = Biography.objects.order_by('-trp_id')[0]
         last_trp_id = int(last_bio.trp_id)
@@ -82,6 +130,14 @@ class BDRObject(object):
             return self.data.get(name)
         else:
             raise AttributeError
+
+    def __eq__(self, other):
+        sid = self.data.get("pid", "").split(":")[-1]
+        oid = other.data.get("pid", "").split(":")[-1]
+        return sid == oid
+
+    def __contains__(self, item):
+        return item in self.data
 
     OBJECT_TYPE = "*"
     @classmethod
@@ -200,7 +256,6 @@ class Print(Page):
 
     def url(self):
         return reverse('specific_print', args=[self.id,])
-
 
 class Annotation(object):
 
@@ -382,3 +437,14 @@ class Annotation(object):
         else:
             raise Exception('error putting update to %s: %s - %s' % (self._pid, r.status_code, r.content))
 
+def get_full_title_static(data):
+    if 'primary_title' not in data:
+        return 'No Title'
+    if 'nonsort' in data:
+        if data['nonsort'].endswith(u"'"):
+            return u'%s%s' % (data['nonsort'], data['primary_title'])
+        else:
+            return u'%s %s' % (data['nonsort'], data['primary_title'])
+    else:
+        return u'%s' % data['primary_title']
+    pass
