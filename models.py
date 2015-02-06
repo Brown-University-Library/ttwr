@@ -468,4 +468,3 @@ def get_full_title_static(data):
             return u'%s %s' % (data['nonsort'], data['primary_title'])
     else:
         return u'%s' % data['primary_title']
-    pass
