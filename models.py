@@ -30,15 +30,18 @@ class Biography(models.Model):
         return Print.search(query='contributor:"%s"' % self.name )
 
     def annotations_by_books_and_prints(self, group_amount=50):
-        # TODO: this could use some cleaning up
+        # Might need some cleaining up later, see if we can use objects here
+
+        #Look up every annotation for a person
         num_prints_estimate = 6000
         query_uri = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:"annotation"+AND+contributor:"%s"+AND+display:BDR_PUBLIC&rows=%s&fl=rel_is_annotation_of_ssim,primary_title,pid,nonsort' % (app_settings.BDR_SERVER, self.name, num_prints_estimate)
         annotations = json.loads(requests.get(query_uri).text)['response']['docs']
-        # annotations = BDRAnnotation.search(query="contributor:%s+AND+display:BDR_PUBLIC" % self.name)
         pages = dict([(page['rel_is_annotation_of_ssim'][0].replace(u'bdr:', u''), page) for page in annotations])
         books = {}
         prints = []
         pages_to_look_up = []
+
+        # create a list of pages the annotations are attached to
         for page_id in pages:
             page = pages[page_id]
             page['title'] = get_full_title_static(page)
@@ -48,12 +51,29 @@ class Biography(models.Model):
 
         num_pages = len(pages_to_look_up)
         i = 0
+        # Look up which books those pages are part of in groups of group_amount 
+        # (by default 50, any longer tends to break the request because the URL is too long)
         while(i < num_pages):
             group = pages_to_look_up[i : i+group_amount]
             pids = "(pid:" + ("+OR+pid:".join(group)) + ")"
             book_query = u"https://%s/api/pub/search/?q=%s+AND+display:BDR_PUBLIC&fl=pid,primary_title,nonsort,object_type,rel_is_part_of_ssim,rel_has_pagination_ssim&rows=%s" % (app_settings.BDR_SERVER, pids, group_amount)
             data = json.loads(requests.get(book_query).text)
             book_response = data['response']['docs']
+
+            # Create a dict that maps book pids to a list of pages for that book
+            # essentially:
+            # {
+            #    "123456": {
+            #                 'pid':'123456'
+            #                 'title':"Sculpture in Rome"
+            #                 'pages': [{...}, {...}, ...] (all pages in this book with annotations)
+            #              }
+            #    "456789": {
+            #                  ...
+            #              }
+            #    ...
+            # }
+            # Also deals with any prints that came up in the search
             for p in book_response:
                 try:
                     pid = p['rel_is_part_of_ssim'][0].replace(u'bdr:', u'')
@@ -437,6 +457,7 @@ class Annotation(object):
         else:
             raise Exception('error putting update to %s: %s - %s' % (self._pid, r.status_code, r.content))
 
+# Copied this from views.py for getting titles from nonstandard queries
 def get_full_title_static(data):
     if 'primary_title' not in data:
         return 'No Title'
