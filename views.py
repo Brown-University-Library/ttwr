@@ -156,7 +156,6 @@ def page_detail(request, page_id, book_id=None):
 
     # Previous/next page links
     pagenum = int(page_json['rel_has_pagination_ssim'][0])
-    context['pagenum'] = pagenum
 
     # Initialize both to none
     prev_pid = "none"
