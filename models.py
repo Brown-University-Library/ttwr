@@ -94,6 +94,9 @@ class Biography(models.Model):
 
             i += group_amount
 
+            for b in books:
+                books[b]['pages'] = sorted(books[b]['pages'].items())
+
         return (books,prints)
 
 
