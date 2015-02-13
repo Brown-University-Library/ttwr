@@ -82,7 +82,7 @@ class Biography(models.Model):
                     if(pid not in books):
                         books[pid] = {}
                         books[pid]['title'] = get_full_title_static(p)
-                        books[pid]['pages'] = {}
+                        books[pid]['pages'] = dict()
                         books[pid]['pid'] = pid
                     books[pid]['pages'][n] = pages[p['pid'].split(":")[-1]]
                 except KeyError:
@@ -94,8 +94,8 @@ class Biography(models.Model):
 
             i += group_amount
 
-            for b in books:
-                books[b]['pages'] = sorted(books[b]['pages'].items())
+        for b in books:
+            books[b]['pages'] = sorted(books[b]['pages'].items())
 
         return (books,prints)
 

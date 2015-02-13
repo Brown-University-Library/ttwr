@@ -79,7 +79,6 @@
                 {% endif %}
                 {% if pages_books%}
                 <h4>Pages</h4>
-                {{pages_books}}
                 <ul>
                 {% for key,book in pages_books.items %}
                 <li class="page_list_item"><b>In <a href="{% url 'thumbnail_viewer' key %}" target="_blank">{{book.title}}</a> ({{ book.pages|length }}):</b><br/>
