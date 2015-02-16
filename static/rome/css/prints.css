@@ -80,18 +80,14 @@ ul#sort {
 	background-color: #857f6d;
 	}
 	
-	h3 {
-	padding-bottom: 7px;
-	}
-	
-	p {
+p {
 	margin: 0 40px 0px;
 	line-height: 18px;
 	padding-bottom: 5px;
 	}
 
 /* this is for the author name in a bio */
-   p.resp {
+p.resp {
     text-align:right;
     font-style:italic;
     }
