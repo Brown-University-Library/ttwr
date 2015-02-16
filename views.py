@@ -153,6 +153,8 @@ def page_detail(request, page_id, book_id=None):
         annotation['xml_uri'] = annot_xml_uri
         curr_annot = get_annotation_detail(annotation)
         context['annotations'].append(curr_annot)
+    if(len(context['annotations']) != 0):
+        context['annotations'] = sorted(context['annotations'], key=lambda k: k['title'] if 'title' in k else k['orig_title'], reverse=False)
 
     # Previous/next page links
     pagenum = int(page_json['rel_has_pagination_ssim'][0])
