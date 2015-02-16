@@ -39,6 +39,12 @@ function show_sorting(sorting) {
     document.getElementById("sort_"+sorting).style.fontWeight="bold";
 }
 </script>
+<style type="text/css">
+    #page_body li {
+        font-size: 14px;
+        height: 30px;
+    }
+</style>
 </head>
 {% load static from staticfiles %}
 {% load url from future %}
@@ -52,7 +58,7 @@ function show_sorting(sorting) {
         <div style="font-size:15px; margin-left:20px; width:95%; padding-top:15px; padding-bottom:10px">
             {{page_documentation}}
         </div>
-        <div style="font-size:15px; margin-left:20px; padding-top:15px; padding-bottom:10px">
+        <div style="font-size:15px; margin-left:20px; margin-right:10px; padding-top:15px; padding-bottom:10px">
             {% for i in page_range %}
                 <button id="page_button_{{i}}" class="page_button" onclick="show_page({{i}})">{{i}}</button>
             {% endfor %}
@@ -71,15 +77,13 @@ function show_sorting(sorting) {
             <ol>
                 {% for bio in page %}
                 <li value={{bio.number_in_list}}>
-                    <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}">
+                    <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}" class="dark">
                         <a href="{% url 'person_detail' bio.trp_id %}">
-                            [View]
-                        </a>&nbsp
-                        <span class="dark">{{ bio.name }}
+                        {{ bio.name }}
                         {% if bio.birth_date and bio.death_date %} ({{ bio.birth_date }} to {{ bio.death_date }}){% endif %}
-                        {% if bio.roles %} [{%for role in bio.roles%}{{ role }}{% if not forloop.last %}, {%endif%}{%endfor%}]{% endif %}</span>
-                        <br/>
-                        ID: {{ bio.trp_id }}
+                        </a>
+                        {% if bio.roles %} [{%for role in bio.roles%}{{ role }}{% if not forloop.last %}, {%endif%}{%endfor%}]{% endif %}
+                        <em>&nbsp;ID: {{ bio.trp_id }}</em>
                         <!-- Biography ID: {{ bio.pid }} -->
                     </span>
                     <br />
