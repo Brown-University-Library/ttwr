@@ -153,8 +153,8 @@ def page_detail(request, page_id, book_id=None):
         annotation['xml_uri'] = annot_xml_uri
         curr_annot = get_annotation_detail(annotation)
         context['annotations'].append(curr_annot)
-    if(len(context['annotations']) != 0):
-        context['annotations'] = sorted(context['annotations'], key=lambda k: k['title'] if 'title' in k else k['orig_title'], reverse=False)
+    if(context['annotations']):
+        context['annotations'] = sorted(context['annotations'], key=lambda k: k['title'] if 'title' in k else k['orig_title'])
 
     # Previous/next page links
     pagenum = int(page_json['rel_has_pagination_ssim'][0])
@@ -491,7 +491,7 @@ def biography_list(request):
     if fq != 'all':
         bio_list = filter_bios(fq, bio_list)
 
-    bios_per_page=20
+    bios_per_page=30
     PAGIN=Paginator(bio_list,bios_per_page)
     page_list=[]
 
