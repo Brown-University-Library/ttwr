@@ -508,7 +508,7 @@ def biography_list(request):
     context['curr_page']=1
     context['PAGIN']=PAGIN
     context['page_list']=page_list
-    context['role_set']=role_set
+    context['role_set']=sorted(role_set)
     context['sorting'] = fq
 
     c=RequestContext(request, context)
