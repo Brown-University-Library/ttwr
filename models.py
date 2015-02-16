@@ -36,7 +36,7 @@ class Biography(models.Model):
         num_prints_estimate = 6000
         query_uri = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:"annotation"+AND+contributor:"%s"+AND+display:BDR_PUBLIC&rows=%s&fl=rel_is_annotation_of_ssim,primary_title,pid,nonsort' % (app_settings.BDR_SERVER, self.name, num_prints_estimate)
         annotations = json.loads(requests.get(query_uri).text)['response']['docs']
-        pages = dict([(page['rel_is_annotation_of_ssim'][0].replace(u'bdr:', u''), page) for page in annotations])
+        pages = dict([(page['rel_is_annotation_of_ssim'][0].split(u':')[-1], page) for page in annotations])
         books = {}
         prints = []
         pages_to_look_up = []
@@ -46,6 +46,7 @@ class Biography(models.Model):
             page = pages[page_id]
             page['title'] = get_full_title_static(page)
             page['page_id'] = page_id
+            page['id'] = page_id.split(u':')[-1]
             pages_to_look_up.append(pages[page_id]['rel_is_annotation_of_ssim'][0].replace(u':', u'\:'))
             page['thumb'] = u"https://%s/viewers/image/thumbnail/%s/"  % (app_settings.BDR_SERVER, page['rel_is_annotation_of_ssim'][0])
 
@@ -76,7 +77,7 @@ class Biography(models.Model):
             # Also deals with any prints that came up in the search
             for p in book_response:
                 try:
-                    pid = p['rel_is_part_of_ssim'][0].replace(u'bdr:', u'')
+                    pid = p['rel_is_part_of_ssim'][0].split(u':')[-1]
                     n = int(p['rel_has_pagination_ssim'][0])
                     
                     if(pid not in books):
@@ -84,9 +85,9 @@ class Biography(models.Model):
                         books[pid]['title'] = get_full_title_static(p)
                         books[pid]['pages'] = dict()
                         books[pid]['pid'] = pid
-                    books[pid]['pages'][n] = pages[p['pid'].split(":")[-1]]
+                    books[pid]['pages'][n] = pages[p['pid'].split(u':')[-1]]
                 except KeyError:
-                    pid = p['pid'].replace(u'bdr:',u'')
+                    pid = p['pid'].split(u':')[-1]
                     p_obj = {}
                     p_obj['primary_title'] = get_full_title_static(p)
                     p_obj['pid'] = p['pid']
