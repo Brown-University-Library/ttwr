@@ -166,9 +166,9 @@ def page_detail(request, page_id, book_id=None):
     # If the page numbers don't match the list indices, search for the correct page
     if(book_json['relations']['hasPart'][pagenum - 1]['pid'] != page_pid):
         for page in book_json['relations']['hasPart']:
-            if(int(page['rel_has_pagination_ssim']) == (pagenum-1)):
+            if(int(page['rel_has_pagination_ssim'][0]) == (pagenum-1)):
                 prev_pid = page['pid'].split(':')[-1]
-            if(int(page['rel_has_pagination_ssim']) == (pagenum+1)):
+            if(int(page['rel_has_pagination_ssim'][0]) == (pagenum+1)):
                 next_pid = page['pid'].split(':')[-1]
     else:
         
