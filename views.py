@@ -157,27 +157,24 @@ def page_detail(request, page_id, book_id=None):
         context['annotations'] = sorted(context['annotations'], key=lambda k: k['title'] if 'title' in k else k['orig_title'])
 
     # Previous/next page links
-    pagenum = int(page_json['rel_has_pagination_ssim'][0])
+    # First, find the index of the page we're currently loading
+    hasPart_index = 0
+    for page in book_json['relations']['hasPart']:
+        if page['pid'] == page_pid:
+            hasPart_index = int(page['order']) - 1
 
-    # Initialize both to none
-    prev_pid = "none"
+    # Initialize both the next page and previous page
+    prev_pid = book_json['relations']['hasPart'][hasPart_index - 1]['pid'].split(":")[-1]
     next_pid = "none"
+    try:
+        next_pid = book_json['relations']['hasPart'][hasPart_index + 1]['pid'].split(":")[-1]
+    except KeyError:
+        # If it's the last page in the book, there is no next pid
+        next_pid = "none"
 
-    # If the page numbers don't match the list indices, search for the correct page
-    if(book_json['relations']['hasPart'][pagenum - 1]['pid'] != page_pid):
-        for page in book_json['relations']['hasPart']:
-            if(int(page['rel_has_pagination_ssim'][0]) == (pagenum-1)):
-                prev_pid = page['pid'].split(':')[-1]
-            if(int(page['rel_has_pagination_ssim'][0]) == (pagenum+1)):
-                next_pid = page['pid'].split(':')[-1]
-    else:
-        
-        if(pagenum != 1):
-            prev_pid = book_json['relations']['hasPart'][pagenum - 2]['pid'].split(":")[-1]
-        try:
-            next_pid = book_json['relations']['hasPart'][pagenum]['pid'].split(":")[-1]
-        except IndexError:
-            next_pid = "none"
+    # If it's the first page in the book
+    if hasPart_index == 0:
+        prev_pid == "none"
 
     context['prev_pid'] = prev_pid
     context['next_pid'] = next_pid
