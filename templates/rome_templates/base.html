@@ -5,7 +5,7 @@
   <head>
     <title> {% block title %}{% endblock title %}</title>
     {% block css_stylesheets %}
-      <link rel="stylesheet" href="{%static 'rome/css/prints.css' %}" type="text/css" media="screen" />
+      <link rel="stylesheet" href="{%static usr_style %}" type="text/css" media="screen" />
     {% endblock css_stylesheets %}
 
     {% block extra_head %}
@@ -17,11 +17,11 @@
           <h1>
               <span class="repeatbg"><span class="leftcap"><a href="../">{% block page_title %}{% endblock page_title %}</a></span></span>
           </h1>
-          <div style="font-size:15px; margin-left:20px; width:95%; padding-top:15px; padding-bottom:10px">
+          <div class="intro" style="font-size:15px; margin-left:20px; width:95%; padding-top:15px; padding-bottom:10px">
             {% block intro %}
             {% endblock intro %}
           </div>
-          <div style="font-size:15px; margin-left:20px; padding-top:15px; padding-bottom:10px">
+          <div class="pagination" style="font-size:15px; margin-left:20px; padding-top:15px; padding-bottom:10px">
             {% block pagination %}
             {% endblock pagination %}
           </div>
@@ -31,9 +31,9 @@
             {% endblock content %}
       </div>
       <div id="footer">
-        <span>&#169; 2014 Brown University</span>
-        <a href="http://www.brown.edu"><img src="{%static 'rome/images/brown-logo.gif' %}" alt="Brown University" /></a>
-        <a href="http://www.stg.brown.edu"><img src="{%static 'rome/images/stg-logo.gif' %}" alt="Scholarly Technology Group" /></a>
+        <span>&#169; {{cpydate}} Brown University</span>
+        <a href="http://www.brown.edu"><img src="{%static brown_image %}" alt="Brown University" /></a>
+        <a href="http://www.stg.brown.edu"><img src="{%static stg_image %}" alt="Scholarly Technology Group" /></a>
     </div>
   </body>
 </html>
