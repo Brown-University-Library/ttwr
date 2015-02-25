@@ -8,6 +8,10 @@
       <link rel="stylesheet" href="{%static usr_style %}" type="text/css" media="screen" />
     {% endblock css_stylesheets %}
 
+    {% block javascript %}
+      <script src="{% static 'rome/js/jquery-1.11.1.min.js' %}" type="text/javascript"></script>
+    {% endblock javascript %}
+
     {% block extra_head %}
     {% endblock extra_head %}
   <head>
@@ -25,6 +29,8 @@
             {% block pagination %}
             {% endblock pagination %}
           </div>
+          {% block cookietrail %}
+          {% endblock %}
       </div>
       <div id="page_body">
             {% block content %}
