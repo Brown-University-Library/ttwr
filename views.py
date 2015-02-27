@@ -24,7 +24,7 @@ def std_context(style="rome/css/prints.css",title="The Theater that was Rome"):
     context={}
     context['usr_style']=style
     context['title']=title
-    context['cpydate']=2013
+    context['cpydate']=2015
     context['home_image']="rome/images/home.gif"
     context['brown_image']="rome/images/brown-logo.gif"
     context['stg_image']="rome/images/stg-logo.gif"
@@ -39,6 +39,7 @@ def index(request):
 
 
 def book_list(request):
+    context = std_context()
     book_list = Book.search()
 
     sort_by = request.GET.get('sort_by', 'authors')
@@ -49,25 +50,19 @@ def book_list(request):
     page = request.GET.get('page', 1)
     PAGIN=Paginator(book_list, BOOKS_PER_PAGE);
 
-    return render(request,
-                  'rome_templates/book_list.html',
-                  {
-                      'books': PAGIN.page(page),
-                      'sorting': sort_by,
-                      'sort_options': Book.SORT_OPTIONS,
-                  }
-                 )
+    context['books'] = PAGIN.page(page)
+    context['sorting'] = sort_by
+    context['sort_options'] = Book.SORT_OPTIONS
+
+    return render(request, 'rome_templates/book_list.html', context)
 
 
 def book_detail(request, book_id):
     book_list_page = request.GET.get('book_list_page', 1)
-    return render(request,
-                  'rome_templates/book_detail.html',
-                  {
-                    'back_to_book_href': u'%s?page=%s' % (reverse('books'), book_list_page),
-                    'book': Book.get_or_404(pid="%s:%s" % (PID_PREFIX, book_id)),
-                  }
-                 )
+    context = std_context()
+    context['back_to_book_href'] = u'%s?page=%s' % (reverse('books'), book_list_page)
+    context['book'] = Book.get_or_404(pid="%s:%s" % (PID_PREFIX, book_id))
+    return render(request, 'rome_templates/book_detail.html', context)
 
 
 def page_detail(request, page_id, book_id=None):

@@ -1,31 +1,34 @@
-{% load markdown_deux_tags %}
-<head>
-<title>{{title}}</title>
-</head>
+{% extends "rome_templates/base.html"%}
+{% load url from future %}
 {% load static from staticfiles %}
+{% load markdown_deux_tags %}
+
+{% block title %}{{title}}{% endblock %}
+{% block page_title%}The Theater that was Rome{% endblock %}
+
+{% block extra_head%}
+<style type="text/css">
+    .intro, .pagination {
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block css_stylesheets%}
 <link rel="stylesheet" href="{%static usr_style%}" type="text/css" media="screen" />
 <link rel="stylesheet" href="{%static usr_essays_style%}" type="text/css" media="screen" />
-<body>
-    <div id="page_head">
-        <h1>
-            <span class="repeatbg"><span class="leftcap"><a href="../">The Theater that was Rome</a></span></span>
-        </h1>
-    </div>
-    <div id="cookietrail">
-        <ol>
-            <li><a href="../">Back to essays</a></li>
-        </ol>
-    </div>
-    <div id="page_body">
+{% endblock %}
+
+{% block cookietrail %}
+<div id="cookietrail">
+    <ol>
+        <li><a href="../">Back to essays</a></li>
+    </ol>
+</div>
+{% endblock %}
+
+{% block content %}
         {% block essay %}
         {{essay_text|markdown}}
         {% endblock %}
-    </div>
-
-<div id="footer">
-    <span>&#169; {{cpydate}} Brown University</span>
-    <a href="http://www.brown.edu"><img src="{%static brown_image%}" alt="Brown University" /></a>
-    <a href="http://www.stg.brown.edu"><img src="{%static stg_image%}" alt="Scholarly Technology Group" /></a>
-</div>
-
-</body>
+{% endblock %}

@@ -68,9 +68,12 @@ p {
   * HEADER
   */
 
+div#page_head h1 {
+	background: url(../images/light-header-rightcap.gif) no-repeat right top;
+}
+
 h1 {
 	font: small-caps 21px medium Georgia, "Times New Roman", Times, serif;
-	background: url(../images/light-header-rightcap.gif) no-repeat right top;
 	height: 43px;
 	margin: 0 4px 0 4px;
 	padding: 0;

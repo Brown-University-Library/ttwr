@@ -1,5 +1,10 @@
-<head>
-<title>{{title}}</title>
+{% extends "rome_templates/base.html" %}
+{% load url from future %}
+
+{% block title %}{{title}}{% endblock %}
+{% block page_title %}The Theater that was Rome - People{% endblock %}
+
+{% block extra_head %}
 <script type="text/javascript">
 window.onload=load;
 var curr_page;
@@ -45,58 +50,44 @@ function show_sorting(sorting) {
         height: 30px;
     }
 </style>
-</head>
-{% load static from staticfiles %}
-{% load url from future %}
-<link rel="stylesheet" href="{%static usr_style%}" type="text/css" media="screen" />
+{% endblock %}
 
-<body>
-    <div id="page_head">
-        <h1>
-            <span class="repeatbg"><span class="leftcap"><a href="../">The Theater that was Rome - People</a></span></span>
-        </h1>
-        <div style="font-size:15px; margin-left:20px; width:95%; padding-top:15px; padding-bottom:10px">
-            {{page_documentation}}
-        </div>
-        <div style="font-size:15px; margin-left:20px; margin-right:10px; padding-top:15px; padding-bottom:10px">
-            {% for i in page_range %}
-                <button id="page_button_{{i}}" class="page_button" onclick="show_page({{i}})">{{i}}</button>
+{% block intro %}{{page_documentation}}{% endblock %}
+
+{% block pagination %}
+    {% for i in page_range %}
+        <button id="page_button_{{i}}" class="page_button" onclick="show_page({{i}})">{{i}}</button>
+    {% endfor %}
+    &nbsp showing <span id="bios_shown"></span> of {{num_bios}} biographies; on page <span id="curr_page_span">1</span>
+    <br/>
+    Filter by:&nbsp
+    {% for role in role_set %}
+        {% if role %}<a id="sort_{{ role }}" class="sort_link" href="{% url 'people' %}?filter={{ role }}">{{ role.capitalize }}</a> | {%endif%}
+    {% endfor %}
+    <a id="sort_all" class="sort_link" href="{% url 'people' %}">All</a>
+{% endblock %}
+
+{% block content %}
+    {% for page in page_list %}
+    <div id="page_{{forloop.counter}}" num="{{forloop.counter}}" style="display:none;">
+        <ol>
+            {% for bio in page %}
+            <li value={{bio.number_in_list}}>
+                <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}" class="dark">
+                    <a href="{% url 'person_detail' bio.trp_id %}">
+                    {{ bio.name }}
+                    {% if bio.birth_date and bio.death_date %} ({{ bio.birth_date }} to {{ bio.death_date }}){% endif %}
+                    </a>
+                    {% if bio.roles %} [{%for role in bio.roles%}{{ role }}{% if not forloop.last %}, {%endif%}{%endfor%}]{% endif %}
+                    <em>&nbsp;ID: {{ bio.trp_id }}</em>
+                    <!-- Biography ID: {{ bio.pid }} -->
+                </span>
+                <br />
+                <br />
+            </li>
             {% endfor %}
-            &nbsp showing <span id="bios_shown"></span> of {{num_bios}} biographies; on page <span id="curr_page_span">1</span>
-            <br/>
-            Filter by:&nbsp
-            {% for role in role_set %}
-                {% if role %}<a id="sort_{{ role }}" class="sort_link" href="{% url 'people' %}?filter={{ role }}">{{ role.capitalize }}</a> | {%endif%}
-            {% endfor %}
-            <a id="sort_all" class="sort_link" href="{% url 'people' %}">All</a>
-        </div>
+        </ol>
     </div>
-    <div id="page_body">
-        {% for page in page_list %}
-        <div id="page_{{forloop.counter}}" num="{{forloop.counter}}" style="display:none;">
-            <ol>
-                {% for bio in page %}
-                <li value={{bio.number_in_list}}>
-                    <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}" class="dark">
-                        <a href="{% url 'person_detail' bio.trp_id %}">
-                        {{ bio.name }}
-                        {% if bio.birth_date and bio.death_date %} ({{ bio.birth_date }} to {{ bio.death_date }}){% endif %}
-                        </a>
-                        {% if bio.roles %} [{%for role in bio.roles%}{{ role }}{% if not forloop.last %}, {%endif%}{%endfor%}]{% endif %}
-                        <em>&nbsp;ID: {{ bio.trp_id }}</em>
-                        <!-- Biography ID: {{ bio.pid }} -->
-                    </span>
-                    <br />
-                    <br />
-                </li>
-                {% endfor %}
-            </ol>
-        </div>
-        {% endfor %}
-    </div>
-    <div id="footer">
-        <span>&#169; {{cpydate}} Brown University</span>
-        <a href="http://www.brown.edu"><img src="{%static brown_image%}" alt="Brown University" /></a>
-        <a href="http://www.stg.brown.edu"><img src="{%static stg_image%}" alt="Scholarly Technology Group" /></a>
-    </div>
-</body>
+    {% endfor %}
+
+{% endblock %}
