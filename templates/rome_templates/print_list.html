@@ -1,5 +1,7 @@
-<head>
-<title>{{title}}</title>
+{% extends "rome_templates/base.html"%}
+{% load url from future %}
+
+{% block extra_head %}
 <script type="text/javascript">
 window.onload=load;
 var curr_page;
@@ -63,109 +65,70 @@ function show_collection(collection)
     document.getElementById("collection_"+collection).style.fontWeight="bold";
 }
 </script>
-</head>
-{% load static from staticfiles %}
-{% load url from future %}
-<link rel="stylesheet" href="{%static usr_style%}" type="text/css" media="screen" />
+{% endblock %}
 
-<body>
-    <div id="page_head">
-        <h1>
-            <span class="repeatbg"><span class="leftcap"><a href="../">The Theater that was Rome - Prints</a></span></span>
-        </h1>
-        <div style="font-size:15px; margin-left:20px; width:95%; padding-top:15px; padding-bottom:10px">
-            {{page_documentation}}
-        </div>
-        <div style="font-size:15px; margin-left:20px; padding-top:15px; padding-bottom:10px">
-            {% for i in page_range %}
-                <button id="page_button_{{i}}" class="page_button" onclick="show_page({{i}})">{{i}}</button>
-            {% endfor %}
-            &nbsp showing <span id="prints_shown"></span> of {{num_prints}} prints; on page <span id="curr_page_span">1</span>
-            &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-            Sort by:&nbsp
-            <a id="sort_authors" class="sort_link" href="{% url 'prints' %}?sort_by=authors&collection={{ collection }}">Author</a> |
-            <a id="sort_title"   class="sort_link" href="{% url 'prints' %}?sort_by=title&collection={{ collection }}">Title</a> |
-            <a id="sort_date"    class="sort_link" href="{% url 'prints' %}?sort_by=date&collection={{ collection }}">Date</a>
-            &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-            Collection:&nbsp;
-            <a id="collection_chinea" class="sort_collection" href="{% url 'prints' %}?collection=chinea&sort_by={{ sorting }}">Chinea</a> |
-            <a id="collection_not" class="sort_collection" href="{% url 'prints' %}?collection=not&sort_by={{ sorting }}">Non-Chinea</a> |
-            <a id="collection_both" class="sort_collection" href="{% url 'prints' %}?collection=both&sort_by={{ sorting }}">Both</a>
-        </div>
-    </div>
-    <div id="page_body">
-        {% for page in page_list %}
-        <div id="page_{{forloop.counter}}" num="{{forloop.counter}}" style="display:none;">
-            <ol>
-                {% for pprint in page %}
-                <li value={{pprint.number_in_list}}>
-                    <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}">
-                        <a href="{{ pprint.thumbnail_url }}?prints_list_page={{forloop.parentloop.counter}}&collection={{collection}}">
-                            [View]
-                        </a>&nbsp
-                        Author(s): <span class="dark">{{ pprint.authors }}</span><br />
-                        Title:
-                        <span class="dark">
-                            <span num="{{forloop.parentloop.counter}}_{{forloop.counter}}">{{ pprint.short_title }}
-                                {% if pprint.title_cut %}
-                                <span class="more_button"
-                                        onclick="expand_title('{{forloop.parentloop.counter}}','{{forloop.counter}}')">
-                                        [more]
-                                </span>
-                                {% endif %}
-                            </span>
-                            <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}_full" style="display:none;">
-                                {{ pprint.title }}
-                            </span>
+{% block page_title%}The Theater that was Rome - Prints{% endblock %}
+
+{% block intro %}{{page_documentation}}{% endblock %}
+
+{% block pagination %}
+{% for i in page_range %}
+    <button id="page_button_{{i}}" class="page_button" onclick="show_page({{i}})">{{i}}</button>
+{% endfor %}
+&nbsp showing <span id="prints_shown"></span> of {{num_prints}} prints; on page <span id="curr_page_span">1</span>
+&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+Sort by:&nbsp
+<a id="sort_authors" class="sort_link" href="{% url 'prints' %}?sort_by=authors&collection={{ collection }}">Author</a> |
+<a id="sort_title"   class="sort_link" href="{% url 'prints' %}?sort_by=title&collection={{ collection }}">Title</a> |
+<a id="sort_date"    class="sort_link" href="{% url 'prints' %}?sort_by=date&collection={{ collection }}">Date</a>
+&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+Collection:&nbsp;
+<a id="collection_chinea" class="sort_collection" href="{% url 'prints' %}?collection=chinea&sort_by={{ sorting }}">Chinea</a> |
+<a id="collection_not" class="sort_collection" href="{% url 'prints' %}?collection=not&sort_by={{ sorting }}">Non-Chinea</a> |
+<a id="collection_both" class="sort_collection" href="{% url 'prints' %}?collection=both&sort_by={{ sorting }}">Both</a>
+{% endblock %}
+
+
+{% block content %}
+{% for page in page_list %}
+<div id="page_{{forloop.counter}}" num="{{forloop.counter}}" style="display:none;">
+    <ol>
+        {% for pprint in page %}
+        <li value={{pprint.number_in_list}}>
+            <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}">
+                <a href="{{ pprint.thumbnail_url }}?prints_list_page={{forloop.parentloop.counter}}&collection={{collection}}">
+                    [View]
+                </a>&nbsp
+                Author(s): <span class="dark">{{ pprint.authors }}</span><br />
+                Title:
+                <span class="dark">
+                    <span num="{{forloop.parentloop.counter}}_{{forloop.counter}}">{{ pprint.short_title }}
+                        {% if pprint.title_cut %}
+                        <span class="more_button"
+                                onclick="expand_title('{{forloop.parentloop.counter}}','{{forloop.counter}}')">
+                                [more]
                         </span>
-                        <br />
-                        Date: <span class="dark">{{ pprint.date }}</span> <br />
-                        <a href={{ pprint.studio_uri }} target="_blank">[More info]</a>,
-                        <br />
-                        Object ID: {{ pprint.id }}
-                        {% if pprint.in_chinea %}
-                        <br />
-                        This print is in the Chinea collection.
                         {% endif %}
                     </span>
-                    <br />
-                    <br />
-                </li>
-                {% endfor %}
-            </ol>
-        </div>
+                    <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}_full" style="display:none;">
+                        {{ pprint.title }}
+                    </span>
+                </span>
+                <br />
+                Date: <span class="dark">{{ pprint.date }}</span> <br />
+                <a href={{ pprint.studio_uri }} target="_blank">[More info]</a>,
+                <br />
+                Object ID: {{ pprint.id }}
+                {% if pprint.in_chinea %}
+                <br />
+                This print is in the Chinea collection.
+                {% endif %}
+            </span>
+            <br />
+            <br />
+        </li>
         {% endfor %}
-        
-        
-        <!-- <ul>
-                    {% for print in print_list %}
-                        <li>
-                            <span>
-                                Author(s): <span class="dark">{{ print.authors }}</span><br />
-                                Date: <span class="dark">{{ print.date }}</span> <br />
-                                Title: <span class="dark">
-                                <span num={{forloop.counter}}>{{ print.short_title }}
-                                    {% if print.title_cut %}
-                                    <span class="more_button"
-                                            onclick="expand_title('{{print.title}}',{{forloop.counter}})">
-                                            [more]
-                                    </span>
-                                    {% endif %}
-                                </span></span><br />
-                                More info:
-                                    <a href={{ print.studio_uri }} target="_blank">Click here</a><br />
-                                Viewers:
-                                    <a href={{ print.det_img_viewer }} target="_blank">Detailed Image Viewer</a>
-                            </span>
-                            <br />
-                            <br />
-                        </li>
-                    {% endfor %}
-                </ul> -->
-    </div>
-    <div id="footer">
-	    <span>&#169; {{cpydate}} Brown University</span>
-	    <a href="http://www.brown.edu"><img src="{%static brown_image%}" alt="Brown University" /></a>
-	    <a href="http://www.stg.brown.edu"><img src="{%static stg_image%}" alt="Scholarly Technology Group" /></a>
-	</div>
-</body>
+    </ol>
+</div>
+{% endfor %}
+{% endblock %}
