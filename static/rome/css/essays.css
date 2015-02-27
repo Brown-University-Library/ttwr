@@ -1,3 +1,26 @@
+
+
+#page_body ul{
+	padding: 0 40px 0;
+	}
+
+#page_body li {
+	font-size: 14px;
+	line-height: 19px;
+	margin-bottom: 9px;
+	list-style-type: square;
+	color: #a89983;
+	}
+	
+#page_body li a {
+	margin-right: 10px;
+	}
+
+#page_body li span {
+	color: #3e3a2e;
+	vertical-align: -12%;
+	}
+
 p {
     margin: 20px;
     }

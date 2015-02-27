@@ -22,6 +22,7 @@ from .app_settings import BDR_SERVER, BOOKS_PER_PAGE, PID_PREFIX, logger
 
 def std_context(style="rome/css/prints.css",title="The Theater that was Rome"):
     context={}
+    context['common_style']="rome/css/common.css"
     context['usr_style']=style
     context['title']=title
     context['cpydate']=2015
@@ -536,8 +537,7 @@ def essay_detail(request, essay_slug):
     except ObjectDoesNotExist:
         return HttpResponseNotFound('Essay %s Not Found' % essay_slug)
     template=loader.get_template('rome_templates/essay_detail.html')
-    context=std_context(style="rome/css/links.css")
-    context['usr_essays_style']="rome/css/essays.css"
+    context=std_context(style="rome/css/essays.css")
     context['essay_text'] = essay.text
     c=RequestContext(request,context)
     return HttpResponse(template.render(c))
