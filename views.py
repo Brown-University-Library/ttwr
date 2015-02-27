@@ -24,7 +24,7 @@ def std_context(style="rome/css/prints.css",title="The Theater that was Rome"):
     context={}
     context['usr_style']=style
     context['title']=title
-    context['cpydate']=2013
+    context['cpydate']=2015
     context['home_image']="rome/images/home.gif"
     context['brown_image']="rome/images/brown-logo.gif"
     context['stg_image']="rome/images/stg-logo.gif"
