@@ -3,7 +3,7 @@
   {% load static from staticfiles %}
   {% load url from future %}
   <head>
-    <title> {% block title %}{% endblock title %}</title>
+    <title> {% block title %}{{title}}{% endblock title %}</title>
     {% block css_stylesheets %}
       <link rel="stylesheet" href="{%static usr_style %}" type="text/css" media="screen" />
     {% endblock css_stylesheets %}
