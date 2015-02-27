@@ -5,6 +5,7 @@
   <head>
     <title> {% block title %}{{title}}{% endblock title %}</title>
     {% block css_stylesheets %}
+      <link rel="stylesheet" href="{%static common_style %}" type="text/css" media="screen" />
       <link rel="stylesheet" href="{%static usr_style %}" type="text/css" media="screen" />
     {% endblock css_stylesheets %}
 
@@ -22,11 +23,11 @@
           <h1>
               <span class="repeatbg"><span class="leftcap"><a href="../">{% block page_title %}The Theater that was Rome{% endblock page_title %}</a></span></span>
           </h1>
-          <div class="intro" style="font-size:15px; margin-left:20px; width:95%; padding-top:15px; padding-bottom:10px">
+          <div class="intro">
             {% block intro %}
             {% endblock intro %}
           </div>
-          <div class="pagination" style="font-size:15px; margin-left:20px; padding-top:15px; padding-bottom:10px">
+          <div class="pagination">
             {% block pagination %}
             {% endblock pagination %}
           </div>
