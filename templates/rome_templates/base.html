@@ -17,6 +17,7 @@
   <head>
 
   <body>
+      {% block page_head %}
       <div id="page_head">
           <h1>
               <span class="repeatbg"><span class="leftcap"><a href="../">{% block page_title %}The Theater that was Rome{% endblock page_title %}</a></span></span>
@@ -32,6 +33,7 @@
           {% block cookietrail %}
           {% endblock %}
       </div>
+      {% endblock %}
       <div id="page_body">
             {% block content %}
             {% endblock content %}
