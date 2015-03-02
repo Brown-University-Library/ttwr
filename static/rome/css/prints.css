@@ -97,3 +97,22 @@ a.bookEssay {
 {
 	cursor:pointer;
 }
+
+/*
+ * For thumbnail viewer
+ */
+.img_container{
+  float:left;
+  margin-bottom:5px;
+  padding-bottom:5px;
+  text-align:center;
+}
+.img_container:hover {
+  background:rgba(0,0,0,.1);
+}
+
+.img_container img {
+  margin:5px;
+  padding-left:5px;
+  height: 150px;
+}
