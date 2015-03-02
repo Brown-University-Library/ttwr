@@ -55,30 +55,6 @@ $(document).ready(function() {
 
 {% block extra_head %}
 <style type="text/css">
-    a#prev_page {
-        display: block;
-        width: 30px;
-        margin: 5px;
-        margin-left: 3%;
-        float:left;
-        font-size: 12pt;
-    }
-
-    a#next_page {
-        display: block;
-        width: 30px;
-        margin:5px;
-        margin-left: 50%;
-        float:left;
-        font-size: 12pt;
-    }
-
-    div#prevnext {
-        margin: 5px;
-        height: 20px;
-        text-align: center;
-    }
-
     div.intro, div.pagination {
         display: none;
     }
@@ -117,64 +93,64 @@ $(document).ready(function() {
             <a id="next_page">Loading...</a>
         </div>
     {% endif %}
-        <div id="image_span" style="float:left;padding-left:20px;width:60%;margin-bottom:20px;">
+        <div id="image_span">
         <iframe src={{ det_img_view_src}} width="100%" height="800" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
         </div>
-        <div id="metadata" style="float:left;width:36%">
+        <div id="metadata">
             {% if user.is_authenticated %}
-            <div class="new_annotation_link"><a href="{{ create_annotation_link }}" style="float:right;">Create New Annotation</a></div>
+            <div class="new_annotation_link"><a href="{{ create_annotation_link }}">Create New Annotation</a></div>
             {% endif %}
-            <ul style="list-style:none">
+            <ul>
             {% for annotation in annotations %}
-                <li>
+                <li class="annotation">
                     
                 {% if annotation.has_elements.title %}
-                <div style="margin-bottom:10px; font-size:125%; text-align:center;">
+                <div class="annot_title">
                   <b>{{ annotation.orig_title }}</b>{% if user.is_authenticated %} (<a href="{{ annotation.edit_link }}">Edit</a>){% endif %}
                 </div>
                 {% if annotation.title %}
-                <div style="margin-bottom:5px; font-size:100%; text-align:center;"><i> {{ annotation.title }} </i></div>
+                <div class="annot_subtitle"><i> {{ annotation.title }} </i></div>
                 {% endif %}
                 {% endif %}
                 
                 {% for name in annotation.names %}
-                    <div style="margin-bottom:5px"><b>{{ name.role }}:</b> <a href="{% url 'person_detail' name.trp_id %}">{{ name.name }}</a></div>
+                    <div class="annot_field"><b>{{ name.role }}:</b> <a href="{% url 'person_detail' name.trp_id %}">{{ name.name }}</a></div>
                 {% endfor %}
                 
                 {% if annotation.has_elements.abstract %}
-                <div style="margin-bottom:5px"><b>Abstract:</b> {{ annotation.abstract }} </div>
+                <div class="annot_field"><b>Abstract:</b> {{ annotation.abstract }} </div>
                 {% endif %}
                 
                 {% if annotation.has_elements.genre%}
-                <div style="margin-bottom:5px"><b>Genre:</b> {{ annotation.genre }} </div>
+                <div class="annot_field"><b>Genre:</b> {{ annotation.genre }} </div>
                 {% endif %}
                 
                 {% if annotation.has_elements.origin %}
-                <div style="margin-bottom:5px"><b>Origin:</b> {{ annotation.origin }} </div>
+                <div class="annot_field"><b>Origin:</b> {{ annotation.origin }} </div>
                 {% endif %}
                 
                 {% if annotation.has_elements.annotations %}
-                <div style="margin-bottom:5px"><b>Annotations:</b></div>
+                <div class="annot_field"><b>Annotations:</b></div>
                 <ul>
                 {% for annot in annotation.annotations %}
-                <li style="margin-bottom:5px">{{ annot }}</li>
+                <li class="annot_field">{{ annot }}</li>
                 {% endfor %}
                 </ul>
                 {% endif %}
                 
                 {% if annotation.has_elements.inscriptions %}
-                <div style="margin-bottom:5px"><b>Inscriptions:</b></div>
+                <div class="annot_field"><b>Inscriptions:</b></div>
                 <ul>
                 {% for insc in annotation.inscriptions %}
-                <li style="margin-bottom:5px">{{ insc }}</li>
+                <li class="annot_field">{{ insc }}</li>
                 {% endfor %}
                 </ul>
                 {% endif %}
                 
-                <div style="margin-bottom:5px"><a href={{ annotation.xml_uri }} target="_blank">[View XML]</a></div>
+                <div class="annot_field"><a href={{ annotation.xml_uri }} target="_blank">[View XML]</a></div>
                 
                 {% if annotation.has_elements.annotator %}
-                <div style="margin-bottom:5px"><i>[{{ annotation.annotator }}]</i></div>
+                <div class="annot_field"><i>[{{ annotation.annotator }}]</i></div>
                 {% endif %}
                 <br />
                 <br />

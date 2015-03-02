@@ -116,3 +116,66 @@ a.bookEssay {
   padding-left:5px;
   height: 150px;
 }
+
+/*
+ * For page_detail
+ */
+a#prev_page {
+    display: block;
+    width: 30px;
+    margin: 5px;
+    margin-left: 3%;
+    float:left;
+    font-size: 12pt;
+}
+
+a#next_page {
+    display: block;
+    width: 30px;
+    margin:5px;
+    margin-left: 50%;
+    float:left;
+    font-size: 12pt;
+}
+
+div#prevnext {
+    margin: 5px;
+    height: 20px;
+    text-align: center;
+}
+
+div#image_span {
+	float:left;
+	padding-left:20px;
+	width:60%;
+	margin-bottom:20px;
+}
+
+#metadata {
+	float:left;
+	width:36%;
+}
+
+#metadata ul {
+	list-style:none;
+}
+
+.annot_title {
+	margin-bottom:10px;
+	font-size:125%;
+	text-align:center;
+}
+
+.annot_subtitle {
+	margin-bottom:5px;
+	font-size:100%;
+	text-align:center;
+}
+
+.annot_field {
+	margin-bottom:5px;
+}
+
+.new_annotation_link a {
+	float: right;
+}
