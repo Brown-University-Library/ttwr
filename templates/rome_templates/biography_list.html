@@ -56,8 +56,6 @@ function show_sorting(sorting) {
 </style>
 {% endblock %}
 
-{% block intro %}{{page_documentation}}{% endblock %}
-
 {% block pagination %}
     {% for i in page_range %}
         <button id="page_button_{{i}}" class="page_button" onclick="show_page({{i}})">{{i}}</button>

@@ -29,6 +29,7 @@ def std_context(style="rome/css/prints.css",title="The Theater that was Rome"):
     context['home_image']="rome/images/home.gif"
     context['brown_image']="rome/images/brown-logo.gif"
     context['stg_image']="rome/images/stg-logo.gif"
+    context['page_documentation']=""
     return context
 
 

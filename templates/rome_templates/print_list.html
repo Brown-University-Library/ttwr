@@ -1,7 +1,7 @@
 {% extends "rome_templates/base.html"%}
 {% load url from future %}
 
-{% block extra_head %}
+{% block javascript %}
 <script type="text/javascript">
 window.onload=load;
 var curr_page;
@@ -65,6 +65,9 @@ function show_collection(collection)
     document.getElementById("collection_"+collection).style.fontWeight="bold";
 }
 </script>
+{% endblock %}
+
+{% block extra_head %}
 <style type="text/css">
     #cookietrail {
         display: none;
@@ -73,8 +76,6 @@ function show_collection(collection)
 {% endblock %}
 
 {% block page_title%}The Theater that was Rome - Prints{% endblock %}
-
-{% block intro %}{{page_documentation}}{% endblock %}
 
 {% block pagination %}
 {% for i in page_range %}
