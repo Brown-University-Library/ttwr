@@ -12,8 +12,7 @@
 	padding: 0 50px 0;
 	}
 
-#page_head li,
-#page_body li {
+#page_head li {
 	/*margin-bottom: 6px;*/
 /*	list-style-type: square;*/
 	color: #a89983;

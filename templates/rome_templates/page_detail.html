@@ -87,7 +87,6 @@ $(document).ready(function() {
 
 
 {% block cookietrail %}
-<div id="cookietrail">
     <ol>
         <li>Title: <span class="dark">{{ title }}</span></li><br />
         <li>Author(s): <span class="dark">{{ authors }}</span></li><br />
@@ -106,9 +105,7 @@ $(document).ready(function() {
         {% if print_mode %}
             <li><a href="{{back_to_print_href}}">return to print list</a>
         {% endif %}
-
     </ol>
-</div>
 {% endblock %}
 
 

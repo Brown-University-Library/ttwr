@@ -3,9 +3,6 @@
 {% load static from staticfiles %}
 {% load markdown_deux_tags %}
 
-{% block title %}{{title}}{% endblock %}
-{% block page_title%}The Theater that was Rome{% endblock %}
-
 {% block extra_head%}
 <style type="text/css">
     .intro, .pagination {
@@ -15,11 +12,9 @@
 {% endblock %}
 
 {% block cookietrail %}
-<div id="cookietrail">
     <ol>
         <li><a href="../">Back to essays</a></li>
     </ol>
-</div>
 {% endblock %}
 
 {% block content %}
