@@ -4,12 +4,18 @@
 {% block title %}{{title}}{% endblock %}
 {% block page_title %}The Theater that was Rome{% endblock %}
 
+{% block extra_head %}
+<style type="text/css">
+    .pagination, .intro {
+        display: none;
+    }
+</style>
+{% endblock %}
+
 {% block cookietrail %}
-<div id="cookietrail">
     <ol>
         <li>Links</li>
     </ol>
-</div>
 {% endblock %}
 
 {% block content%}

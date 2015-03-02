@@ -7,43 +7,34 @@
 
 {% block extra_head %}
   <style>
-    .img_container{
-      float:left;
-      margin-bottom:5px;
-      padding-bottom:5px;
-      text-align:center;
-    }
-    .img_container:hover {
-      background:rgba(0,0,0,.1);
+    .intro, .pagination {
+      display: none;
     }
   </style>
   
 {% endblock %}
 
-{% block intro %}
-  {{page_documentation}}
-  <div id="cookietrail">
-      <ol>
-          <li>Book {{ book.id }}</li><br />
-          <li>Author(s): <span class="dark">{{ book.authors }}</span></li><br />
-          <li>Title: <span class="dark">{{ book.title }}</span></li><br />
-          {% for atitle  in book.alt_titles %}
-            {% if forloop.first %}
-            <li>Alternative Title(s):</li><br />
-            {% endif %}
-            <li>&nbsp;&nbsp;&nbsp;&nbsp;<span class="dark">{{atitle}}</span></li><br />
-          {% endfor %}
-          <li>Date: <span class="dark">{{ book.date }}</span></li><br />
-          <li><a href="{{back_to_book_href}}">return to book list</a></li><br />
-      </ol>
-  </div>
+{% block cookietrail %}
+<ol>
+    <li>Book {{ book.id }}</li><br />
+    <li>Author(s): <span class="dark">{{ book.authors }}</span></li><br />
+    <li>Title: <span class="dark">{{ book.title }}</span></li><br />
+    {% for atitle  in book.alt_titles %}
+      {% if forloop.first %}
+      <li>Alternative Title(s):</li><br />
+      {% endif %}
+      <li>&nbsp;&nbsp;&nbsp;&nbsp;<span class="dark">{{atitle}}</span></li><br />
+    {% endfor %}
+    <li>Date: <span class="dark">{{ book.date }}</span></li><br />
+    <li><a href="{{back_to_book_href}}">return to book list</a></li><br />
+</ol>
 {% endblock %}
 
 {% block content %}
   {% for page in book.pages %}
     <div class="img_container">
         <a href="{{ page.url }}" target="_blank">
-            <img src="{{ page.thumbnail_src }}" height="150px" style="margin:5px;padding-left:5px" />
+            <img src="{{ page.thumbnail_src }}" height="150px"/>
         </a>
         <br />
         Image {{forloop.counter}}
