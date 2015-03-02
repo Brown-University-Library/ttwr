@@ -213,8 +213,24 @@ def get_annotation_detail(annotation):
         curr_annot['has_elements']['genre']=1
     for origin in root.getiterator('{http://www.loc.gov/mods/v3}originInfo'):
         try:
+            for impression in origin.getiterator("{http://www.loc.gov/mods/v3}dateOther"):
+                try:
+                    curr_annot['impression']=impression.text
+                    if(impression.text != None):
+                        curr_annot['has_elements']['impression']=1
+                except:
+                    pass
+
             curr_annot['origin']=origin[0].date
             curr_annot['has_elements']['origin']=1
+
+        except:
+            pass
+    for impression in root.getiterator('{http://www.loc.gov/mods/v3}dateOther'):
+        try:
+            if impression.attrib['type'] == "impression":
+                curr_annot['impression']=impression[0].text
+                curr_annot['has_elements']['impression']=1
         except:
             pass
     curr_annot['inscriptions'] = []
