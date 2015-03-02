@@ -20,7 +20,7 @@ from .models import Biography, Essay, Book, Annotation
 from .app_settings import BDR_SERVER, BOOKS_PER_PAGE, PID_PREFIX, logger
 
 
-def std_context(style="rome/css/prints.css",title="The Theater that was Rome"):
+def std_context(style="rome/css/content.css",title="The Theater that was Rome"):
     context={}
     context['common_style']="rome/css/common.css"
     context['usr_style']=style
