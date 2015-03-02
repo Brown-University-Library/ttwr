@@ -6,21 +6,7 @@
 {% block page_title %}The Theater that was Rome{% endblock %}
 
 {% block javascript%}
-<script src="{% static 'rome/js/jquery-1.11.1.min.js' %}" type="text/javascript"></script>
 <script type="text/javascript">
-function expand_title(title,num)
-{
-    var spans=document.getElementsByTagName("span");
-    var i;
-    for(i=0;i<spans.length;i++)
-    {
-        if(spans[i].getAttribute("num")==num)
-        {
-            spans[i].innerHTML=title;
-            break;
-        }
-    }
-}
 
 {% if book_mode %}
 var pid = "{{ print_id }}"
