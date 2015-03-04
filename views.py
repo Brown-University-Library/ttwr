@@ -20,7 +20,19 @@ from .models import Biography, Essay, Book, Annotation
 from .app_settings import BDR_SERVER, BOOKS_PER_PAGE, PID_PREFIX, logger
 
 
-def std_context(style="rome/css/content.css",title="The Theater that was Rome"):
+def std_context(path, style="rome/css/content.css",title="The Theater that was Rome"):
+    pathparts = path.split(u'/')
+    breadcrumbs = []
+    url = "/"
+
+    for node in pathparts:
+        if(len(node) > 0):
+            url += node + u'/'
+            obj = {"url": url, "name":node.title()}
+            if(node == "rome"):
+                obj['name'] = "The Theater that was Rome"
+            breadcrumbs.append(obj)
+
     context={}
     context['common_style']="rome/css/common.css"
     context['usr_style']=style
@@ -30,18 +42,19 @@ def std_context(style="rome/css/content.css",title="The Theater that was Rome"):
     context['brown_image']="rome/images/brown-logo.gif"
     context['stg_image']="rome/images/stg-logo.gif"
     context['page_documentation']=""
+    context['breadcrumbs']=breadcrumbs
     return context
 
 
 def index(request):
     template=loader.get_template('rome_templates/index.html')
-    context=std_context(style="rome/css/home.css")
+    context=std_context(request.path_info, style="rome/css/home.css")
     c=RequestContext(request,context)
     return HttpResponse(template.render(c))
 
 
 def book_list(request):
-    context = std_context()
+    context = std_context(request.path_info, )
     book_list = Book.search()
 
     sort_by = request.GET.get('sort_by', 'authors')
@@ -61,16 +74,17 @@ def book_list(request):
 
 def book_detail(request, book_id):
     book_list_page = request.GET.get('book_list_page', 1)
-    context = std_context()
+    context = std_context(request.path_info, )
     context['back_to_book_href'] = u'%s?page=%s' % (reverse('books'), book_list_page)
     context['book'] = Book.get_or_404(pid="%s:%s" % (PID_PREFIX, book_id))
+    context['breadcrumbs'][len(context['breadcrumbs']) - 1]['name'] = breadcrumb_detail(context)
     return render(request, 'rome_templates/book_detail.html', context)
 
 
 def page_detail(request, page_id, book_id=None):
     page_pid = u'%s:%s' % (PID_PREFIX, page_id)
     template=loader.get_template('rome_templates/page_detail.html')
-    context=std_context()
+    context=std_context(request.path_info, )
     if book_id:
         book_pid = '%s:%s' % (PID_PREFIX, book_id)
     else:
@@ -97,6 +111,7 @@ def page_detail(request, page_id, book_id=None):
 
     context['studio_url'] = 'https://%s/studio/item/%s/' % (BDR_SERVER, page_pid)
     context['book_id'] = book_id
+
     thumbnails=[]
     book_json_uri = u'https://%s/api/pub/items/%s/' % (BDR_SERVER, book_pid)
     r = requests.get(book_json_uri, timeout=60)
@@ -127,6 +142,8 @@ def page_detail(request, page_id, book_id=None):
             context['date']="n.d."
     context['lowres_url']="https://%s/fedora/objects/%s/datastreams/lowres/content" % (BDR_SERVER, page_pid)
     context['det_img_view_src']="https://%s/viewers/image/zoom/%s" % (BDR_SERVER, page_pid)
+
+    context['breadcrumbs'][len(context['breadcrumbs']) - 2]['name'] = breadcrumb_detail(context, view="print")
 
     # annotations/metadata
     page_json_uri = u'https://%s/api/pub/items/%s/' % (BDR_SERVER, page_pid)
@@ -175,6 +192,8 @@ def page_detail(request, page_id, book_id=None):
 
     context['prev_pid'] = prev_pid
     context['next_pid'] = next_pid
+
+    context['breadcrumbs'][len(context['breadcrumbs']) - 1]['name'] = "Image " + page_json['rel_has_pagination_ssim'][0]
 
     c=RequestContext(request,context)
     return HttpResponse(template.render(c))
@@ -267,7 +286,7 @@ def print_list(request):
     elif(collection == 'not'):
         chinea = "+NOT+primary_title:\"Chinea\"+NOT+subtitle:\"Chinea\""
 
-    context=std_context(title="The Theater that was Rome - Prints")
+    context=std_context(request.path_info, title="The Theater that was Rome - Prints")
     context['page_documentation']='Browse the prints in the Theater that was Rome collection. Click on "View" to explore a print further.'
     context['curr_page']=page
     context['sorting']='authors'
@@ -352,7 +371,7 @@ def print_list(request):
 def print_detail(request, print_id):
     print_pid = '%s:%s' % (PID_PREFIX, print_id)
     template = loader.get_template('rome_templates/page_detail.html')
-    context = std_context()
+    context = std_context(request.path_info, )
 
     if request.user.is_authenticated():
         context['create_annotation_link'] = reverse('new_print_annotation', kwargs={'print_id':print_id})
@@ -410,6 +429,9 @@ def print_detail(request, print_id):
         curr_annot = get_annotation_detail(annotation)
         context['annotations'].append(curr_annot)
 
+
+    context['breadcrumbs'][len(context['breadcrumbs']) - 1]['name'] = breadcrumb_detail(context, view="print")
+
     c=RequestContext(request,context)
     #raise 404 if a certain print does not exist
     return HttpResponse(template.render(c))
@@ -421,7 +443,7 @@ def biography_detail(request, trp_id):
         bio = Biography.objects.get(trp_id=trp_id)
     except ObjectDoesNotExist:
         return HttpResponseNotFound('Person %s Not Found' % trp_id)
-    context = std_context(title="The Theater that was Rome - Biography")
+    context = std_context(request.path_info, title="The Theater that was Rome - Biography")
     context = RequestContext(request, context)
     template = loader.get_template('rome_templates/biography_detail.html')
     context['bio'] = bio
@@ -437,6 +459,8 @@ def biography_detail(request, trp_id):
     prints_merged[len(prints_merged):] = prints_search
 
     context['prints'] = prints_merged
+
+    context['breadcrumbs'][len(context['breadcrumbs']) - 1]['name'] = breadcrumb_detail(context, view="bio")
     return HttpResponse(template.render(context))
 
 def person_detail_tei(request, trp_id):
@@ -508,7 +532,7 @@ def biography_list(request):
     for i in PAGIN.page_range:
         page_list.append(PAGIN.page(i).object_list)
 
-    context=std_context(title="The Theater that was Rome - Biographies")
+    context=std_context(request.path_info, title="The Theater that was Rome - Biographies")
     context['page_documentation']='Browse the biographies of artists related to the Theater that was Rome collection.'
     context['num_bios']=len(bio_list)
     context['bio_list']=bio_list
@@ -527,20 +551,20 @@ def biography_list(request):
 
 def about(request):
     template=loader.get_template('rome_templates/about.html')
-    context=std_context(style="rome/css/links.css")
+    context=std_context(request.path_info, style="rome/css/links.css")
     c=RequestContext(request,context)
     return HttpResponse(template.render(c))
 
 def links(request):
     template=loader.get_template('rome_templates/links.html')
-    context=std_context(style="rome/css/links.css")
+    context=std_context(request.path_info, style="rome/css/links.css")
 
     c=RequestContext(request,context)
     return HttpResponse(template.render(c))
 
 def essay_list(request):
     template=loader.get_template('rome_templates/essay_list.html')
-    context=std_context(style="rome/css/links.css")
+    context=std_context(request.path_info, style="rome/css/links.css")
     context['page_documentation']='Listed below are essays on topics that relate to the Theater that was Rome collection of books and engravings. The majority of the essays were written by students in Brown University classes that used this material, and edited by Prof. Evelyn Lincoln.'
     c=RequestContext(request,context)
     essay_objs = Essay.objects.all()
@@ -554,10 +578,20 @@ def essay_detail(request, essay_slug):
     except ObjectDoesNotExist:
         return HttpResponseNotFound('Essay %s Not Found' % essay_slug)
     template=loader.get_template('rome_templates/essay_detail.html')
-    context=std_context(style="rome/css/essays.css")
+    context=std_context(request.path_info, style="rome/css/essays.css")
     context['essay_text'] = essay.text
     c=RequestContext(request,context)
     return HttpResponse(template.render(c))
+
+def breadcrumb_detail(context, view="book", title_words=4):
+    if(view == "book"):
+        return " ".join(context['book'].title().split(" ")[0:title_words]) + " . . ."
+
+    if(view == "print"):
+        return " ".join(context['title'].split(" ")[0:title_words]) + " . . ."
+
+    if(view == "bio"):
+        return context['bio'].name
 
 @login_required(login_url=reverse_lazy('rome_login'))
 def new_annotation(request, book_id, page_id):

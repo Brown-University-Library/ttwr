@@ -21,7 +21,10 @@
       {% block page_head %}
       <div id="page_head">
           <h1>
-              <span class="repeatbg"><span class="leftcap"><a href="../">{% block page_title %}The Theater that was Rome{% endblock page_title %}</a></span></span>
+              <span class="repeatbg"><span class="leftcap">{% for b in breadcrumbs %}
+              <a href="{{b.url}}">{{b.name}}</a>{% if not forloop.last %} - {% endif %}
+              {% endfor %}
+              </span></span>
           </h1>
           <div class="intro">
             {% block intro %}
