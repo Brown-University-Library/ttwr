@@ -31,7 +31,8 @@ def std_context(path, style="rome/css/content.css",title="The Theater that was R
             obj = {"url": url, "name":node.title()}
             if(node == "rome"):
                 obj['name'] = "The Theater that was Rome"
-            breadcrumbs.append(obj)
+            if("rome" in url):
+                breadcrumbs.append(obj)
 
     context={}
     context['common_style']="rome/css/common.css"
@@ -73,7 +74,6 @@ def book_list(request):
     context['page_range']=PAGIN.page_range
     context['PAGIN']=PAGIN
 
-    context['books'] = PAGIN.page(page)
     context['sorting'] = sort_by
     context['sort_options'] = Book.SORT_OPTIONS
     context['page_list'] = page_list
@@ -87,7 +87,7 @@ def book_list(request):
 
 def book_detail(request, book_id):
     book_list_page = request.GET.get('book_list_page', 1)
-    context = std_context(request.path_info, )
+    context = std_context(request.path_info)
     context['back_to_book_href'] = u'%s?page=%s' % (reverse('books'), book_list_page)
     context['book'] = Book.get_or_404(pid="%s:%s" % (PID_PREFIX, book_id))
     context['breadcrumbs'][len(context['breadcrumbs']) - 1]['name'] = breadcrumb_detail(context)
