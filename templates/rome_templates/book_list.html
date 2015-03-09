@@ -1,5 +1,6 @@
 {% extends "rome_templates/base.html" %}
 {% load url from future %}
+{% load static from staticfiles %}
 
 {% block title %}The Theater that was Rome - Books{% endblock %}
 {% block page_title %}The Theater that was Rome - Books{% endblock %}
@@ -12,6 +13,29 @@
 </style>
 {% endblock %}
 
+{% block javascript %}
+<script type="text/javascript" src="{% static 'rome/js/list.js'%}"></script>
+<script type="text/javascript">
+window.onload=load;
+var curr_page;
+var max_num;
+var prints_per_page;
+
+function load()
+{
+    max_num={{num_books}};
+    prints_per_page={{ books_per_page }};
+    
+    curr_page={{ curr_page }};
+    show_page(curr_page);
+    show_sorting('{{ sorting }}');
+    show_collection('{{ collection }}');
+
+    expand_buttons()
+}
+</script>
+{% endblock %}
+
 {% block intro %}
   Click on "View" to see thumbnails of all the pages of a book. Click "BDR
   View" to see the default repository entry for a book.
@@ -19,10 +43,9 @@
 
 {% block pagination %}
             {% for i in books.paginator.page_range %}
-                <a id="page_button_{{i}}" class="page_button" 
-                  href="{% url 'books' %}?page={{i}}&sort_by={{sorting}}">{{i}}</a>
+                <button id="page_button_{{i}}" class="page_button" onclick="show_page({{i}})">{{i}}</button>
             {% endfor %}
-            &nbsp showing <span id="books_shown">{{books.start_index}} - {{books.end_index}}</span> of {{books.paginator.count}} books; on page <span id="curr_page_span">{{books.number}}</span>
+            &nbsp showing <span id="prints_shown"></span> of {{books.paginator.count}} books; on page <span id="curr_page_span">{{books.number}}</span>
             &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
             Sort by:&nbsp
             {% for opt in sort_options.keys %}
@@ -34,8 +57,10 @@
 {% endblock %}
 
 {% block content %}
-  <ol>
-    {% for book in books %}
+{% for page in page_list %}
+<div id="page_{{forloop.counter}}" num="{{forloop.counter}}" style="display:none;">
+  <ul class="results">
+    {% for book in page %}
       <li {% if forloop.first %}value="{{books.start_index}}"{% endif %}>
         <span id="{{books.number}}_{{forloop.counter}}">
           Book {{ book.id }}
@@ -52,11 +77,16 @@
             &nbsp;&nbsp;&nbsp;&nbsp;<span class="dark">{{atitle}}</span><br />
           {% endfor %}
           Date: <span class="dark">{{ book.date }}</span><br />
+          <div class="collection_data">
+            ID: {{ book.id }}
+          </div>
           <a href={{ book.studio_uri }} target="_blank">[BDR View]</a><br />
         </span>
         <br />
         <br />
       </li>
     {% endfor %}
-  </ol>
+  </ul>
+</div>
+{% endfor %}
 {% endblock %}

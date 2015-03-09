@@ -65,9 +65,22 @@ def book_list(request):
     page = request.GET.get('page', 1)
     PAGIN=Paginator(book_list, BOOKS_PER_PAGE);
 
+    page_list = []
+    for i in PAGIN.page_range:
+        page_list.append(PAGIN.page(i).object_list)
+
+    context['num_pages']=PAGIN.num_pages
+    context['page_range']=PAGIN.page_range
+    context['PAGIN']=PAGIN
+
     context['books'] = PAGIN.page(page)
     context['sorting'] = sort_by
     context['sort_options'] = Book.SORT_OPTIONS
+    context['page_list'] = page_list
+
+    context['curr_page'] = page
+    context['num_books'] = len(book_list)
+    context['books_per_page'] = BOOKS_PER_PAGE
 
     return render(request, 'rome_templates/book_list.html', context)
 
@@ -278,7 +291,7 @@ def get_annotation_detail(annotation):
 def print_list(request):
     template=loader.get_template('rome_templates/print_list.html')
     page = request.GET.get('page', 1)
-    sort_by = request.GET.get('sort_by', 'authors')
+    sort_by = request.GET.get('sort_by', 'title')
     collection = request.GET.get('collection', 'both')
     chinea = ""
     if(collection == 'chinea'):
