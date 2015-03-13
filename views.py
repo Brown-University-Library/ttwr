@@ -26,7 +26,7 @@ def std_context(path, style="rome/css/content.css",title="The Theater that was R
     url = "/"
 
     for node in pathparts:
-        if(len(node) > 0):
+        if node:
             url += node + u'/'
             obj = {"url": url, "name":node.title()}
             if(node == "rome"):
@@ -90,7 +90,7 @@ def book_detail(request, book_id):
     context = std_context(request.path_info)
     context['back_to_book_href'] = u'%s?page=%s' % (reverse('books'), book_list_page)
     context['book'] = Book.get_or_404(pid="%s:%s" % (PID_PREFIX, book_id))
-    context['breadcrumbs'][len(context['breadcrumbs']) - 1]['name'] = breadcrumb_detail(context)
+    context['breadcrumbs'][-1]['name'] = breadcrumb_detail(context)
     return render(request, 'rome_templates/book_detail.html', context)
 
 
@@ -156,7 +156,7 @@ def page_detail(request, page_id, book_id=None):
     context['lowres_url']="https://%s/fedora/objects/%s/datastreams/lowres/content" % (BDR_SERVER, page_pid)
     context['det_img_view_src']="https://%s/viewers/image/zoom/%s" % (BDR_SERVER, page_pid)
 
-    context['breadcrumbs'][len(context['breadcrumbs']) - 2]['name'] = breadcrumb_detail(context, view="print")
+    context['breadcrumbs'][-2]['name'] = breadcrumb_detail(context, view="print")
 
     # annotations/metadata
     page_json_uri = u'https://%s/api/pub/items/%s/' % (BDR_SERVER, page_pid)
@@ -206,7 +206,7 @@ def page_detail(request, page_id, book_id=None):
     context['prev_pid'] = prev_pid
     context['next_pid'] = next_pid
 
-    context['breadcrumbs'][len(context['breadcrumbs']) - 1]['name'] = "Image " + page_json['rel_has_pagination_ssim'][0]
+    context['breadcrumbs'][-1]['name'] = "Image " + page_json['rel_has_pagination_ssim'][0]
 
     c=RequestContext(request,context)
     return HttpResponse(template.render(c))
@@ -443,7 +443,7 @@ def print_detail(request, print_id):
         context['annotations'].append(curr_annot)
 
 
-    context['breadcrumbs'][len(context['breadcrumbs']) - 1]['name'] = breadcrumb_detail(context, view="print")
+    context['breadcrumbs'][-1]['name'] = breadcrumb_detail(context, view="print")
 
     c=RequestContext(request,context)
     #raise 404 if a certain print does not exist
@@ -473,7 +473,7 @@ def biography_detail(request, trp_id):
 
     context['prints'] = prints_merged
 
-    context['breadcrumbs'][len(context['breadcrumbs']) - 1]['name'] = breadcrumb_detail(context, view="bio")
+    context['breadcrumbs'][-1]['name'] = breadcrumb_detail(context, view="bio")
     return HttpResponse(template.render(context))
 
 def person_detail_tei(request, trp_id):
