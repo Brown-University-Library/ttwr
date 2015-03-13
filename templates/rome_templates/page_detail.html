@@ -114,6 +114,10 @@ $(document).ready(function() {
                 {% if annotation.has_elements.origin %}
                 <div class="annot_field"><b>Origin:</b> {{ annotation.origin }} </div>
                 {% endif %}
+
+                {% if annotation.has_elements.impression %}
+                <div class="annot_field"><b>Impression:</b> {{ annotation.impression }} </div>
+                {% endif %}
                 
                 {% if annotation.has_elements.annotations %}
                 <div class="annot_field"><b>Annotations:</b></div>

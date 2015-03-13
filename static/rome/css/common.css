@@ -75,6 +75,7 @@ p {
 
 div#page_head h1 {
 	background: url(../images/light-header-rightcap.gif) no-repeat right top;
+	color: #f9f5e7; /* same as rgb(249,245,231) */
 }
 
 h1 {
@@ -104,9 +105,16 @@ h1 span.repeatbg {
 	margin-right: 10px;
 	}
 	
-h1 a, h1 a:hover {
+h1 a {
 	text-decoration: none;
-	color: #f9f5e7;
+	color: #f9f5e7; /* same as rgb(249,245,231) */
+	margin: 0;
+	padding: 0;
+}
+
+h1 a:hover {
+	text-decoration: none;
+	color: rgb(209,205,191); /* non hover color minus (40, 40, 40) */
 	margin: 0;
 	padding: 0;
 }
