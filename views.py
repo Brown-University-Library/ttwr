@@ -46,6 +46,17 @@ def std_context(path, style="rome/css/content.css",title="The Theater that was R
     context['breadcrumbs']=breadcrumbs
     return context
 
+def list_context(path, style="rome/css/content.css",title="The Theater that was Rome - Results"):
+    context = std_context(path, style, title)
+
+    context['num_results']
+    context['results_per_page']
+    context['curr_page']
+
+    context['sort_options']
+
+    context['page_list'] = []
+
 
 def index(request):
     template=loader.get_template('rome_templates/index.html')
@@ -58,8 +69,8 @@ def book_list(request):
     context = std_context(request.path_info, )
     book_list = Book.search()
 
-    sort_by = request.GET.get('sort_by', 'authors')
-    sort_by = Book.SORT_OPTIONS.get(sort_by, 'authors')
+    sort_by = request.GET.get('sort_by', 'title')
+    sort_by = Book.SORT_OPTIONS.get(sort_by, 'title')
 
     book_list=sorted(book_list,key=methodcaller(sort_by))
 
@@ -79,8 +90,8 @@ def book_list(request):
     context['page_list'] = page_list
 
     context['curr_page'] = page
-    context['num_books'] = len(book_list)
-    context['books_per_page'] = BOOKS_PER_PAGE
+    context['num_results'] = len(book_list)
+    context['results_per_page'] = BOOKS_PER_PAGE
 
     return render(request, 'rome_templates/book_list.html', context)
 

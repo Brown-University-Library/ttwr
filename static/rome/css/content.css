@@ -2,6 +2,7 @@
 /*
   * BODY
   */
+
 	
 #page_body {
 	clear: both;
@@ -9,7 +10,7 @@
 
 #page_head ul, ol,
 #page_body ul, ol{
-	padding: 0 50px 0;
+	padding: 0 10px 0;
 	}
 
 #page_head li {
@@ -178,4 +179,18 @@ div#image_span {
 
 .new_annotation_link a {
 	float: right;
+}
+
+/*
+ * For list results pages
+ */
+
+.metadata div.extra {
+ 	opacity: 0.4;
+}
+
+.metadata a {
+	font-size: 14px;
+	color: #9a2600;
+
 }
