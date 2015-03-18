@@ -1,0 +1,135 @@
+{% extends "rome_templates/base.html" %}
+{% load url from future %}
+{% load static from staticfiles %}
+
+{% block title %}The Theater that was Rome - Results{% endblock %}
+{% block page_title %}The Theater that was Rome - Results{% endblock %}
+
+{% block extra_head %}
+<style type="text/css">
+    #cookietrail {
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block css_stylesheets %}
+      <link rel="stylesheet" type="text/css" href="{%static 'rome/css/bootstrap.min.css'%}" />
+      <link rel="stylesheet" href="{%static common_style %}" type="text/css" media="screen" />
+      <link rel="stylesheet" href="{%static usr_style %}" type="text/css" media="screen" />
+{% endblock css_stylesheets %}
+
+{% block javascript %}
+<script type="text/javascript" src="{% static 'rome/js/list.js'%}"></script>
+<script type="text/javascript">
+window.onload=load;
+var curr_page;
+var max_num;
+var prints_per_page;
+
+function load()
+{
+    max_num={{num_results}};
+    prints_per_page={{ results_per_page }};
+    
+    curr_page={{ curr_page }};
+    show_page(curr_page);
+    show_sorting('{{ sorting }}');
+
+    expand_buttons()
+
+    $("li").hover(function(e) {
+      $(this).find(".metadata .extra").fadeTo(200, 1);
+    }, function(e) {
+      $(this).find(".metadata .extra").fadeTo(200, 0.4);
+    })
+}
+</script>
+{% endblock %}
+
+{% block intro %}
+  Click on "View" to see thumbnails of all the pages of a book. Click "Library View" to see the default repository entry for a book.
+{% endblock %}
+
+{% block pagination %}
+  {% for i in page_range %}
+      <button id="page_button_{{i}}" class="page_button btn btn-default" onclick="show_page({{i}})">{{i}}</button>
+  {% endfor %}
+  &nbsp showing <span id="prints_shown"></span> of {{num_results}} books; on page <span id="curr_page_span">{{ curr_page }}</span>
+  <br />
+  Sort by:&nbsp
+  {% for opt in sort_options.keys %}
+    <a id="sort_{{opt}}" 
+      class="sort_link{% if opt == sorting %} sort_active{% endif %}"
+      href="?sort_by={{opt}}">{{opt|title}}
+    </a>{% if not forloop.last %} | {% endif %}
+  {% endfor %}
+{% endblock %}
+
+{% block content %}
+{% for page in page_list %}
+<div id="page_{{forloop.counter}}" num="{{forloop.counter}}" style="display:none;">
+  <ul class="results container">
+    {% for result in page %}
+      <li {% if forloop.first %}value="{{books.start_index}}"{% endif %} class="row">
+
+        <div class="metadata col-sm-8" id="{{forloop.parentloop.counter}}_{{forloop.counter}}">
+          <a href="{{ result.thumbnail_url }}?book_list_page={{books.number}}">
+            {% block result_title%}
+            {{result.short_title}}
+            {% endblock %}
+          </a> 
+          <br />
+          {% block metadata%}
+
+          <span class="dark">{% for author in result.name %}{% if forloop.last and not forloop.first %}and {{author}}.{% endif %}{% if not forloop.last or forloop.first %}{{author}}; {% endif %}{% endfor %}</span><br />
+          <span class="dark">{{ result.date }}</span><br />
+
+          {% endblock %}
+
+          <div class="extra">
+          {% block extra%}
+
+          Full Title: <span class="dark">
+                    <span num="{{forloop.parentloop.counter}}_{{forloop.counter}}">{{ result.short_title }}
+                        {% if result.title_cut %}
+                        <span class="more_button"
+                                onclick="expand_title('{{forloop.parentloop.counter}}','{{forloop.counter}}')">
+                                [more]
+                        </span>
+                        {% endif %}
+                    </span>
+                    <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}_full" style="display:none;">
+                        {{ result.title }}
+                    </span>
+                </span>
+<br />
+          {% for atitle  in result.alt_titles %}
+            {% if forloop.first %}
+            Alternative Title(s):<br />
+            {% endif %}
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="dark">{{atitle}}</span><br />
+          {% endfor %}
+
+          {% endblock %}
+          </div>
+        </div>
+
+        <div class="collection_data col-sm-2 col-sm-offset-2">
+        {% block collection_data %}
+            ID: {{ result.id }} <br />
+          <a href={{ result.studio_uri }} target="_blank">[Library View]</a><br />
+
+          <span style="display: none;" class="sort_by_field">
+              {% block sort_by_field%}
+              {{result.primary_title}}
+              {% endblock %}
+          </span>
+        {% endblock %}
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endfor %}
+{% endblock %}
