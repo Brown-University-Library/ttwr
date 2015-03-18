@@ -60,22 +60,24 @@ function load()
   <br />
   {% if sort_options %}
   <div class="sort_options">
-  Sort by:&nbsp
-  {% for opt in sort_options.keys %}
+  Sort by:&nbsp;
+  {% for key,opt in sort_options.items %}
     <a id="sort_{{opt}}" 
       class="sort_link{% if opt == sorting %} sort_active{% endif %}"
-      href="?sort_by={{opt}}">{{opt|title}}
+      href="?sort_by={{opt}}{% if filter_options %}&filter={{ filter }}{% endif %}">{{key|title}}
     </a>{% if not forloop.last %} | {% endif %}
   {% endfor %}
   </div>
   {% endif %}
 
   {% if filter_options %}
+  <br/>
   <div class="filter_options">
-  {% for opt in filter_options.keys %}
+  Filter by:&nbsp;
+  {% for key,opt in filter_options.items %}
     <a id="sort_{{opt}}" 
       class="sort_link{% if opt == filter %} sort_active{% endif %}"
-      href="?filter={{opt}}">{{opt|title}}
+      href="?filter={{opt}}{% if sort_options %}&sort_by={{ sorting }}{% endif %}">{{key|title}}
     </a>{% if not forloop.last %} | {% endif %}
   {% endfor %}
   </div>

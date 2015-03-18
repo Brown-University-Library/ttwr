@@ -303,7 +303,7 @@ def print_list(request):
     template=loader.get_template('rome_templates/print_list.html')
     page = request.GET.get('page', 1)
     sort_by = request.GET.get('sort_by', 'title')
-    collection = request.GET.get('collection', 'both')
+    collection = request.GET.get('filter', 'both')
     chinea = ""
     if(collection == 'chinea'):
         chinea = "+AND+(primary_title:\"Chinea\"+OR+subtitle:\"Chinea\")"
@@ -316,13 +316,18 @@ def print_list(request):
     context['sorting']='authors'
     if sort_by!='authors':
         context['sorting']=sort_by
+
+    # Use book object for now
+    context['sort_options'] = Book.SORT_OPTIONS
+    context['filter_options'] = {"chinea": "chinea", "Non-Chinea": "not", "Both": "both"}
+
     # load json for all prints in the collection #
     num_prints_estimate = 6000
 
     url1 = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:image-compound%s&rows=%s' % (BDR_SERVER, chinea, num_prints_estimate)
     prints_json = json.loads(requests.get(url1).text)
     num_prints = prints_json['response']['numFound']
-    context['num_prints'] = num_prints
+    context['num_results'] = num_prints
     prints_set = prints_json['response']['docs']
 
     print_list=[]
@@ -377,7 +382,7 @@ def print_list(request):
     context['print_list']=print_list
 
     prints_per_page=20
-    context['prints_per_page']=prints_per_page
+    context['results_per_page']=prints_per_page
     PAGIN=Paginator(print_list,prints_per_page) #20 prints per page
     context['num_pages']=PAGIN.num_pages
     context['page_range']=PAGIN.page_range
@@ -386,7 +391,7 @@ def print_list(request):
     for i in PAGIN.page_range:
         page_list.append(PAGIN.page(i).object_list)
     context['page_list']=page_list
-    context['collection']=collection
+    context['filter']=collection
 
     c=RequestContext(request,context)
     return HttpResponse(template.render(c))

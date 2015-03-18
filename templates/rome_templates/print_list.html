@@ -1,96 +1,60 @@
-{% extends "rome_templates/base.html"%}
+{% extends "rome_templates/result_base.html"%}
 {% load url from future %}
 {% load static from staticfiles %}
 
-{% block javascript %}
-<script type="text/javascript" src="{% static 'rome/js/list.js'%}"></script>
-<script type="text/javascript">
-window.onload=load;
-var curr_page;
-var max_num;
-var prints_per_page;
-
-function load()
-{
-    max_num={{num_prints}};
-    prints_per_page={{ prints_per_page }};
-    
-    curr_page={{ curr_page }};
-    show_page(curr_page);
-    show_sorting('{{ sorting }}');
-    show_collection('{{ collection }}');
-}
-</script>
-{% endblock %}
-
-{% block extra_head %}
-<style type="text/css">
-    #cookietrail {
-        display: none;
-    }
-</style>
-{% endblock %}
-
 {% block page_title%}The Theater that was Rome - Prints{% endblock %}
 
-{% block pagination %}
-{% for i in page_range %}
-    <button id="page_button_{{i}}" class="page_button" onclick="show_page({{i}})">{{i}}</button>
-{% endfor %}
-&nbsp showing <span id="prints_shown"></span> of {{num_prints}} prints; on page <span id="curr_page_span">1</span>
-&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-Sort by:&nbsp
-<a id="sort_authors" class="sort_link" href="{% url 'prints' %}?sort_by=authors&collection={{ collection }}">Author</a> |
-<a id="sort_title"   class="sort_link" href="{% url 'prints' %}?sort_by=title&collection={{ collection }}">Title</a> |
-<a id="sort_date"    class="sort_link" href="{% url 'prints' %}?sort_by=date&collection={{ collection }}">Date</a>
-&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-Collection:&nbsp;
-<a id="collection_chinea" class="sort_collection" href="{% url 'prints' %}?collection=chinea&sort_by={{ sorting }}">Chinea</a> |
-<a id="collection_not" class="sort_collection" href="{% url 'prints' %}?collection=not&sort_by={{ sorting }}">Non-Chinea</a> |
-<a id="collection_both" class="sort_collection" href="{% url 'prints' %}?collection=both&sort_by={{ sorting }}">Both</a>
+
+
+{% block result_title%}
+{{result.short_title}}
 {% endblock %}
 
+{% block metadata%}
+    Authors: <span class="dark">{{ result.authors }}</span><br/>
+    Date: <span class="dark">{{ result.date }}</span> <br />
+{% endblock %}
 
-{% block content %}
-{% for page in page_list %}
-<div id="page_{{forloop.counter}}" num="{{forloop.counter}}" style="display:none;">
-    <ol>
-        {% for pprint in page %}
-        <li value={{pprint.number_in_list}}>
-            <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}">
-                <a href="{{ pprint.thumbnail_url }}?prints_list_page={{forloop.parentloop.counter}}&collection={{collection}}">
-                    [View]
-                </a>&nbsp
-                Author(s): <span class="dark">{{ pprint.authors }}</span><br />
-                Title:
-                <span class="dark">
-                    <span num="{{forloop.parentloop.counter}}_{{forloop.counter}}">{{ pprint.short_title }}
-                        {% if pprint.title_cut %}
-                        <span class="more_button"
-                                onclick="expand_title('{{forloop.parentloop.counter}}','{{forloop.counter}}')">
-                                [more]
-                        </span>
-                        {% endif %}
-                    </span>
-                    <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}_full" style="display:none;">
-                        {{ pprint.title }}
-                    </span>
-                </span>
+{% block extra%}
+    Full Title:
+    <span class="dark">
+        <span num="{{forloop.parentloop.counter}}_{{forloop.counter}}">{{ result.short_title }}
+            {% if result.title_cut %}
+            <span class="more_button"
+                    onclick="expand_title('{{forloop.parentloop.counter}}','{{forloop.counter}}')">
+                    [more]
+            </span>
+            {% endif %}
+        </span>
+        <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}_full" style="display:none;">
+            {{ result.title }}
+        </span>
+    </span>
+{% endblock %}
+{% block collection_data%}
+                ID: {{ result.id }}
                 <br />
-                Date: <span class="dark">{{ pprint.date }}</span> <br />
-                <a href={{ pprint.studio_uri }} target="_blank">[More info]</a>,
-                <br />
-                Object ID: {{ pprint.id }}
-                {% if pprint.in_chinea %}
+                <a href={{ result.studio_uri }} target="_blank">[Library View]</a>
+                {% if result.in_chinea %}
                 <br />
                 This print is in the Chinea collection.
                 {% endif %}
             </span>
-            <br />
-            <br />
-        </li>
-        {% endfor %}
-    </ol>
-</div>
-{% endfor %}
+{% endblock %}
+
+{% block sort_by_field%}
+
+{% if sorting == 'title' %}
+{{result.title}}
+
+{% elif sorting == 'authors' %}
+{{result.authors}}
+
+{% elif sorting == 'date' %}
+{{result.date}}
+
+{% else %}
+{{result.title}}
+
+{% endif %}
 {% endblock %}
