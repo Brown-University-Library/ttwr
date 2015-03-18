@@ -558,16 +558,17 @@ def biography_list(request):
 
     context=std_context(request.path_info, title="The Theater that was Rome - Biographies")
     context['page_documentation']='Browse the biographies of artists related to the Theater that was Rome collection.'
-    context['num_bios']=len(bio_list)
+    context['num_results']=len(bio_list)
     context['bio_list']=bio_list
-    context['bios_per_page']=bios_per_page
+    context['results_per_page']=bios_per_page
     context['num_pages']=PAGIN.num_pages
     context['page_range']=PAGIN.page_range
     context['curr_page']=1
     context['PAGIN']=PAGIN
     context['page_list']=page_list
-    context['role_set']=sorted(role_set)
-    context['sorting'] = fq
+    context['filter_options']= dict([(x, x) for x in sorted(role_set)])
+    context['filter_options']['all'] = 'all'
+    context['filter'] = fq
 
     c=RequestContext(request, context)
     return HttpResponse(template.render(c))

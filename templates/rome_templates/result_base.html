@@ -35,6 +35,7 @@ function load()
     curr_page={{ curr_page }};
     show_page(curr_page);
     show_sorting('{{ sorting }}');
+    show_filter('{{ filter }}');
 
     expand_buttons()
 
@@ -55,8 +56,10 @@ function load()
   {% for i in page_range %}
       <button id="page_button_{{i}}" class="page_button btn btn-default" onclick="show_page({{i}})">{{i}}</button>
   {% endfor %}
-  &nbsp showing <span id="prints_shown"></span> of {{num_results}} books; on page <span id="curr_page_span">{{ curr_page }}</span>
+  &nbsp showing <span id="prints_shown"></span> of {{num_results}} results; on page <span id="curr_page_span">{{ curr_page }}</span>
   <br />
+  {% if sort_options %}
+  <div class="sort_options">
   Sort by:&nbsp
   {% for opt in sort_options.keys %}
     <a id="sort_{{opt}}" 
@@ -64,6 +67,19 @@ function load()
       href="?sort_by={{opt}}">{{opt|title}}
     </a>{% if not forloop.last %} | {% endif %}
   {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if filter_options %}
+  <div class="filter_options">
+  {% for opt in filter_options.keys %}
+    <a id="sort_{{opt}}" 
+      class="sort_link{% if opt == filter %} sort_active{% endif %}"
+      href="?filter={{opt}}">{{opt|title}}
+    </a>{% if not forloop.last %} | {% endif %}
+  {% endfor %}
+  </div>
+  {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -71,10 +87,10 @@ function load()
 <div id="page_{{forloop.counter}}" num="{{forloop.counter}}" style="display:none;">
   <ul class="results container">
     {% for result in page %}
-      <li {% if forloop.first %}value="{{books.start_index}}"{% endif %} class="row">
+      <li {% if forloop.first %}value="{{forloop.parent.counter}}"{% endif %} class="row">
 
         <div class="metadata col-sm-8" id="{{forloop.parentloop.counter}}_{{forloop.counter}}">
-          <a href="{{ result.thumbnail_url }}?book_list_page={{books.number}}">
+          <a href="{{ result.thumbnail_url }}?book_list_page={{forloop.parent.counter}}">
             {% block result_title%}
             {{result.short_title}}
             {% endblock %}
@@ -119,13 +135,13 @@ function load()
         {% block collection_data %}
             ID: {{ result.id }} <br />
           <a href={{ result.studio_uri }} target="_blank">[Library View]</a><br />
+        {% endblock %}
 
           <span style="display: none;" class="sort_by_field">
               {% block sort_by_field%}
               {{result.primary_title}}
               {% endblock %}
           </span>
-        {% endblock %}
         </div>
       </li>
     {% endfor %}

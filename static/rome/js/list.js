@@ -72,10 +72,22 @@ function show_page(i)
 
 function show_sorting(sorting)
 {
-    var links=document.getElementsByClassName("sort_link");
-    for(var i=0;i<links.length;i++)
-        links[i].style.fontWeight="normal";
-    document.getElementById("sort_"+sorting).style.fontWeight="bold";
+    var links= $(".sort_options a.sort_link")
+    if(links.length != 0) {
+        for(var i=0;i<links.length;i++)
+            links[i].style.fontWeight="normal";
+        document.getElementById("sort_"+sorting).style.fontWeight="bold";
+    }
+}
+
+function show_filter(filter)
+{
+    var links= $(".filter_options a.sort_link")
+    if(links.length != 0) {
+        for(var i=0;i<links.length;i++)
+            links[i].style.fontWeight="normal";
+        document.getElementById("sort_"+filter).style.fontWeight="bold";
+    }
 }
 
 function show_collection(collection)

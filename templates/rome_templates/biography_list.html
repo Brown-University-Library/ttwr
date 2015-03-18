@@ -1,74 +1,26 @@
-{% extends "rome_templates/base.html" %}
+{% extends "rome_templates/result_base.html" %}
 {% load url from future %}
 {% load static from staticfiles %}
 
-{% block title %}{{title}}{% endblock %}
 {% block page_title %}The Theater that was Rome - People{% endblock %}
 
-{% block javascript %}
-<script type="text/javascript" src="{% static 'rome/js/list.js'%}"></script>
-<script type="text/javascript">
-window.onload=load;
-var curr_page;
-var max_num;
-var prints_per_page;
-function load()
-{
-    max_num={{num_bios}};
-    prints_per_page={{ bios_per_page }};
-    curr_page={{ curr_page }};
-    show_page(curr_page);
-    show_sorting('{{sorting}}');
-}
-</script>
-{% endblock %}
-{% block extra_head %}
-<style type="text/css">
-    #page_body li {
-        font-size: 14px;
-        height: 30px;
-    }
-
-    #cookietrail {
-        display: none;
-    }
-</style>
+{% block result_title%}
+{{result.name}}
 {% endblock %}
 
-{% block pagination %}
-    {% for i in page_range %}
-        <button id="page_button_{{i}}" class="page_button" onclick="show_page({{i}})">{{i}}</button>
-    {% endfor %}
-    &nbsp showing <span id="prints_shown"></span> of {{num_bios}} biographies; on page <span id="curr_page_span">1</span>
-    <br/>
-    Filter by:&nbsp
-    {% for role in role_set %}
-        {% if role %}<a id="sort_{{ role }}" class="sort_link" href="{% url 'people' %}?filter={{ role }}">{{ role.capitalize }}</a> | {%endif%}
-    {% endfor %}
-    <a id="sort_all" class="sort_link" href="{% url 'people' %}">All</a>
+{% block metadata%}
+                    {% if result.birth_date and result.death_date %} ({{ result.birth_date }} to {{ result.death_date }}){% endif %}
+                    <br/>
+                    {% if result.roles %} [{%for role in result.roles%}{{ role }}{% if not forloop.last %}, {%endif%}{%endfor%}]{% endif %}
 {% endblock %}
 
-{% block content %}
-    {% for page in page_list %}
-    <div id="page_{{forloop.counter}}" num="{{forloop.counter}}" style="display:none;">
-        <ol>
-            {% for bio in page %}
-            <li value={{bio.number_in_list}}>
-                <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}" class="dark">
-                    <a href="{% url 'person_detail' bio.trp_id %}">
-                    {{ bio.name }}
-                    {% if bio.birth_date and bio.death_date %} ({{ bio.birth_date }} to {{ bio.death_date }}){% endif %}
-                    </a>
-                    {% if bio.roles %} [{%for role in bio.roles%}{{ role }}{% if not forloop.last %}, {%endif%}{%endfor%}]{% endif %}
-                    <em>&nbsp;ID: {{ bio.trp_id }}</em>
-                    <!-- Biography ID: {{ bio.pid }} -->
-                </span>
-                <br />
-                <br />
-            </li>
-            {% endfor %}
-        </ol>
-    </div>
-    {% endfor %}
+{% block extra %}{% endblock %}
 
+{% block collection_data%}
+                    <em>&nbsp;ID: {{ result.trp_id }}</em>
 {% endblock %}
+
+{% block sort_by_field%}
+{{result.name}}
+{% endblock %}
+
