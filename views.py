@@ -46,18 +46,6 @@ def std_context(path, style="rome/css/content.css",title="The Theater that was R
     context['breadcrumbs']=breadcrumbs
     return context
 
-def list_context(path, style="rome/css/content.css",title="The Theater that was Rome - Results"):
-    context = std_context(path, style, title)
-
-    context['num_results']
-    context['results_per_page']
-    context['curr_page']
-
-    context['sort_options']
-
-    context['page_list'] = []
-
-
 def index(request):
     template=loader.get_template('rome_templates/index.html')
     context=std_context(request.path_info, style="rome/css/home.css")
