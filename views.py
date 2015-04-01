@@ -46,7 +46,6 @@ def std_context(path, style="rome/css/content.css",title="The Theater that was R
     context['breadcrumbs']=breadcrumbs
     return context
 
-
 def index(request):
     template=loader.get_template('rome_templates/index.html')
     context=std_context(request.path_info, style="rome/css/home.css")
@@ -58,8 +57,8 @@ def book_list(request):
     context = std_context(request.path_info, )
     book_list = Book.search()
 
-    sort_by = request.GET.get('sort_by', 'authors')
-    sort_by = Book.SORT_OPTIONS.get(sort_by, 'authors')
+    sort_by = request.GET.get('sort_by', 'title')
+    sort_by = Book.SORT_OPTIONS.get(sort_by, 'title')
 
     book_list=sorted(book_list,key=methodcaller(sort_by))
 
@@ -79,8 +78,8 @@ def book_list(request):
     context['page_list'] = page_list
 
     context['curr_page'] = page
-    context['num_books'] = len(book_list)
-    context['books_per_page'] = BOOKS_PER_PAGE
+    context['num_results'] = len(book_list)
+    context['results_per_page'] = BOOKS_PER_PAGE
 
     return render(request, 'rome_templates/book_list.html', context)
 
@@ -292,7 +291,7 @@ def print_list(request):
     template=loader.get_template('rome_templates/print_list.html')
     page = request.GET.get('page', 1)
     sort_by = request.GET.get('sort_by', 'title')
-    collection = request.GET.get('collection', 'both')
+    collection = request.GET.get('filter', 'both')
     chinea = ""
     if(collection == 'chinea'):
         chinea = "+AND+(primary_title:\"Chinea\"+OR+subtitle:\"Chinea\")"
@@ -305,13 +304,18 @@ def print_list(request):
     context['sorting']='authors'
     if sort_by!='authors':
         context['sorting']=sort_by
+
+    # Use book object for now
+    context['sort_options'] = Book.SORT_OPTIONS
+    context['filter_options'] = {"chinea": "chinea", "Non-Chinea": "not", "Both": "both"}
+
     # load json for all prints in the collection #
     num_prints_estimate = 6000
 
     url1 = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:image-compound%s&rows=%s' % (BDR_SERVER, chinea, num_prints_estimate)
     prints_json = json.loads(requests.get(url1).text)
     num_prints = prints_json['response']['numFound']
-    context['num_prints'] = num_prints
+    context['num_results'] = num_prints
     prints_set = prints_json['response']['docs']
 
     print_list=[]
@@ -366,7 +370,7 @@ def print_list(request):
     context['print_list']=print_list
 
     prints_per_page=20
-    context['prints_per_page']=prints_per_page
+    context['results_per_page']=prints_per_page
     PAGIN=Paginator(print_list,prints_per_page) #20 prints per page
     context['num_pages']=PAGIN.num_pages
     context['page_range']=PAGIN.page_range
@@ -375,7 +379,7 @@ def print_list(request):
     for i in PAGIN.page_range:
         page_list.append(PAGIN.page(i).object_list)
     context['page_list']=page_list
-    context['collection']=collection
+    context['filter']=collection
 
     c=RequestContext(request,context)
     return HttpResponse(template.render(c))
@@ -547,16 +551,17 @@ def biography_list(request):
 
     context=std_context(request.path_info, title="The Theater that was Rome - Biographies")
     context['page_documentation']='Browse the biographies of artists related to the Theater that was Rome collection.'
-    context['num_bios']=len(bio_list)
+    context['num_results']=len(bio_list)
     context['bio_list']=bio_list
-    context['bios_per_page']=bios_per_page
+    context['results_per_page']=bios_per_page
     context['num_pages']=PAGIN.num_pages
     context['page_range']=PAGIN.page_range
     context['curr_page']=1
     context['PAGIN']=PAGIN
     context['page_list']=page_list
-    context['role_set']=sorted(role_set)
-    context['sorting'] = fq
+    context['filter_options']= dict([(x, x) for x in sorted(role_set)])
+    context['filter_options']['all'] = 'all'
+    context['filter'] = fq
 
     c=RequestContext(request, context)
     return HttpResponse(template.render(c))
