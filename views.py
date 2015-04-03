@@ -23,7 +23,7 @@ from .app_settings import BDR_SERVER, BOOKS_PER_PAGE, PID_PREFIX, logger
 def std_context(path, style="rome/css/content.css",title="The Theater that was Rome"):
     pathparts = path.split(u'/')
     breadcrumbs = []
-    url = "/"
+    url = "/projects/"
 
     for node in pathparts:
         if node:
