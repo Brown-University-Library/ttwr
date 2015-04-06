@@ -180,8 +180,7 @@ def page_detail(request, page_id, book_id=None):
         curr_annot = get_annotation_detail(annotation)
         context['annotations'].append(curr_annot)
     if(context['annotations']):
-        context['annotations'] = sorted(context['annotations'], key=lambda k: int(k['title'].split(" ")[0][0]) if 'title' in k and k['title'].split(" ")[0][0].isdigit() else k['orig_title'])
-
+        context['annotations'] = sorted(context['annotations'], key=lambda k: k['title'] if 'title' in k else k['orig_title'])
     # Previous/next page links
     # First, find the index of the page we're currently loading
     hasPart_index = 0
