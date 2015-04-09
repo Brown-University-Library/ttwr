@@ -224,7 +224,7 @@ class BDRObject(object):
     def authors(self):
         if "contributor_display" in self.data:
             return "; ".join(self.contributor_display)
-        return "contributor(s) not available"
+        return "Anonymous"
 
     @property
     def thumbnail_src(self):

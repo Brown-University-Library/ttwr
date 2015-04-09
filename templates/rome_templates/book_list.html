@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block metadata%}
-          <span class="dark">{% for author in result.name %}{% if forloop.last and not forloop.first %}and {{author}}.{% endif %}{% if not forloop.last or forloop.first %}{{author}}; {% endif %}{% endfor %}</span><br />
+          <span class="dark">{% if result.name %}{% for author in result.name %}{% if forloop.last and not forloop.first %}and {{author}}.{% endif %}{% if not forloop.last or forloop.first %}{{author}}; {% endif %}{% endfor %}{% else %}Anonymous{% endif %}</span><br />
           <span class="dark">{{ result.date }}</span><br />
 {% endblock %}
 

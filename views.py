@@ -19,6 +19,12 @@ import requests
 from .models import Biography, Essay, Book, Annotation
 from .app_settings import BDR_SERVER, BOOKS_PER_PAGE, PID_PREFIX, logger
 
+def annotation_order(s): 
+    retval = re.sub("[^0-9]", "", first_word(s['orig_title']))
+    return int(retval) if retval != '' else 0
+    
+
+def first_word(s): return s.split(" ")[0]
 
 def std_context(path, style="rome/css/content.css",title="The Theater that was Rome"):
     pathparts = path.split(u'/')
@@ -180,7 +186,8 @@ def page_detail(request, page_id, book_id=None):
         curr_annot = get_annotation_detail(annotation)
         context['annotations'].append(curr_annot)
     if(context['annotations']):
-        context['annotations'] = sorted(context['annotations'], key=lambda k: k['title'] if 'title' in k else k['orig_title'])
+        context['annotations'] = sorted(context['annotations'], key=lambda annote: annotation_order(annote))
+
     # Previous/next page links
     # First, find the index of the page we're currently loading
     hasPart_index = 0
