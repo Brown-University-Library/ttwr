@@ -96,6 +96,12 @@ def book_detail(request, book_id):
     context['back_to_book_href'] = u'%s?page=%s' % (reverse('books'), book_list_page)
     context['book'] = Book.get_or_404(pid="%s:%s" % (PID_PREFIX, book_id))
     context['breadcrumbs'][-1]['name'] = breadcrumb_detail(context)
+    grp = 20 # group size for lookups
+    pages = context['book'].pages()
+    pid_groups = [["%s:%s" % (PID_PREFIX, x.id) for x in pages[i:i+grp]] for i in range(0, len(pages), grp)]
+    url = "https://%s/api/pub/search?q=%s+AND+display:BDR_PUBLIC&fl=rel_is_annotation_of_ssim&rows=6000&callback=mark_annotated"
+    annot_lookups = [url % (BDR_SERVER, "rel_is_annotation_of_ssim:(\"" + ("\"+OR+\"".join(l)) + "\")") for l in pid_groups]
+    context['annot_lookups'] = annot_lookups
     return render(request, 'rome_templates/book_detail.html', context)
 
 
