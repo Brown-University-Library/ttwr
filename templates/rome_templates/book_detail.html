@@ -32,6 +32,14 @@
       $("#"+id).addClass("annotated");
     };
   }
+
+  function cover_display (data) {
+    if (data.relations.hasAnnotation) {
+      var annot = data.relations.hasAnnotation[0];
+      // $(".intro").text(JSON.stringify(annot));
+      $(".intro").css("display", "block");
+    };
+  }
 </script>
 {% endblock %}
 
@@ -59,6 +67,9 @@
         </a>
         <br />
         Image {{forloop.counter}}
+        {% if forloop.first %}
+          <script type="text/javascript" src="https://repository.library.brown.edu/api/pub/items/bdr:{{page.id}}?callback=cover_display"></script>
+        {% endif %}
     </div>
   {% endfor %}
   {% for uri in annot_lookups %}
