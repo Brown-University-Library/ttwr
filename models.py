@@ -269,6 +269,11 @@ class Book(BDRObject):
 
 # Page
 class Page(BDRObject):
+    SORT_OPTIONS = SortedDict([
+        ( 'authors', 'authors' ),
+        ( 'title', 'title' ),
+        ( 'date', 'date' ),
+    ])
     OBJECT_TYPE = "implicit-set" #TODO change to something more page appropriate
 
     def embedded_viewer_src(self):

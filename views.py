@@ -16,7 +16,7 @@ from operator import itemgetter, methodcaller
 import xml.etree.ElementTree as ET
 import re
 import requests
-from .models import Biography, Essay, Book, Annotation
+from .models import Biography, Essay, Book, Annotation, Page
 from .app_settings import BDR_SERVER, BOOKS_PER_PAGE, PID_PREFIX, logger
 
 def annotation_order(s): 
@@ -320,7 +320,7 @@ def print_list(request):
         context['sorting']=sort_by
 
     # Use book object for now
-    context['sort_options'] = Book.SORT_OPTIONS
+    context['sort_options'] = Page.SORT_OPTIONS
     context['filter_options'] = {"chinea": "chinea", "Non-Chinea": "not", "Both": "both"}
 
     # load json for all prints in the collection #
