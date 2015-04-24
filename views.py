@@ -65,7 +65,7 @@ def book_list(request):
 
     sort_by = request.GET.get('sort_by', 'title')
     sort_by = Book.SORT_OPTIONS.get(sort_by, 'title_sort')
-    book_list=sorted(book_list,key=methodcaller(sort_by))
+    book_list=sorted(book_list,key=methodcaller('sort_key', sort_by))
 
     page = request.GET.get('page', 1)
     PAGIN=Paginator(book_list, BOOKS_PER_PAGE);

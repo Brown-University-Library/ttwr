@@ -212,6 +212,13 @@ class BDRObject(object):
     def title_sort(self):
         return self.data['primary_title']
 
+    def sort_key(self, sort_by):
+        if(sort_by == 'title_sort'):
+            return (self.title_sort(), self.date())
+        elif(sort_by == 'authors'):
+            return (self.authors(), self.title_sort(), self.date())
+        return (self.date(), self.title_sort())
+
     def alt_titles(self):
         if "mods_title_alt" in self.data:
             return self.mods_title_alt
