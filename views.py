@@ -64,8 +64,7 @@ def book_list(request):
     book_list = Book.search()
 
     sort_by = request.GET.get('sort_by', 'title')
-    sort_by = Book.SORT_OPTIONS.get(sort_by, 'title')
-
+    sort_by = Book.SORT_OPTIONS.get(sort_by, 'title_sort')
     book_list=sorted(book_list,key=methodcaller(sort_by))
 
     page = request.GET.get('page', 1)

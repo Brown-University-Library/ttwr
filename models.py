@@ -209,6 +209,9 @@ class BDRObject(object):
     def title(self):
         return self._get_full_title()
 
+    def title_sort(self):
+        return self.data['primary_title']
+
     def alt_titles(self):
         if "mods_title_alt" in self.data:
             return self.mods_title_alt
@@ -237,7 +240,7 @@ class Book(BDRObject):
     CUTOFF = 80
     SORT_OPTIONS = SortedDict([
         ( 'authors', 'authors' ),
-        ( 'title', 'title' ),
+        ( 'title', 'title_sort' ),
         ( 'date', 'date' ),
     ])
 
