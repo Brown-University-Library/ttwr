@@ -36,8 +36,7 @@
   function cover_display (data) {
     if (data.relations.hasAnnotation) {
       var annot = data.relations.hasAnnotation[0];
-      // $(".intro").text(JSON.stringify(annot));
-      $(".intro").css("display", "block");
+      // Front cover has annotation and might do something about this later...
     };
   }
 </script>
@@ -58,7 +57,7 @@
     <li><a href="{{back_to_book_href}}">return to book list</a></li><br />
 </ol>
 <br/>
-Pages marked with <span class="annotated">&nbsp;&nbsp;</span> are annotated.
+Pages marked with <span class="annotated">&nbsp;&nbsp;&nbsp;</span> are annotated.
 {% endblock %}
 
 {% block content %}
@@ -69,9 +68,6 @@ Pages marked with <span class="annotated">&nbsp;&nbsp;</span> are annotated.
         </a>
         <br />
         Image {{forloop.counter}}
-        {% if forloop.first %}
-          <script type="text/javascript" src="https://repository.library.brown.edu/api/pub/items/bdr:{{page.id}}?callback=cover_display"></script>
-        {% endif %}
     </div>
   {% endfor %}
   {% for uri in annot_lookups %}
