@@ -3,7 +3,7 @@
 {% block title%}The Theater that was Rome - Books{% endblock %}
 
 {% block result_title%}
-{{result.short_title}}
+{{result.short_title}} {% if result.partnumber %} ({{result.partnumber.0}}){% endif %}
 {% endblock %}
 
 {% block metadata%}
