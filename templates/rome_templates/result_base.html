@@ -93,7 +93,7 @@ function load()
 
         <div class="metadata col-sm-8" id="{{forloop.parentloop.counter}}_{{forloop.counter}}">
           {% block result_link%}
-          <a href="{{ result.thumbnail_url }}?book_list_page={{forloop.parent.counter}}">
+          <a href="{{ result.thumbnail_url }}?book_list_page={{forloop.parentloop.counter}}">
             {% block result_title%}
             {{result.short_title}}
             {% endblock %}
