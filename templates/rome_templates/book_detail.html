@@ -10,8 +10,36 @@
     .intro, .pagination {
       display: none;
     }
+
+    .annotated {
+      background-color: rgba(154,38,0,0.25)
+    }
+
+    .annotated:hover {
+      background-color: rgba(154,38,0,0.4)
+    }
   </style>
   
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+  var bdr_url = "http://repository.library.brown.edu/api/pub/items/"
+
+  function mark_annotated(data) {
+    for (var i = 0; i < data.response.numFound; i++) {
+      var id = data.response.docs[i].rel_is_annotation_of_ssim[0].split(":")[1];
+      $("#"+id).addClass("annotated");
+    };
+  }
+
+  function cover_display (data) {
+    if (data.relations.hasAnnotation) {
+      var annot = data.relations.hasAnnotation[0];
+      // Front cover has annotation and might do something about this later...
+    };
+  }
+</script>
 {% endblock %}
 
 {% block cookietrail %}
@@ -28,16 +56,21 @@
     <li>Date: <span class="dark">{{ book.date }}</span></li><br />
     <li><a href="{{back_to_book_href}}">return to book list</a></li><br />
 </ol>
+<br/>
+Pages marked with <span class="annotated">&nbsp;&nbsp;&nbsp;</span> are annotated.
 {% endblock %}
 
 {% block content %}
   {% for page in book.pages %}
-    <div class="img_container">
+    <div class="img_container" id="{{ page.id }}">
         <a href="{{ page.url }}" target="_blank">
             <img src="{{ page.thumbnail_src }}" height="150px"/>
         </a>
         <br />
         Image {{forloop.counter}}
     </div>
+  {% endfor %}
+  {% for uri in annot_lookups %}
+  <script type="text/javascript" src="{{ uri }}"></script>
   {% endfor %}
 {% endblock %}

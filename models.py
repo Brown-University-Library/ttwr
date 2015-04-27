@@ -209,6 +209,16 @@ class BDRObject(object):
     def title(self):
         return self._get_full_title()
 
+    def title_sort(self):
+        return self.data['primary_title']
+
+    def sort_key(self, sort_by):
+        if(sort_by == 'title_sort'):
+            return (self.title_sort(), self.date())
+        elif(sort_by == 'authors'):
+            return (self.authors(), self.title_sort(), self.date())
+        return (self.date(), self.title_sort())
+
     def alt_titles(self):
         if "mods_title_alt" in self.data:
             return self.mods_title_alt
@@ -237,7 +247,7 @@ class Book(BDRObject):
     CUTOFF = 80
     SORT_OPTIONS = SortedDict([
         ( 'authors', 'authors' ),
-        ( 'title', 'title' ),
+        ( 'title', 'title_sort' ),
         ( 'date', 'date' ),
     ])
 
@@ -266,6 +276,11 @@ class Book(BDRObject):
 
 # Page
 class Page(BDRObject):
+    SORT_OPTIONS = SortedDict([
+        ( 'authors', 'authors' ),
+        ( 'title', 'title' ),
+        ( 'date', 'date' ),
+    ])
     OBJECT_TYPE = "implicit-set" #TODO change to something more page appropriate
 
     def embedded_viewer_src(self):

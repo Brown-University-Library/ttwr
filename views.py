@@ -16,7 +16,7 @@ from operator import itemgetter, methodcaller
 import xml.etree.ElementTree as ET
 import re
 import requests
-from .models import Biography, Essay, Book, Annotation
+from .models import Biography, Essay, Book, Annotation, Page
 from .app_settings import BDR_SERVER, BOOKS_PER_PAGE, PID_PREFIX, logger
 
 def annotation_order(s): 
@@ -64,9 +64,8 @@ def book_list(request):
     book_list = Book.search()
 
     sort_by = request.GET.get('sort_by', 'title')
-    sort_by = Book.SORT_OPTIONS.get(sort_by, 'title')
-
-    book_list=sorted(book_list,key=methodcaller(sort_by))
+    sort_by = Book.SORT_OPTIONS.get(sort_by, 'title_sort')
+    book_list=sorted(book_list,key=methodcaller('sort_key', sort_by))
 
     page = request.GET.get('page', 1)
     PAGIN=Paginator(book_list, BOOKS_PER_PAGE);
@@ -96,6 +95,12 @@ def book_detail(request, book_id):
     context['back_to_book_href'] = u'%s?page=%s' % (reverse('books'), book_list_page)
     context['book'] = Book.get_or_404(pid="%s:%s" % (PID_PREFIX, book_id))
     context['breadcrumbs'][-1]['name'] = breadcrumb_detail(context)
+    grp = 20 # group size for lookups
+    pages = context['book'].pages()
+    pid_groups = [["%s:%s" % (PID_PREFIX, x.id) for x in pages[i:i+grp]] for i in range(0, len(pages), grp)]
+    url = "https://%s/api/pub/search?q=%s+AND+display:BDR_PUBLIC&fl=rel_is_annotation_of_ssim&rows=6000&callback=mark_annotated"
+    annot_lookups = [url % (BDR_SERVER, "rel_is_annotation_of_ssim:(\"" + ("\"+OR+\"".join(l)) + "\")") for l in pid_groups]
+    context['annot_lookups'] = annot_lookups
     return render(request, 'rome_templates/book_detail.html', context)
 
 
@@ -315,7 +320,7 @@ def print_list(request):
         context['sorting']=sort_by
 
     # Use book object for now
-    context['sort_options'] = Book.SORT_OPTIONS
+    context['sort_options'] = Page.SORT_OPTIONS
     context['filter_options'] = {"chinea": "chinea", "Non-Chinea": "not", "Both": "both"}
 
     # load json for all prints in the collection #
