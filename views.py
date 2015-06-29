@@ -98,7 +98,7 @@ def book_detail(request, book_id):
     grp = 20 # group size for lookups
     pages = context['book'].pages()
     pid_groups = [["%s:%s" % (PID_PREFIX, x.id) for x in pages[i:i+grp]] for i in range(0, len(pages), grp)]
-    url = "https://%s/api/pub/search?q=%s+AND+display:BDR_PUBLIC&fl=rel_is_annotation_of_ssim&rows=6000&callback=mark_annotated"
+    url = "https://%s/api/search?q=%s+AND+display:BDR_PUBLIC&fl=rel_is_annotation_of_ssim&rows=6000&callback=mark_annotated"
     annot_lookups = [url % (BDR_SERVER, "rel_is_annotation_of_ssim:(\"" + ("\"+OR+\"".join(l)) + "\")") for l in pid_groups]
     context['annot_lookups'] = annot_lookups
     return render(request, 'rome_templates/book_detail.html', context)
@@ -136,7 +136,7 @@ def page_detail(request, page_id, book_id=None):
     context['book_id'] = book_id
 
     thumbnails=[]
-    book_json_uri = u'https://%s/api/pub/items/%s/' % (BDR_SERVER, book_pid)
+    book_json_uri = u'https://%s/api/items/%s/' % (BDR_SERVER, book_pid)
     r = requests.get(book_json_uri, timeout=60)
     if not r.ok:
         logger.error(u'TTWR - error retrieving url %s' % book_json_uri)
@@ -169,7 +169,7 @@ def page_detail(request, page_id, book_id=None):
     context['breadcrumbs'][-2]['name'] = breadcrumb_detail(context, view="print")
 
     # annotations/metadata
-    page_json_uri = u'https://%s/api/pub/items/%s/' % (BDR_SERVER, page_pid)
+    page_json_uri = u'https://%s/api/items/%s/' % (BDR_SERVER, page_pid)
     r = requests.get(page_json_uri, timeout=60)
     if not r.ok:
         logger.error(u'TTWR - error retrieving url %s' % page_json_uri)
@@ -326,7 +326,7 @@ def print_list(request):
     # load json for all prints in the collection #
     num_prints_estimate = 6000
 
-    url1 = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:image-compound%s&rows=%s' % (BDR_SERVER, chinea, num_prints_estimate)
+    url1 = 'https://%s/api/search/?q=ir_collection_id:621+AND+object_type:image-compound%s&rows=%s' % (BDR_SERVER, chinea, num_prints_estimate)
     prints_json = json.loads(requests.get(url1).text)
     num_prints = prints_json['response']['numFound']
     context['num_results'] = num_prints
@@ -421,7 +421,7 @@ def print_detail(request, print_id):
     context['print_id'] = print_id
     context['studio_url'] = 'https://%s/studio/item/%s/' % (BDR_SERVER, print_pid)
 
-    json_uri = 'https://%s/api/pub/items/%s/' % (BDR_SERVER, print_pid)
+    json_uri = 'https://%s/api/items/%s/' % (BDR_SERVER, print_pid)
     print_json = json.loads(requests.get(json_uri).text)
     context['short_title'] = print_json['brief']['title']
     context['title'] = _get_full_title(print_json)
@@ -507,7 +507,7 @@ def person_detail_tei(request, trp_id):
 
 def _get_info_from_trp_id(trp_id):
     trp_id = u'trp-%04d' % int(trp_id)
-    r = requests.get(u'http://%s/api/pub/search?q=mods_id_trp_ssim:%s+AND+display:BDR_PUBLIC&fl=pid,name' % (BDR_SERVER, trp_id))
+    r = requests.get(u'http://%s/api/search?q=mods_id_trp_ssim:%s+AND+display:BDR_PUBLIC&fl=pid,name' % (BDR_SERVER, trp_id))
     if r.ok:
         data = json.loads(r.text)
         if data['response']['numFound'] > 0:
@@ -527,7 +527,7 @@ def _get_full_title(data):
 
 
 def _get_book_pid_from_page_pid(page_pid):
-    query = u'https://%s/api/pub/items/%s/' % (BDR_SERVER, page_pid)
+    query = u'https://%s/api/items/%s/' % (BDR_SERVER, page_pid)
     r = requests.get(query)
     if r.ok:
         data = json.loads(r.text)
