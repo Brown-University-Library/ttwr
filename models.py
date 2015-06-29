@@ -122,6 +122,8 @@ class Essay(models.Model):
     author = models.CharField(max_length=254)
     title = models.CharField(max_length=254)
     text = models.TextField()
+    pids = models.CharField(max_length=254, null=True, blank=True, help_text='Comma-separated list of pids for books or prints associated with this essay.')
+    people = models.ManyToManyField(Biography, null=True, blank=True, help_text='List of people associated with this essay.')
 
 
 class Genre(models.Model):
