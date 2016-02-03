@@ -30,11 +30,11 @@ class Biography(models.Model):
         return Print.search(query='contributor:"%s"' % self.name )
 
     def annotations_by_books_and_prints(self, group_amount=50):
-        # Might need some cleaining up later, see if we can use objects here
+        # Might need some cleaning up later, see if we can use objects here
 
         #Look up every annotation for a person
         num_prints_estimate = 6000
-        query_uri = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+object_type:"annotation"+AND+contributor:"%s"+AND+display:BDR_PUBLIC&rows=%s&fl=rel_is_annotation_of_ssim,primary_title,pid,nonsort' % (app_settings.BDR_SERVER, self.name, num_prints_estimate)
+        query_uri = 'https://%s/api/search/?q=ir_collection_id:621+AND+object_type:"annotation"+AND+contributor:"%s"+AND+display:BDR_PUBLIC&rows=%s&fl=rel_is_annotation_of_ssim,primary_title,pid,nonsort' % (app_settings.BDR_SERVER, self.name, num_prints_estimate)
         annotations = json.loads(requests.get(query_uri).text)['response']['docs']
         pages = dict([(page['rel_is_annotation_of_ssim'][0].split(u':')[-1], page) for page in annotations])
         books = {}
@@ -57,7 +57,7 @@ class Biography(models.Model):
         while(i < num_pages):
             group = pages_to_look_up[i : i+group_amount]
             pids = "(pid:" + ("+OR+pid:".join(group)) + ")"
-            book_query = u"https://%s/api/pub/search/?q=%s+AND+display:BDR_PUBLIC&fl=pid,primary_title,nonsort,object_type,rel_is_part_of_ssim,rel_has_pagination_ssim&rows=%s" % (app_settings.BDR_SERVER, pids, group_amount)
+            book_query = u"https://%s/api/search/?q=%s+AND+display:BDR_PUBLIC&fl=pid,primary_title,nonsort,object_type,rel_is_part_of_ssim,rel_has_pagination_ssim&rows=%s" % (app_settings.BDR_SERVER, pids, group_amount)
             data = json.loads(requests.get(book_query).text)
             book_response = data['response']['docs']
 
@@ -122,6 +122,8 @@ class Essay(models.Model):
     author = models.CharField(max_length=254)
     title = models.CharField(max_length=254)
     text = models.TextField()
+    pids = models.CharField(max_length=254, null=True, blank=True, help_text='Comma-separated list of pids for books or prints associated with this essay.')
+    people = models.ManyToManyField(Biography, null=True, blank=True, help_text='List of people associated with this essay.')
 
 
 class Genre(models.Model):
@@ -166,7 +168,7 @@ class BDRObject(object):
     OBJECT_TYPE = "*"
     @classmethod
     def search(cls, query="*", rows=6000):
-        url1 = 'https://%s/api/pub/collections/621/?q=%s&fq=object_type:%s&fl=*&fq=discover:BDR_PUBLIC&rows=%s' % (app_settings.BDR_SERVER, query, cls.OBJECT_TYPE, rows)
+        url1 = 'https://%s/api/collections/621/?q=%s&fq=object_type:%s&fl=*&fq=discover:BDR_PUBLIC&rows=%s' % (app_settings.BDR_SERVER, query, cls.OBJECT_TYPE, rows)
         objects_json = json.loads(requests.get(url1).text)
         num_objects = objects_json['items']['numFound']
         if num_objects>rows: #only reload if we need to find more bdr_objects
@@ -176,7 +178,7 @@ class BDRObject(object):
 
     @classmethod
     def get(cls, pid):
-        json_uri='https://%s/api/pub/items/%s/?q=*&fl=*' % (app_settings.BDR_SERVER, pid)
+        json_uri='https://%s/api/items/%s/?q=*&fl=*' % (app_settings.BDR_SERVER, pid)
         resp = requests.get(json_uri)
         if not resp.ok:
              return cls()
