@@ -326,7 +326,7 @@ def print_list(request):
     # load json for all prints in the collection #
     num_prints_estimate = 6000
 
-    url1 = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+(genre_aat:"etchings (prints)"+OR+genre_aat:"engravings_prints")%s&rows=%s' % (BDR_SERVER, chinea, num_prints_estimate)
+    url1 = 'https://%s/api/pub/search/?q=ir_collection_id:621+AND+(genre_aat:"etchings (prints)"+OR+genre_aat:"engravings (prints)")%s&rows=%s' % (BDR_SERVER, chinea, num_prints_estimate)
     prints_json = json.loads(requests.get(url1).text)
     num_prints = prints_json['response']['numFound']
     context['num_results'] = num_prints
