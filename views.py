@@ -61,7 +61,7 @@ def index(request):
 
 def book_list(request):
     context = std_context(request.path, )
-    book_list = Book.search()
+    book_list = Book.search(query="genre_aat:books*")
 
     sort_by = request.GET.get('sort_by', 'title')
     sort_by = Book.SORT_OPTIONS.get(sort_by, 'title_sort')
