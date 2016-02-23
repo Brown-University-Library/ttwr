@@ -321,7 +321,7 @@ def print_list(request):
 
     # Use book object for now
     context['sort_options'] = Page.SORT_OPTIONS
-    context['filter_options'] = {"chinea": "chinea", "Non-Chinea": "not", "Both": "both"}
+    context['filter_options'] = [("chinea", "chinea"), ("Both", "both"), ("Non-Chinea", "not")]
 
     # load json for all prints in the collection #
     num_prints_estimate = 6000
@@ -573,8 +573,8 @@ def biography_list(request):
     context['curr_page']=1
     context['PAGIN']=PAGIN
     context['page_list']=page_list
-    context['filter_options']= dict([(x, x) for x in sorted(role_set)])
-    context['filter_options']['all'] = 'all'
+    context['filter_options'] = [("all","all")]
+    context['filter_options'].extend([(x, x) for x in sorted(role_set)])
     context['filter'] = fq
 
     c=RequestContext(request, context)

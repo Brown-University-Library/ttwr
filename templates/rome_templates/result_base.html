@@ -74,7 +74,7 @@ function load()
   <br/>
   <div class="filter_options">
   Filter by:&nbsp;
-  {% for key,opt in filter_options.items %}
+  {% for key,opt in filter_options %}
     <a id="sort_{{opt}}" 
       class="sort_link{% if opt == filter %} sort_active{% endif %}"
       href="?filter={{opt}}{% if sort_options %}&sort_by={{ sorting }}{% endif %}">{{key|title}}
