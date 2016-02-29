@@ -94,6 +94,9 @@ def book_detail(request, book_id):
     context = std_context(request.path)
     context['back_to_book_href'] = u'%s?page=%s' % (reverse('books'), book_list_page)
     context['book'] = Book.get_or_404(pid="%s:%s" % (PID_PREFIX, book_id))
+
+    context['essays'] = context['book'].essays()
+
     context['breadcrumbs'][-1]['name'] = breadcrumb_detail(context)
     grp = 20 # group size for lookups
     pages = context['book'].pages()
@@ -106,6 +109,7 @@ def book_detail(request, book_id):
 
 def page_detail(request, page_id, book_id=None):
     page_pid = u'%s:%s' % (PID_PREFIX, page_id)
+    this_page = Page.get_or_404(page_pid)
     template=loader.get_template('rome_templates/page_detail.html')
     context=std_context(request.path, )
     if book_id:
@@ -217,6 +221,8 @@ def page_detail(request, page_id, book_id=None):
 
     context['prev_pid'] = prev_pid
     context['next_pid'] = next_pid
+
+    context['essays'] = this_page.essays()
 
     context['breadcrumbs'][-1]['name'] = "Image " + page_json['rel_has_pagination_ssim'][0]
 

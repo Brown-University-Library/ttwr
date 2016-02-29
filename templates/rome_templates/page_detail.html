@@ -60,6 +60,14 @@ $(document).ready(function() {
             <li>Print ID: <span class="dark">{{ print_id }}</span></li><br />
         {% endif %}
         <li><a href="{{ studio_url }}" target="_blank">[BDR View]</a></li><br />
+        {% if essays %}
+            <h4>Essays</h4>
+                <ul>
+                {% for essay in essays %}
+                    <li><b><a href="{% url 'specific_essay' essay.slug %}">{{essay.title}}</a></b></li>
+                {% endfor %}
+                </ul>
+        {% endif %}
         {% if book_mode %}
             <li><a href="{{back_to_thumbnail_href}}">return to thumbnail viewer</a></li><br />
             <li><a href="{{back_to_book_href}}">return to book list</a></li><br />

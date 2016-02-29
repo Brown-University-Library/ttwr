@@ -54,6 +54,14 @@
       <li>&nbsp;&nbsp;&nbsp;&nbsp;<span class="dark">{{atitle}}</span></li><br />
     {% endfor %}
     <li>Date: <span class="dark">{{ book.date }}</span></li><br />
+    {% if essays %}
+      <h4>Essays</h4>
+          <ul>
+          {% for essay in essays %}
+            <li><b><a href="{% url 'specific_essay' essay.slug %}"><span class="dark">{{essay.title}}</span></a></b></li>
+          {% endfor %}
+          </ul>
+    {% endif %}
     <li><a href="{{back_to_book_href}}">return to book list</a></li><br />
 </ol>
 <br/>
