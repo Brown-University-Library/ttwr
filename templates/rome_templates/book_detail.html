@@ -40,6 +40,16 @@
       // Front cover has annotation and might do something about this later...
     };
   }
+
+  function add_toggle_handlers(essays){
+    $(".essaytoggle").on('click', function(){
+        var id = $(this).attr('id');
+        var slug = id.substring(6);
+        var textid = "essaytext" + slug;
+        $("#" +textid).toggle();
+    });
+  }
+
 </script>
 {% endblock %}
 
@@ -58,8 +68,9 @@
     {% if essays %}
       <li>Essays:<span class= "dark"><br />
           {% for essay in essays %}
-            <li><a href="{% url 'specific_essay' essay.slug %}">{{essay.title}}</a></li><br />
-            <li>{{essay.text|markdown}}</li><br />
+            <li><a href="{% url 'specific_essay' essay.slug %}">{{essay.title}}</a></li>
+            <div id = "toggle{{essay.slug}}" class = "essaytoggle">Toggle Essay</div><br />
+            <li id = "essaytext{{essay.slug}}" style = "display : none">{{essay.text|markdown}}</li><br />
           {% endfor %}
       </li><br />
     {% endif %}
@@ -68,6 +79,7 @@
 <br/>
 Pages marked with <span class="annotated">&nbsp;&nbsp;&nbsp;</span> are annotated.
 {% endblock %}
+
 
 {% block content %}
   {% for page in book.pages %}
@@ -82,4 +94,5 @@ Pages marked with <span class="annotated">&nbsp;&nbsp;&nbsp;</span> are annotate
   {% for uri in annot_lookups %}
   <script type="text/javascript" src="{{ uri }}"></script>
   {% endfor %}
+  <script type = "text/javascript">add_toggle_handlers();</script>
 {% endblock %}
