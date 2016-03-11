@@ -27,6 +27,10 @@
 <script type="text/javascript">
   var bdr_url = "http://repository.library.brown.edu/api/pub/items/"
 
+  $(document).ready(function() {
+    add_toggle_handlers();
+  });
+
   function mark_annotated(data) {
     for (var i = 0; i < data.response.numFound; i++) {
       var id = data.response.docs[i].rel_is_annotation_of_ssim[0].split(":")[1];
@@ -41,12 +45,19 @@
     };
   }
 
-  function add_toggle_handlers(essays){
+  function add_toggle_handlers(){
     $(".essaytoggle").on('click', function(){
         var id = $(this).attr('id');
         var slug = id.substring(6);
         var textid = "essaytext" + slug;
+        var toggleid = "togspan" + slug;
         $("#" +textid).toggle();
+        if ($("#" +toggleid).text() === "Show Essay Text"){
+          $("#" +toggleid).text("Hide Essay Text");
+        } else {
+          $("#" +toggleid).text("Show Essay Text");
+        }
+        $(".underlinewrap").css("border-bottom", "1px dotted");
     });
   }
 
@@ -69,8 +80,8 @@
       <li>Essays:<span class= "dark"><br />
           {% for essay in essays %}
             <li><a href="{% url 'specific_essay' essay.slug %}">{{essay.title}}</a></li>
-            <div id = "toggle{{essay.slug}}" class = "essaytoggle">Toggle Essay</div><br />
-            <li id = "essaytext{{essay.slug}}" style = "display : none">{{essay.text|markdown}}</li><br />
+            <div id = "toggle{{essay.slug}}" class = "essaytoggle"><span class = "underlinewrap" id="togspan{{essay.slug}}">Show Essay Text</span></div>
+            <div id = "essaytext{{essay.slug}}" class = "text">{{essay.text|markdown}}</div>
           {% endfor %}
       </li><br />
     {% endif %}
@@ -94,5 +105,4 @@ Pages marked with <span class="annotated">&nbsp;&nbsp;&nbsp;</span> are annotate
   {% for uri in annot_lookups %}
   <script type="text/javascript" src="{{ uri }}"></script>
   {% endfor %}
-  <script type = "text/javascript">add_toggle_handlers();</script>
 {% endblock %}

@@ -168,7 +168,7 @@ def page_detail(request, page_id, book_id=None):
         except:
             context['date']="n.d."
     context['lowres_url']="https://%s/fedora/objects/%s/datastreams/lowres/content" % (BDR_SERVER, page_pid)
-    context['det_img_view_src']="https://%s/viewers/image/zoom/%s" % (BDR_SERVER, page_pid)
+    context['det_img_view_src']="https://%s/viewers/image/iip/%s" % (BDR_SERVER, page_pid)
 
     context['breadcrumbs'][-2]['name'] = breadcrumb_detail(context, view="print")
 
@@ -358,7 +358,7 @@ def print_list(request):
             current_print['title_cut']=1
         current_print['title']=title
         current_print['short_title']=short_title
-        current_print['det_img_viewer']='https://%s/viewers/image/zoom/%s' % (BDR_SERVER, pid)
+        current_print['det_img_viewer']='https://%s/viewers/image/iip/%s' % (BDR_SERVER, pid)
         try:
             current_print['date']=Print['dateCreated'][0:4]
         except:
@@ -418,7 +418,7 @@ def print_detail(request, print_id):
 
     context['book_mode'] = 0
     context['print_mode'] = 1
-    context['det_img_view_src'] = 'https://%s/viewers/image/zoom/%s/' % (BDR_SERVER, print_pid)
+    context['det_img_view_src'] = 'https://%s/viewers/image/iip/%s/' % (BDR_SERVER, print_pid)
     if prints_list_page:
         context['back_to_print_href'] = u'%s?page=%s&collection=%s' % (reverse('prints'), prints_list_page, collection)
     else:

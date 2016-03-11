@@ -1,6 +1,7 @@
 {% extends "rome_templates/base.html" %}
 {% load url from future %}
 {% load static from staticfiles %}
+{% load markdown_deux_tags %}
 
 {% block title %}{{title}}{% endblock %}
 {% block page_title %}The Theater that was Rome{% endblock %}
@@ -32,52 +33,65 @@ $(document).ready(function() {
     } else {
         $("#next_page").html("");
     }
-
+    add_toggle_handlers();
+    add_low_toggle_handlers();
 });
 
 {% endif %}
+
+function add_toggle_handlers(){
+    $(".essaytoggle").on('click', function(){
+        var id = $(this).attr('id');
+        var slug = id.substring(6);
+        var textid = "essaytext" + slug;
+        var toggleid = "toggle" + slug;
+        $("#" +textid).toggle();
+        if ($("#" +toggleid).text() === "Show Essay Text"){
+          $("#" +toggleid).text("Hide Essay Text");
+        } else {
+          $("#" +toggleid).text("Show Essay Text");
+        }        
+    });
+}
+
+function add_low_toggle_handlers(){
+    $(".essaytogglelow").on('click', function(){
+        var id = $(this).attr('id');
+        var slug = id.substring(9);
+        var textid = "essaytextlow" + slug;
+        var toggleid = "togspanlow" + slug;
+        $("#" +textid).toggle();
+        if ($("#" +toggleid).text() === "Show Essay Text"){
+          $("#" +toggleid).text("Hide Essay Text");
+        } else {
+          $("#" +toggleid).text("Show Essay Text");
+        }        
+    });
+}
+
 </script>
 {% endblock javascript %}
 
 {% block extra_head %}
 <style type="text/css">
-    div.intro, div.pagination {
+    div.intro, div.pagination_rome {
         display: none;
     }
 </style>
 {% endblock %}
 
+{% block navigation %}
+    {% if book_mode %}
+        <br />
+        <ul class= "navigationlink"><a href="{{back_to_thumbnail_href}}" >return to book</a></ul>
+        <ul class = "navigationlink"><a href="{{back_to_book_href}}" >return to book list</a></ul>
+    {% endif %}
+    {% if print_mode %}
+        <br />
+        <ul class = "navigationlink"><a href="{{back_to_print_href}}">return to print list</a></ul>
+    {% endif %}
 
-{% block cookietrail %}
-    <ol>
-        <li>Title: <span class="dark">{{ title }}</span></li><br />
-        <li>Author(s): <span class="dark">{{ authors }}</span></li><br />
-        <li>Date: <span class="dark">{{ date }}</span></li><br />
-        {% if book_mode %}
-            <li>Book ID: <span class="dark">{{ book_id }}</span></li><br />
-        {% endif %}
-        {% if print_mode %}
-            <li>Print ID: <span class="dark">{{ print_id }}</span></li><br />
-        {% endif %}
-        <li><a href="{{ studio_url }}" target="_blank">[BDR View]</a></li><br />
-        {% if essays %}
-            <h4>Essays</h4>
-                <ul>
-                {% for essay in essays %}
-                    <li><b><a href="{% url 'specific_essay' essay.slug %}">{{essay.title}}</a></b></li>
-                {% endfor %}
-                </ul>
-        {% endif %}
-        {% if book_mode %}
-            <li><a href="{{back_to_thumbnail_href}}">return to thumbnail viewer</a></li><br />
-            <li><a href="{{back_to_book_href}}">return to book list</a></li><br />
-        {% endif %}
-        {% if print_mode %}
-            <li><a href="{{back_to_print_href}}">return to print list</a>
-        {% endif %}
-    </ol>
 {% endblock %}
-
 
 {% block content %}
     <br />
@@ -150,10 +164,29 @@ $(document).ready(function() {
                 {% if annotation.has_elements.annotator %}
                 <div class="annot_field"><i>[{{ annotation.annotator }}]</i></div>
                 {% endif %}
-                <br />
-                <br />
-                </li>
             {% endfor %}
             </ul>
+        {% if essays %}
+            <ul><b>Essays:</ul></b><span>
+            {% for essay in essays %}
+                <li class = "essaytitlelow"><a href="{% url 'specific_essay' essay.slug %}">{{essay.title}}</a></li>
+                <div id = "togglelow{{essay.slug}}" class = "essaytogglelow"><span class = "underlinewrap" id="togspanlow{{essay.slug}}">Show Essay Text</span></div>
+                <div id = "essaytextlow{{essay.slug}}" class = "essaytextlow">{{essay.text|markdown}}</div>
+            {% endfor %}
+        {% endif %}    
+        <br />
+        <div id = "bookinfo">
+        <ul> Book Information: <ul/><br />
+        <ul><b><i>{{ title }}</i>, {{date}}</b></ul>
+        <ul>{{ authors }}</ul>
+        {% if book_mode %}
+            <ul><b>Brown ID #: </b>{{ book_id }} <a href="{{ studio_url }}" target="_blank"> [Library View]</a></ul>
+        {% endif %}
+            {% if print_mode %}
+                <ul><b>Print ID: </b>{{ print_id }}<a href="{{ studio_url }}" target="_blank"> [Library View]</a></ul>
+            {% endif %}
+        <ul></ul>
+        <br />
+        </div>
         </div>
 {% endblock %}
