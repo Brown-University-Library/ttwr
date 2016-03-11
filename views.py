@@ -94,6 +94,9 @@ def book_detail(request, book_id):
     context = std_context(request.path)
     context['back_to_book_href'] = u'%s?page=%s' % (reverse('books'), book_list_page)
     context['book'] = Book.get_or_404(pid="%s:%s" % (PID_PREFIX, book_id))
+
+    context['essays'] = context['book'].essays()
+
     context['breadcrumbs'][-1]['name'] = breadcrumb_detail(context)
     grp = 20 # group size for lookups
     pages = context['book'].pages()
@@ -106,6 +109,7 @@ def book_detail(request, book_id):
 
 def page_detail(request, page_id, book_id=None):
     page_pid = u'%s:%s' % (PID_PREFIX, page_id)
+    this_page = Page.get_or_404(page_pid)
     template=loader.get_template('rome_templates/page_detail.html')
     context=std_context(request.path, )
     if book_id:
@@ -164,7 +168,7 @@ def page_detail(request, page_id, book_id=None):
         except:
             context['date']="n.d."
     context['lowres_url']="https://%s/fedora/objects/%s/datastreams/lowres/content" % (BDR_SERVER, page_pid)
-    context['det_img_view_src']="https://%s/viewers/image/zoom/%s" % (BDR_SERVER, page_pid)
+    context['det_img_view_src']="https://%s/viewers/image/iip/%s" % (BDR_SERVER, page_pid)
 
     context['breadcrumbs'][-2]['name'] = breadcrumb_detail(context, view="print")
 
@@ -217,6 +221,8 @@ def page_detail(request, page_id, book_id=None):
 
     context['prev_pid'] = prev_pid
     context['next_pid'] = next_pid
+
+    context['essays'] = this_page.essays()
 
     context['breadcrumbs'][-1]['name'] = "Image " + page_json['rel_has_pagination_ssim'][0]
 
@@ -321,7 +327,7 @@ def print_list(request):
 
     # Use book object for now
     context['sort_options'] = Page.SORT_OPTIONS
-    context['filter_options'] = {"chinea": "chinea", "Non-Chinea": "not", "Both": "both"}
+    context['filter_options'] = [("chinea", "chinea"), ("Both", "both"), ("Non-Chinea", "not")]
 
     # load json for all prints in the collection #
     num_prints_estimate = 6000
@@ -352,7 +358,7 @@ def print_list(request):
             current_print['title_cut']=1
         current_print['title']=title
         current_print['short_title']=short_title
-        current_print['det_img_viewer']='https://%s/viewers/image/zoom/%s' % (BDR_SERVER, pid)
+        current_print['det_img_viewer']='https://%s/viewers/image/iip/%s' % (BDR_SERVER, pid)
         try:
             current_print['date']=Print['dateCreated'][0:4]
         except:
@@ -412,7 +418,7 @@ def print_detail(request, print_id):
 
     context['book_mode'] = 0
     context['print_mode'] = 1
-    context['det_img_view_src'] = 'https://%s/viewers/image/zoom/%s/' % (BDR_SERVER, print_pid)
+    context['det_img_view_src'] = 'https://%s/viewers/image/iip/%s/' % (BDR_SERVER, print_pid)
     if prints_list_page:
         context['back_to_print_href'] = u'%s?page=%s&collection=%s' % (reverse('prints'), prints_list_page, collection)
     else:
@@ -573,8 +579,8 @@ def biography_list(request):
     context['curr_page']=1
     context['PAGIN']=PAGIN
     context['page_list']=page_list
-    context['filter_options']= dict([(x, x) for x in sorted(role_set)])
-    context['filter_options']['all'] = 'all'
+    context['filter_options'] = [("all","all")]
+    context['filter_options'].extend([(x, x) for x in sorted(role_set)])
     context['filter'] = fq
 
     c=RequestContext(request, context)

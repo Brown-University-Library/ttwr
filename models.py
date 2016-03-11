@@ -275,6 +275,9 @@ class Book(BDRObject):
     def pages(self):
         return [ Page(data=page_data, parent=self) for page_data in self.relations['hasPart'] ]
 
+    def essays(self):
+        return Essay.objects.filter(pids__contains = self.pid[4:])
+
 
 # Page
 class Page(BDRObject):
@@ -290,6 +293,9 @@ class Page(BDRObject):
 
     def url(self):
         return reverse('book_page_viewer', args=[self.parent.id, self.id])
+
+    def essays(self):
+        return Essay.objects.filter(pids__contains = self.pid[4:])
 
 # Print
 class Print(Page):

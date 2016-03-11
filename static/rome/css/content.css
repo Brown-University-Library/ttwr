@@ -118,6 +118,19 @@ a.bookEssay {
   height: 150px;
 }
 
+div.text {
+	display : none; 
+	color: black;
+}
+
+div.essaytoggle {
+	margin-top:2px; 
+}
+
+span.underlinewrap {
+	border-bottom: 1px dotted;
+}
+
 /*
  * For page_detail
  */
@@ -125,7 +138,7 @@ a#prev_page {
     display: block;
     width: 30px;
     margin: 5px;
-    margin-left: 3%;
+    margin-left: 1%;
     float:left;
     font-size: 12pt;
 }
@@ -134,7 +147,7 @@ a#next_page {
     display: block;
     width: 30px;
     margin:5px;
-    margin-left: 50%;
+    margin-left: 46%;
     float:left;
     font-size: 12pt;
 }
@@ -148,13 +161,44 @@ div#prevnext {
 div#image_span {
 	float:left;
 	padding-left:20px;
-	width:60%;
+	width:50%;
 	margin-bottom:20px;
+}
+
+div.essaytogglelow {
+	margin-left: 40px; 
+	margin-top: 4px;
+}
+
+div.essaytextlow {
+	display : none; 
+	margin-left: 15px;
+}
+
+li.essaytitlelow {
+	margin-left: 40px;
+	margin-top: 4px;
+}
+
+ul.navigationlink{
+	margin-top: 1px;
+	margin-bottom: 1px;
+}
+
+#navigation{
+	margin-top: 10px;
+}
+
+#bookinfo {
+	background-color:rgba(0,0,0,0.1); 
+	margin-left:15px;
+	padding-top: 1px;
 }
 
 #metadata {
 	float:left;
-	width:36%;
+	width:40%;
+	margin-left: 15px;
 }
 
 #metadata ul {
