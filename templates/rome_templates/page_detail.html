@@ -33,26 +33,10 @@ $(document).ready(function() {
     } else {
         $("#next_page").html("");
     }
-    add_toggle_handlers();
     add_low_toggle_handlers();
 });
 
 {% endif %}
-
-function add_toggle_handlers(){
-    $(".essaytoggle").on('click', function(){
-        var id = $(this).attr('id');
-        var slug = id.substring(6);
-        var textid = "essaytext" + slug;
-        var toggleid = "toggle" + slug;
-        $("#" +textid).toggle();
-        if ($("#" +toggleid).text() === "Show Essay Text"){
-          $("#" +toggleid).text("Hide Essay Text");
-        } else {
-          $("#" +toggleid).text("Show Essay Text");
-        }        
-    });
-}
 
 function add_low_toggle_handlers(){
     $(".essaytogglelow").on('click', function(){

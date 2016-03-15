@@ -631,6 +631,15 @@ def breadcrumb_detail(context, view="book", title_words=4):
     if(view == "bio"):
         return context['bio'].name
 
+def search_page(request):
+    template = loader.get_template('rome_templates/search_page.html')
+    context = std_context(request.path, style= "rome/css/links.css")
+    term = "a"
+    query = "https://%s/api/search/?q=ir_collection_id:621+AND+object_type:annotation+AND+display:BDR_PUBLIC+AND+(abstract:*%s*+OR+other_title:*%s*+OR+primary_title:*%s*+OR+mods_note_inscription_ssim:*%s*)&fl=abstract,other_title,primary_title,mods_note_inscription_ssim&rows=100000&callback=hello" % (BDR_SERVER, term, term, term, term)
+    context["query"] = query
+    c=RequestContext(request,context)
+    return HttpResponse(template.render(c))
+
 @login_required(login_url=reverse_lazy('rome_login'))
 def new_annotation(request, book_id, page_id):
     page_pid = '%s:%s' % (PID_PREFIX, page_id)
