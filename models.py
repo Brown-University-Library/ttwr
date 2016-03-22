@@ -212,7 +212,7 @@ class BDRObject(object):
         return self._get_full_title()
 
     def title_sort(self):
-        return self.data['primary_title']
+        return self.data['primary_title'].lower()
 
     def sort_key(self, sort_by):
         if(sort_by == 'title_sort'):

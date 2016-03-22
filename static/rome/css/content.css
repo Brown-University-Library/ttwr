@@ -118,6 +118,11 @@ a.bookEssay {
   height: 150px;
 }
 
+a.essaylink {
+	display: none;
+	margin-left: 35px;
+}
+
 div.text {
 	display : none; 
 	color: black;

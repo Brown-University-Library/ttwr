@@ -56,14 +56,14 @@ def index(request):
     template=loader.get_template('rome_templates/index.html')
     context=std_context(request.path, style="rome/css/home.css")
     c=RequestContext(request,context)
-    return HttpResponse(template.render(c))
-
+    return HttpResponse(template.render(c))  
 
 def book_list(request):
     context = std_context(request.path, )
     book_list = Book.search(query="genre_aat:books*")
 
     sort_by = request.GET.get('sort_by', 'title')
+  
     sort_by = Book.SORT_OPTIONS.get(sort_by, 'title_sort')
     book_list=sorted(book_list,key=methodcaller('sort_key', sort_by))
 
