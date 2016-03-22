@@ -367,11 +367,14 @@ class Annotation(object):
                 trp_id = '%04d' % int(trp_id)
                 try:
                     person = Biography.objects.get(trp_id=trp_id)
-                except:
+                except Biography.DoesNotExist:
                     raise Exception('no person with trp_id %s' % trp_id)
                 p['person'] = person
                 role_text = name.roles[0].text
-                role = Role.objects.get(text=role_text)
+                try:
+                    role = Role.objects.get(text=role_text)
+                except Role.DoesNotExist:
+                    raise Exception('no role with text %s' % role_text)
                 p['role'] = role
                 self._person_formset_data.append(p)
         return self._person_formset_data
