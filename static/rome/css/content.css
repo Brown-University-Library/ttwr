@@ -123,6 +123,11 @@ a.essaylink {
 	margin-left: 35px;
 }
 
+a.essaylinklow {
+	display: none;
+	margin-left: 55px;
+}
+
 div.text {
 	display : none; 
 	color: black;
@@ -176,7 +181,7 @@ div.essaytogglelow {
 }
 
 div.essaytextlow {
-	display : none; 
+	display: none;
 	margin-left: 15px;
 }
 

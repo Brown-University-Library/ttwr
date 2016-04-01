@@ -39,17 +39,25 @@ $(document).ready(function() {
 {% endif %}
 
 function add_low_toggle_handlers(){
+
     $(".essaytogglelow").on('click', function(){
         var id = $(this).attr('id');
         var slug = id.substring(9);
         var textid = "essaytextlow" + slug;
         var toggleid = "togspanlow" + slug;
+        var linkid = "essaylink" + slug;
         $("#" +textid).toggle();
+        $("#" +linkid).toggle();
+        $("#" +textid).children().css('display', 'none');
+        $('#' +textid+ " > h2:first-of-type").css('display', 'block');
+        $("#" +textid+ " > p:first-of-type").css('display', 'block');
+        /**
         if ($("#" +toggleid).text() === "Show Essay Text"){
           $("#" +toggleid).text("Hide Essay Text");
         } else {
           $("#" +toggleid).text("Show Essay Text");
-        }        
+        }      
+        **/  
     });
 }
 
@@ -152,10 +160,10 @@ function add_low_toggle_handlers(){
             </ul>
         {% if essays %}
             <ul><b>Essays:</ul></b><span>
-            {% for essay in essays %}
-                <li class = "essaytitlelow"><a href="{% url 'specific_essay' essay.slug %}">{{essay.title}}</a></li>
-                <div id = "togglelow{{essay.slug}}" class = "essaytogglelow"><span class = "underlinewrap" id="togspanlow{{essay.slug}}">Show Essay Text</span></div>
+            {% for essay in essays %}  
+                <div id = "togglelow{{essay.slug}}" class = "essaytogglelow"><span class = "underlinewrap" id="togspanlow{{essay.slug}}">{{essay.title}}</span></div>
                 <div id = "essaytextlow{{essay.slug}}" class = "essaytextlow">{{essay.text|markdown}}</div>
+                <a href="{% url 'specific_essay' essay.slug %}" target ="_blank" class = "essaylinklow" id = "essaylink{{essay.slug}}">Read More</a>
             {% endfor %}
         {% endif %}    
         <br />
