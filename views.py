@@ -668,7 +668,7 @@ def new_annotation(request, book_id, page_id):
         person_formset = PersonFormSet(prefix='people')
         form = AnnotationForm()
 
-    image_link = 'https://%s/viewers/image/zoom/%s' % (BDR_SERVER, page_pid)
+    image_link = 'https://%s/viewers/image/iip/%s' % (BDR_SERVER, page_pid)
     return render(request, 'rome_templates/new_annotation.html',
             {'form': form, 'person_formset': person_formset, 'inscription_formset': inscription_formset, 'image_link': image_link})
 
