@@ -7,20 +7,19 @@
  $(document).ready(function() {
  	$("#searchbutton").on('click', function(){
  		console.log($("#search")[0].value);
- 		var s= document.createElement("script");
- 		console.log("{{query}}");
- 		s.setAttribute("async", true);
- 		s.setAttribute("source","{{query}}");
+ 		$.getScript("{{querystart}}");
  	});
  });
- function hello(){
- 	console.log("hello");
+ function hello(data){
+ 	console.log("hello, script came back!");
+ 	console.log(data);
  }	
  </script>
- <script type="text/javascript" src="{{query}}"></script>
+ <script type="text/javascript" src="{{querystart}}" id="queryScript"></script>
 {% endblock %}
 
 {% block content %}
 	<input type="text" id="search"></input>
 	<button id="searchbutton">Search</button>
+	<div id = "results"></div>
 {% endblock %}
