@@ -34,30 +34,47 @@ $(document).ready(function() {
         $("#next_page").html("");
     }
     add_low_toggle_handlers();
+    //only show first paragraph of essays
+    $('.essaytextpage').each(function() {
+        var textid = $(this).attr('id');
+        $('#' +textid).children().css('display','none');
+        $('#' +textid+ " > h2:first-of-type").css('display', 'block');
+        $("#" +textid+ " > p:first-of-type").css('display', 'block');
+    });
 });
 
 {% endif %}
 
 function add_low_toggle_handlers(){
 
-    $(".essaytogglelow").on('click', function(){
+    $(".essaytogglepage").on('click', function(){
         var id = $(this).attr('id');
-        var slug = id.substring(9);
-        var textid = "essaytextlow" + slug;
-        var toggleid = "togspanlow" + slug;
+        var slug = id.substring(6);
+        var textid = "essaytext" + slug;
         var linkid = "essaylink" + slug;
+        var hideid = "hide" + slug;
         $("#" +textid).toggle();
         $("#" +linkid).toggle();
+        $("#" + id).toggle();
+        $("#" +hideid).toggle();
+        $("#" +textid).children().css('display', 'none');
+        $('#' +textid+ " > h2:first-of-type").css('display', 'block');
+        $("#" +textid+ " > p:first-of-type").css('display', 'block'); 
+    });
+
+    $(".essayhidepage").on('click', function(){
+        var id = $(this).attr('id');
+        var slug = id.substring(4);
+        var textid = "essaytext" + slug;
+        var linkid = "essaylink" + slug;
+        var toggleid = "toggle" + slug;
+        $("#" +textid).toggle();
+        $("#" +linkid).toggle();
+        $("#" +toggleid).toggle();
+        $("#" + id).toggle();
         $("#" +textid).children().css('display', 'none');
         $('#' +textid+ " > h2:first-of-type").css('display', 'block');
         $("#" +textid+ " > p:first-of-type").css('display', 'block');
-        /**
-        if ($("#" +toggleid).text() === "Show Essay Text"){
-          $("#" +toggleid).text("Hide Essay Text");
-        } else {
-          $("#" +toggleid).text("Show Essay Text");
-        }      
-        **/  
     });
 }
 
@@ -161,9 +178,10 @@ function add_low_toggle_handlers(){
         {% if essays %}
             <ul><b>Essays:</ul></b><span>
             {% for essay in essays %}  
-                <div id = "togglelow{{essay.slug}}" class = "essaytogglelow"><span class = "underlinewrap" id="togspanlow{{essay.slug}}">{{essay.title}}</span></div>
-                <div id = "essaytextlow{{essay.slug}}" class = "essaytextlow">{{essay.text|markdown}}</div>
-                <a href="{% url 'specific_essay' essay.slug %}" target ="_blank" class = "essaylinklow" id = "essaylink{{essay.slug}}">Read More</a>
+                <div id = "toggle{{essay.slug}}" class = "essaytogglepage"><span class = "underlinewrap" id="togspan{{essay.slug}}">{{essay.title}}</span></div>
+                <div id = "essaytext{{essay.slug}}" class = "essaytextpage">{{essay.text|markdown}}</div>
+                <a href="{% url 'specific_essay' essay.slug %}" target ="_blank" class = "essaylinkpage" id = "essaylink{{essay.slug}}"><span class = "underlinewrap">Read More<span class = "underlinewrap" id="togspan{{essay.slug}}"></a>
+                <div id = "hide{{essay.slug}}" class = "essayhidepage"><span class = "underlinewrap" id="togspanhide{{essay.slug}}">Hide Essay</span></div>
             {% endfor %}
         {% endif %}    
         <br />

@@ -51,8 +51,26 @@
         var slug = id.substring(6);
         var textid = "essaytext" + slug;
         var linkid = "essaylink" + slug;
+        var hideid = "essayhide" + slug;
+        $("#" + id).toggle();
         $("#" +textid).toggle();
         $("#" +linkid).toggle();
+        $("#" +hideid).toggle();
+        $("#" +textid).children().css('display', 'none');
+        $('#' +textid+ " > h2:first-of-type").css('display', 'block');
+        $("#" +textid+ " > p:first-of-type").css('display', 'block');
+        $(".underlinewrap").css("border-bottom", "1px dotted");
+    });
+    $(".essayhide").on('click', function(){
+        var id = $(this).attr('id');
+        var slug = id.substring(9);
+        var textid = "essaytext" + slug;
+        var linkid = "essaylink" + slug;
+        var toggleid = "toggle" + slug;
+        $("#" + toggleid).toggle();
+        $("#" +textid).toggle();
+        $("#" +linkid).toggle();
+        $("#" + id).toggle();
         $("#" +textid).children().css('display', 'none');
         $('#' +textid+ " > h2:first-of-type").css('display', 'block');
         $("#" +textid+ " > p:first-of-type").css('display', 'block');
@@ -81,6 +99,7 @@
             <div id = "toggle{{essay.slug}}" class = "essaytoggle"><span class = "underlinewrap" id="togspan{{essay.slug}}">{{essay.title}}</span></div>
             <div id = "essaytext{{essay.slug}}" class = "text">{{essay.text|markdown}}</div>
             <a class = "essaylink" id = "essaylink{{essay.slug}}" href="{% url 'specific_essay' essay.slug %}" target="_blank">Read More</a>
+            <div class= "essayhide" id = "essayhide{{essay.slug}}"><span class = "underlinewrap" id="hide{{essay.slug}}">Hide Essay</span></div>
           {% endfor %}
       </li><br />
     {% endif %}
