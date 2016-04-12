@@ -17,7 +17,6 @@ class Biography(models.Model):
     birth_date = models.CharField(max_length=25, null=True, blank=True, help_text='Optional: enter birth date as yyyy-mm-dd (for sorting and filtering)')
     death_date = models.CharField(max_length=25, null=True, blank=True, help_text='Optional: enter death date as yyyy-mm-dd')
     roles = models.CharField(max_length=254, null=True, blank=True, help_text='Optional: enter roles, separated by a semi-colon')
-    #TO-DO- figure out how to do this data migration -- rolestwo = models.ForeignKey('Role')
     bio = models.TextField()
 
     class Meta:
@@ -111,6 +110,7 @@ class Biography(models.Model):
     def save(self, *args, **kwargs):
         if not self.trp_id:
             self.trp_id = self._get_trp_id()
+        self.roles = self.roles.replace(",",";");
         super(Biography, self).save(*args, **kwargs)
 
     def __unicode__(self):
