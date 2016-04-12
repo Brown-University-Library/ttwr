@@ -191,6 +191,9 @@ function add_low_toggle_handlers(){
         <ul>{{ authors }}</ul>
         {% if book_mode %}
             <ul><b>Brown ID #: </b>{{ book_id }} <a href="{{ studio_url }}" target="_blank"> [Library View]</a></ul>
+            {% if note != "no note" %}
+                <ul>{{note}}</ul>
+            {% endif %}
         {% endif %}
             {% if print_mode %}
                 <ul><b>Print ID: </b>{{ print_id }}<a href="{{ studio_url }}" target="_blank"> [Library View]</a></ul>

@@ -6,6 +6,8 @@ import requests
 import json
 from eulxml.xmlmap import load_xmlobject_from_string
 from bdrxml import mods
+from django.db import IntegrityError
+from django.shortcuts import render_to_response
 
 # Database Models
 class Biography(models.Model):
@@ -107,11 +109,20 @@ class Biography(models.Model):
         new_trp_id = last_trp_id + 1
         return '%04d' % new_trp_id
 
+    def format_trp_id(self, trp_id):
+        return '%04d' % int(trp_id)
+
     def save(self, *args, **kwargs):
         if not self.trp_id:
             self.trp_id = self._get_trp_id()
-        self.roles = self.roles.replace(",",";");
-        super(Biography, self).save(*args, **kwargs)
+        else:
+            self.trp_id = self.format_trp_id(self.trp_id)        
+        self.roles = self.roles.replace(",",";"); 
+        try:
+            super(Biography, self).save(*args, **kwargs)
+        except IntegrityError as e:
+            print e.message
+            #return render_to_response("template.html", {"message": e.message})
 
     def __unicode__(self):
         return u'%s (%s)' % (self.name, self.trp_id)
