@@ -167,13 +167,9 @@ def page_detail(request, page_id, book_id=None):
             context['date']=book_json['dateCreated'][0:4]
         except:
             context['date']="n.d."
-    try:
-        context['note'] = book_json['note']
-        if context['note'][0].find('Buonanno') > 0:
-            context['note'] = "From the personal collection of Vincent J. Buonanno"
-        else:
-            context['note'] = "no note"
-    except:
+    if 'Buonanno' in book_json['note'][0]:
+        context['note'] = "From the personal collection of Vincent J. Buonanno"
+    else:
         context['note'] = "no note"
     context['lowres_url']="https://%s/fedora/objects/%s/datastreams/lowres/content" % (BDR_SERVER, page_pid)
     context['det_img_view_src']="https://%s/viewers/image/iip/%s" % (BDR_SERVER, page_pid)
@@ -643,8 +639,7 @@ def search_page(request):
     template = loader.get_template('rome_templates/search_page.html')
     context = std_context(request.path, style= "rome/css/links.css")
     term = "a"
-    #query = "https://%s/api/search/?q=ir_collection_id:621+AND+object_type:annotation+AND+display:BDR_PUBLIC+AND+(abstract:*%s*+OR+other_title:*%s*+OR+primary_title:*%s*+OR+mods_note_inscription_ssim:*%s*)&fl=abstract,other_title,primary_title,mods_note_inscription_ssim&rows=100000&callback=hello" % (BDR_SERVER, term, term, term, term)
-    querystart = "https://%s/api/pub/search/?q=ir_collection_id:621+object_type:annotation+display:BDR_PUBLIC&callback=hello" % (BDR_SERVER)
+    querystart = "https://%s/api/search/?q=ir_collection_id:621+object_type:annotation+display:BDR_PUBLIC&callback=hello" % (BDR_SERVER)
     context["querystart"] = querystart
     c=RequestContext(request,context)
     return HttpResponse(template.render(c))
