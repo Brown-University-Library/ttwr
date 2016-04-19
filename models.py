@@ -97,8 +97,7 @@ class Biography(models.Model):
             i += group_amount
 
         for b in books:
-            books[b]['pages'] = sorted(books[b]['pages'].items())
-
+            books[b]['pages'] = sorted(books[b]['pages'].items())    
         return (books,prints)
 
     def format_trp_id(self, trp_id):

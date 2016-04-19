@@ -6,28 +6,74 @@
  <script type="text/javascript">
  $(document).ready(function() {
  	$("#searchbutton").on('click', function(){
- 		console.log($("#search")[0].value);
  		var searchterm = $("#search")[0].value;
- 		console.log("{{querystart}}+"+ searchterm +"&callback=hello&rows=500"); //TO-DO this limit means sometimes we don't get ALL the results...
- 		$.getScript("{{querystart}}+"+ searchterm +"&callback=hello&rows=500"); 
+ 		//TO-DO this max row limit means sometimes we don't get ALL the results...
+ 		$.getScript("{{querystart}}+"+ searchterm +"&callback=result_response&rows=500"); 
  	});
  });
- function hello(data){
- 	console.log("hello, script came back!");
- 	console.log(data);
+ function result_response(data){
+ 	clear_results();
  	$("#num_results").text(data.response.numFound);
  	var results = data.response.docs;
+ 	var show = true;
+ 	var pages = [];
  	for (var i =0;  i < results.length; i++){
- 		console.log(results[i].rel_is_annotation_of_ssim[0].substring(4));
- 		display_result(results[i]);
+ 		if (i>20){
+ 			show = false;
+ 		}
+ 		var pid = display_result(results[i], show);
+ 		pages.push(pid);
+ 	}
+ 	console.log(pages);
+ 	group_by_book(pages);
+ }
+ function display_result(result, thumb){
+ 	var result_div = $(document.createElement('div')).css({
+ 		"width": "250px",
+ 		"float": "left",
+ 	});
+ 	var pages = [];
+ 	if (thumb){
+ 		var thumbnail = $(document.createElement('img'));
+ 		thumbnail.attr('height', '150px');
+ 		thumbnail.attr('src', "{{pagequery}}"+result.rel_is_annotation_of_ssim[0]+"/");
+ 		//thumbnail.attr('href', )
+ 		result_div.append(thumbnail);
+ 	} else {
+ 		result_div.text(result.rel_is_annotation_of_ssim[0].substring(4));
+ 	}
+ 	$("#results").append(result_div);
+ 	return result.rel_is_annotation_of_ssim[0].substring(4);
+ }	
+ function clear_results(){
+ 	$("#results").empty();
+ }
+ function group_by_book(pages){
+ 	for (var p =0 ; p< pages.length; p++){
+ 		console.log("https://repository.library.brown.edu/api/items/"+pages[p]);
+ 		//$.getScript("https://repository.library.brown.edu/api/items/"+pages[p]+"&callback=check_page");
+ 	}
+ 	function check_page(page_data){
+ 		 console.log(page_data);
  	}
  }
- function display_result(result){
- 	var result_div = $(document.createElement('div'));
- 	result_div.text(result.rel_is_annotation_of_ssim[0].substring(4));
- 	$("#results").append(result_div);
- 	console.log("{{pagequery}}"+result.rel_is_annotation_of_ssim[0].substring(4)+"/");
- }	
+
+
+//https://repository.library.brown.edu/api/items/bdr%3A256180/
+/**
+def _get_book_pid_from_page_pid(page_pid):
+    query = u'https://%s/api/items/%s/' % (BDR_SERVER, page_pid)
+    r = requests.get(query)
+    if r.ok:
+        data = json.loads(r.text)
+        if data['relations']['isPartOf']:
+            return data['relations']['isPartOf'][0]['pid']
+        elif data['relations']['isMemberOf']:
+            return data['relations']['isMemberOf'][0]['pid']
+        else:
+            return None
+**/
+
  </script>
 {% endblock %}
 
