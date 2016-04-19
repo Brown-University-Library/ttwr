@@ -7,19 +7,33 @@
  $(document).ready(function() {
  	$("#searchbutton").on('click', function(){
  		console.log($("#search")[0].value);
- 		$.getScript("{{querystart}}");
+ 		var searchterm = $("#search")[0].value;
+ 		console.log("{{querystart}}+"+ searchterm +"&callback=hello&rows=500"); //TO-DO this limit means sometimes we don't get ALL the results...
+ 		$.getScript("{{querystart}}+"+ searchterm +"&callback=hello&rows=500"); 
  	});
  });
  function hello(data){
  	console.log("hello, script came back!");
  	console.log(data);
+ 	$("#num_results").text(data.response.numFound);
+ 	var results = data.response.docs;
+ 	for (var i =0;  i < results.length; i++){
+ 		console.log(results[i].rel_is_annotation_of_ssim[0].substring(4));
+ 		display_result(results[i]);
+ 	}
+ }
+ function display_result(result){
+ 	var result_div = $(document.createElement('div'));
+ 	result_div.text(result.rel_is_annotation_of_ssim[0].substring(4));
+ 	$("#results").append(result_div);
+ 	console.log("{{pagequery}}"+result.rel_is_annotation_of_ssim[0].substring(4)+"/");
  }	
  </script>
- <script type="text/javascript" src="{{querystart}}" id="queryScript"></script>
 {% endblock %}
 
 {% block content %}
 	<input type="text" id="search"></input>
 	<button id="searchbutton">Search</button>
+	<li> Number Results: <span id= "num_results"></span></li>
 	<div id = "results"></div>
 {% endblock %}
