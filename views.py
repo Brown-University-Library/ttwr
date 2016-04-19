@@ -56,14 +56,14 @@ def index(request):
     template=loader.get_template('rome_templates/index.html')
     context=std_context(request.path, style="rome/css/home.css")
     c=RequestContext(request,context)
-    return HttpResponse(template.render(c))
-
+    return HttpResponse(template.render(c))  
 
 def book_list(request):
     context = std_context(request.path, )
     book_list = Book.search(query="genre_aat:books*")
 
     sort_by = request.GET.get('sort_by', 'title')
+  
     sort_by = Book.SORT_OPTIONS.get(sort_by, 'title_sort')
     book_list=sorted(book_list,key=methodcaller('sort_key', sort_by))
 
@@ -167,6 +167,10 @@ def page_detail(request, page_id, book_id=None):
             context['date']=book_json['dateCreated'][0:4]
         except:
             context['date']="n.d."
+    if 'Buonanno' in book_json['note'][0]:
+        context['note'] = "From the personal collection of Vincent J. Buonanno"
+    else:
+        context['note'] = "no note"
     context['lowres_url']="https://%s/fedora/objects/%s/datastreams/lowres/content" % (BDR_SERVER, page_pid)
     context['det_img_view_src']="https://%s/viewers/image/iip/%s" % (BDR_SERVER, page_pid)
 
@@ -631,6 +635,15 @@ def breadcrumb_detail(context, view="book", title_words=4):
     if(view == "bio"):
         return context['bio'].name
 
+def search_page(request):
+    template = loader.get_template('rome_templates/search_page.html')
+    context = std_context(request.path, style= "rome/css/links.css")
+    term = "a"
+    querystart = "https://%s/api/search/?q=ir_collection_id:621+object_type:annotation+display:BDR_PUBLIC&callback=hello" % (BDR_SERVER)
+    context["querystart"] = querystart
+    c=RequestContext(request,context)
+    return HttpResponse(template.render(c))
+
 @login_required(login_url=reverse_lazy('rome_login'))
 def new_annotation(request, book_id, page_id):
     page_pid = '%s:%s' % (PID_PREFIX, page_id)
@@ -659,7 +672,7 @@ def new_annotation(request, book_id, page_id):
         person_formset = PersonFormSet(prefix='people')
         form = AnnotationForm()
 
-    image_link = 'https://%s/viewers/image/zoom/%s' % (BDR_SERVER, page_pid)
+    image_link = 'https://%s/viewers/image/iip/%s' % (BDR_SERVER, page_pid)
     return render(request, 'rome_templates/new_annotation.html',
             {'form': form, 'person_formset': person_formset, 'inscription_formset': inscription_formset, 'image_link': image_link})
 
@@ -692,7 +705,7 @@ def new_print_annotation(request, print_id):
         person_formset = PersonFormSet(prefix='people')
         form = AnnotationForm()
 
-    image_link = 'https://%s/viewers/image/zoom/%s' % (BDR_SERVER, print_pid)
+    image_link = 'https://%s/viewers/image/iip/%s' % (BDR_SERVER, print_pid)
     return render(request, 'rome_templates/new_annotation.html',
             {'form': form, 'person_formset': person_formset, 'inscription_formset': inscription_formset, 'image_link': image_link})
 

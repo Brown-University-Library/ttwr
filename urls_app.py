@@ -35,4 +35,5 @@ urlpatterns = patterns('',
     url(r'^genres/new/$', views.new_genre, name='new_genre'),
     url(r'^roles/new/$', views.new_role, name='new_role'),
     url(r'^biographies/new/$', views.new_biography, name='new_biography'),
+    url(r'^search/$', views.search_page, name= 'search_page'),
 )

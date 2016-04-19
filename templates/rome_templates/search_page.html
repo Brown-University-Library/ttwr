@@ -1,0 +1,25 @@
+{% extends "rome_templates/base.html" %}
+
+{% block title%}The Theater that was Rome - Search{% endblock %}
+
+{% block javascript %}
+ <script type="text/javascript">
+ $(document).ready(function() {
+ 	$("#searchbutton").on('click', function(){
+ 		console.log($("#search")[0].value);
+ 		$.getScript("{{querystart}}");
+ 	});
+ });
+ function hello(data){
+ 	console.log("hello, script came back!");
+ 	console.log(data);
+ }	
+ </script>
+ <script type="text/javascript" src="{{querystart}}" id="queryScript"></script>
+{% endblock %}
+
+{% block content %}
+	<input type="text" id="search"></input>
+	<button id="searchbutton">Search</button>
+	<div id = "results"></div>
+{% endblock %}

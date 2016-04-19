@@ -118,6 +118,21 @@ a.bookEssay {
   height: 150px;
 }
 
+a.essaylink {
+	display: none;
+	margin-left: 35px;
+}
+
+div.essayhide {
+	display: none;
+	margin-left: 35px;
+}
+
+a.essaylinkpage {
+	margin-left: 55px;
+	color: #3e3a2e; 
+}
+
 div.text {
 	display : none; 
 	color: black;
@@ -165,19 +180,18 @@ div#image_span {
 	margin-bottom:20px;
 }
 
-div.essaytogglelow {
+div.essaytogglepage{
+	display: none;
 	margin-left: 40px; 
 	margin-top: 4px;
 }
 
-div.essaytextlow {
-	display : none; 
+div.essaytextpage {
 	margin-left: 15px;
 }
 
-li.essaytitlelow {
-	margin-left: 40px;
-	margin-top: 4px;
+div.essayhidepage {
+	margin-left: 55px;
 }
 
 ul.navigationlink{
