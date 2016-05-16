@@ -25,10 +25,10 @@ class Biography(models.Model):
         ordering = ['name']
 
     def books(self):
-        return Book.search(query='name:"%s"' % self.name )
+        return Book.search(query='genre_aat:books+AND+name:"%s"' % self.name )
 
     def prints(self):
-        return Print.search(query='contributor:"%s"' % self.name )
+        return Book.search(query='(genre_aat:"etchings (prints)"+OR+genre_aat:"engravings (prints)")+AND+name:"%s"' % self.name )
 
     def annotations_by_books_and_prints(self, group_amount=50):
         # Might need some cleaning up later, see if we can use objects here
