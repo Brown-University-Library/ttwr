@@ -6,7 +6,9 @@
  <script type="text/javascript">
 
  //TO_DO - make sure no "memory leaks" - (clearing everything property) 
- //TO_DO - take out unneccessary stuff now that real-time loading, just create displaypage() function?
+ //TO_DO - take out unneccessary stuff now that real-time loading, just create displaypage() function - still a bunch to delete
+ //TO_DO - think about searching other fields besides the annotations
+ //TO_DO - error with aldini?
 
  var book_to_page = [];
  var book_to_title = [];
@@ -48,6 +50,7 @@
  	group_by_book(pagepids);
  }
 
+ /**
  function display_loaded_pages(){
  	for (var key in book_to_page){
  		if (book_to_page.hasOwnProperty(key) && appended_books[key]!=1) {
@@ -71,6 +74,29 @@
  			book_to_page[key][x] = null;
  		}
  	}
+ }
+**/
+
+ function display_page(bookpid, pagepid){
+ 	console.log("book: "+bookpid);
+ 	console.log("page: "+pagepid);
+  	if (book_to_page.hasOwnProperty(bookpid) && appended_books[bookpid]!=1) {
+ 		create_book_div(bookpid);
+ 	}
+ 	add_thumbnail(bookpid,pagepid);
+ }
+
+ function display_print(printpid){
+ 	console.log("print: " + printpid);
+ 	//TO_DO printdiv = create_thumbnail(printpid);
+ }
+
+ function add_thumbnail(bookpid,pagepid){
+ 	resdiv = create_thumbnail(pagepid, bookpid, true);
+ 	$("#bookdiv"+bookpid.substring(4)).append(resdiv);
+ 	var num_div = $("#booknumber"+bookpid.substring(4));
+ 	var curr_num = parseInt(num_div.text());
+ 	num_div.text(curr_num+1);
  }
 
  function create_book_div(bookpid){
@@ -96,13 +122,13 @@
  		"height": "30px",
  		"margin-left": "200px"
  	}).attr('id', "booknumber"+bookpid.substring(4));
- 	book_div.append(book_title);
+ 	//book_div.append(book_title);
  	book_div.append(book_number);
  	$("#books").append(book_div);
  	appended_books[bookpid] = 1;
  }
 
- function display_result(pagepid, bookpid, thumb){
+ function create_thumbnail(pagepid, bookpid, thumb){
  	var result_div = $(document.createElement('div')).css({
  		"width": "250px",
  		"float": "left",
@@ -149,6 +175,7 @@
  	var bookpid = null;
  	var booktitle = null;
  	var pagepid = page_data.pid;
+ 	var print = false;
  	if (page_data.relations.isPartOf[0]){
  		bookpid = page_data.relations.isPartOf[0]['pid'];
  		booktitle = page_data.relations.isPartOf[0]['primary_title'];
@@ -160,14 +187,14 @@
  		}
  	}
  	else {
- 		//TO-DO take care of this case by creating print array and display
  		console.log("no collection information found");
- 		if (page_data.genre == "engravings (prints)"){
+ 		if (page_data.genre == "engravings (prints)" || page_data.genre == "etchings (prints)" ){
  			console.log(pagepid+ " is a print");
+ 			prints.push(pagepid);
  		}
-
+ 		print = true;
  	}	
- 	if (bookpid){
+ 	if (bookpid && !print){
 
  		if (!book_to_page[bookpid]){
  			var page_list = [];
@@ -182,8 +209,13 @@
  		}
 
  	}
- 	page_display_counter++;
- 	display_loaded_pages();
+ 	if (!print){
+ 		//page_display_counter++;
+ 		display_page(bookpid,pagepid);
+ 		//display_loaded_pages();
+ 	} else {
+ 		display_print(pagepid);
+ 	}
  }
 
 
@@ -195,4 +227,5 @@
 	<button id="searchbutton">Search</button>
 	<li> Number Results: <span id= "num_results"></span></li>
 	<div id = "books"></div>
+	<div id = "prints"></div>
 {% endblock %}
