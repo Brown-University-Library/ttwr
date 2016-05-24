@@ -5,172 +5,63 @@
 {% block javascript %}
  <script type="text/javascript">
 
- //TO_DO - make sure no "memory leaks" - (clearing everything property) 
- //TO_DO - take out unneccessary stuff now that real-time loading, just create displaypage() function - still a bunch to delete
- //TO_DO - think about searching other fields besides the annotations
- //TO_DO - error with aldini?
-
- var book_to_page = [];
- var book_to_title = [];
- var prints = [];
- var page_display_counter = 0;
- var page_length;
- var results;
+ var book_to_title = []; //for displaying book titles, keyed by pid
  var appended_books = [];
+ var appended_prints = [];
+
+ //SEARCH LOGIC FUNCTIONS:
 
  $(document).ready(function() {
  	$("#searchbutton").on('click', submit_search);
+ 	//modifications to default styling (should probably be factored out to css/templates when ui is redone)
+ 	$("#page_body").css("text-align","center");
+ 	$(".pagination_rome").css("display", "none");
  });
+
  function inputKeyUp(e) {
     e.which = e.which || e.keyCode;
     if(e.which == 13) {
         submit_search();
     }
  }
+
  function submit_search(){
  	var searchterm = $("#search")[0].value;
- 	//TO-DO - this max row limit means sometimes we don't get ALL the results...
- 	$.getScript("{{querystart}}+"+ searchterm +"&callback=result_response&rows=500"); 
+ 	//TO-DO - this max row limit on bdr requests means sometimes we don't get ALL the results...
+ 	$.getScript("{{searchquery}}+"+ searchterm +"&callback=result_response&rows=500"); 
  }
+ 
+function clear_results(){
+ 	book_to_title = [];
+ 	appended_books = [];
+ 	appended_prints = [];
+ 	$("#books").empty();
+ 	$("#printwrapper").empty();
+ }
+
+ //REQUEST FUNCTIONS:
+
+ //callback from search query - get a list of response doc pids
  function result_response(data){
  	clear_results();
  	var num = data.response.numFound;
  	if (num > 500){
- 		$("#num_results").text("Showing first 500 results out of "+ num);
+ 		$("#num_results").text("Showing 500 results of "+ num);
  	} else{
- 		$("#num_results").text(num);
+ 		$("#num_results").text("Number Results: " +num);
  	}
- 	results = data.response.docs;
- 	var show = true;
- 	var pagepids = [];
- 	var resdivs = [];
- 	for (var i =0;  i < results.length; i++){
- 		pagepids.push(results[i].rel_is_annotation_of_ssim[0]);
- 	}
- 	group_by_book(pagepids);
- }
-
- /**
- function display_loaded_pages(){
- 	for (var key in book_to_page){
- 		if (book_to_page.hasOwnProperty(key) && appended_books[key]!=1) {
- 			create_book_div(key);
- 		}
- 	}
- 	create_thumbnails();
- }
-
- function create_thumbnails(){
- 	var resdiv;
- 	for (var key in book_to_page){
- 		for (var x=0; x<book_to_page[key].length;x++){
- 			if (book_to_page[key][x] != null){
- 				resdiv = display_result(book_to_page[key][x], key, true);
- 				$("#bookdiv"+key.substring(4)).append(resdiv);
- 				var num_div = $("#booknumber"+key.substring(4));
- 				var curr_num = parseInt(num_div.text());
- 				num_div.text(curr_num+1);
- 			}
- 			book_to_page[key][x] = null;
- 		}
- 	}
- }
-**/
-
- function display_page(bookpid, pagepid){
- 	console.log("book: "+bookpid);
- 	console.log("page: "+pagepid);
-  	if (book_to_page.hasOwnProperty(bookpid) && appended_books[bookpid]!=1) {
- 		create_book_div(bookpid);
- 	}
- 	add_thumbnail(bookpid,pagepid);
- }
-
- function display_print(printpid){
- 	console.log("print: " + printpid);
- 	//TO_DO printdiv = create_thumbnail(printpid);
- }
-
- function add_thumbnail(bookpid,pagepid){
- 	resdiv = create_thumbnail(pagepid, bookpid, true);
- 	$("#bookdiv"+bookpid.substring(4)).append(resdiv);
- 	var num_div = $("#booknumber"+bookpid.substring(4));
- 	var curr_num = parseInt(num_div.text());
- 	num_div.text(curr_num+1);
- }
-
- function create_book_div(bookpid){
- 	var book_div = $(document.createElement('div'));
- 	book_div.css({
- 		"height": "250px",
- 		"overflow-y": "scroll",
- 		"margin-bottom": "20px"
- 	});
- 	book_div.attr("id", "bookdiv"+bookpid.substring(4));
- 	var book_title = $(document.createElement('div'));
- 	var book_number = $(document.createElement('div'));
- 	book_title.css({
- 		"height": "30px",
- 		"width" : "200px",
- 		"float" : "left"
- 	});
- 	//TO-DO get title not to overflow
- 	book_title.text(book_to_title[bookpid] + " number results:");
- 	book_number.text(0);
- 	book_number.css({
- 		"width": "20px",
- 		"height": "30px",
- 		"margin-left": "200px"
- 	}).attr('id', "booknumber"+bookpid.substring(4));
- 	//book_div.append(book_title);
- 	book_div.append(book_number);
- 	$("#books").append(book_div);
- 	appended_books[bookpid] = 1;
- }
-
- function create_thumbnail(pagepid, bookpid, thumb){
- 	var result_div = $(document.createElement('div')).css({
- 		"width": "250px",
- 		"float": "left",
- 	});
- 	var page_link = $(document.createElement('a'));
- 	page_link.attr('href', '/rome/books/'+bookpid.substring(4)+'/'+pagepid.substring(4));
- 	page_link.attr('target', '_blank');
- 	result_div.append(page_link);
- 	var pages = [];
- 	if (thumb){
- 		var thumbnail = $(document.createElement('img'));
- 		thumbnail.attr('height', '150px');
- 		thumbnail.attr('src', "{{pagequery}}"+pagepid+"/");
- 		page_link.append(thumbnail);
- 		var info = $(document.createElement('div'));
- 		info.attr('height','150px');
- 		info.text("page pid:" + pagepid.substring(4));
- 		page_link.append(info);
- 	} else {
- 		page_link.text(pagepid.substring(4));
- 	}
- 	return result_div;
- }
-
- function clear_results(){
- 	book_to_page = [];
- 	book_to_title = [];
- 	prints = [];
- 	page_display_counter = 0;
- 	page_length = 0;
- 	results = [];
- 	$("#books").empty();
- }
-
- function group_by_book(pages){
- 	page_length = pages.length;
- 	for (var p =0 ; p< pages.length; p++){
- 		//TO-DO put in views.py
- 		$.getScript("https://repository.library.brown.edu/api/items/"+pages[p]+"/?q=&callback=get_page_book");
+ 	var results = data.response.docs;
+ 	for (var i =0;  i < results.length; i++){ 
+ 		group_by_book(results[i].rel_is_annotation_of_ssim[0]);
  	}
  }
 
+ //sort response docs by book by issuing another request to get the full doc for each result pid
+ function group_by_book(resultpid){
+ 	$.getScript("{{pagequery}}"+resultpid+"/?q=&callback=get_page_book");
+ }
+
+//callback from group_by_book request - get book information from page doc and sort accordingly, special case for prints
  function get_page_book(page_data){
  	var bookpid = null;
  	var booktitle = null;
@@ -186,46 +77,192 @@
  			booktitle = primary_title;
  		}
  	}
- 	else {
- 		console.log("no collection information found");
- 		if (page_data.genre == "engravings (prints)" || page_data.genre == "etchings (prints)" ){
- 			console.log(pagepid+ " is a print");
- 			prints.push(pagepid);
- 		}
+ 	else if (page_data.genre == "engravings (prints)" || page_data.genre == "etchings (prints)" ){
  		print = true;
- 	}	
- 	if (bookpid && !print){
-
- 		if (!book_to_page[bookpid]){
- 			var page_list = [];
- 			page_list.push(pagepid);
- 			book_to_page[bookpid] = page_list;
- 		} else {
- 			book_to_page[bookpid].push(pagepid);
- 		}
-
+ 	}
+ 	else {
+ 		console.log("could not find grouping doc for " +  pagepid);
+ 		return;
+ 	}
+ 	if (print){
+ 		display_print(pagepid);
+ 	} else {
  		if (!book_to_title[bookpid]){
  			book_to_title[bookpid] = booktitle;
  		}
-
- 	}
- 	if (!print){
- 		//page_display_counter++;
  		display_page(bookpid,pagepid);
- 		//display_loaded_pages();
- 	} else {
- 		display_print(pagepid);
  	}
  }
 
+///UI FUNCTIONS:
 
+ function display_page(bookpid, pagepid){
+  	if (appended_books[bookpid]!=1) {
+ 		create_book_div(bookpid);
+ 	}
+ 	add_thumbnail(bookpid,pagepid);
+ }
+
+ function display_print(printpid){
+ 	if (Object.keys(appended_prints).length == 0){
+ 		create_print_div();
+ 	}
+ 	if (appended_prints[printpid]!= 1) { //so multi-page prints only show one thumbnail
+ 		appended_prints[printpid] = 1;
+ 		thumb = create_thumbnail(printpid, null);
+ 		$("#prints").append(thumb);
+ 		number = $("#printnum");
+ 		var curr_num = parseInt(number.text());
+ 		if (curr_num == 0){
+ 			$("#printtext").text(" result in Prints");
+ 		}
+ 		else if (curr_num == 1){
+ 			$("#printtext").text(" results in Prints");
+ 		}
+ 		number.text(curr_num+1);
+ 	}
+ }
+
+ function create_print_div(){
+ 	var print_header = $(document.createElement('div'));
+	print_header.css({
+		"height" : "30px",
+		"width" : "100%",
+	});
+	var print_num = $(document.createElement('div')).attr('id',"printnum").text(0);
+	var print_text = $(document.createElement('div')).attr('id', 'printtext').text(" results in Prints");
+	print_num.css({
+		"height" : "30px",
+		"width" : "25px",
+		"float" : "left"
+	});
+	print_text.css({
+		"height" : "30px",
+		"width" : "auto",
+		"float" : "left"
+	});
+	print_header.append(print_num);
+	print_header.append(print_text);
+	var prints = $(document.createElement('div')).attr('id', 'prints');
+	prints.css({
+		"background-color" : "rgba(0,0,0,0.1)",
+		"height": "250px",
+		"overflow-y": "auto",
+		"margin-bottom": "20px"
+	});
+	$('#printwrapper').append(print_header);
+	$('#printwrapper').append(prints);
+ }
+
+ function add_thumbnail(bookpid,pagepid){
+ 	resdiv = create_thumbnail(pagepid, bookpid);
+ 	$("#bookdiv"+bookpid.substring(4)).append(resdiv);
+ 	var num_div = $("#booknumber"+bookpid.substring(4));
+ 	var curr_num = parseInt(num_div.text());
+ 	num_div.text(curr_num+1);
+ 	if (curr_num == 0){
+ 		$("#booktitle"+bookpid.substring(4)).text(" result in " + book_to_title[bookpid]);
+ 	}
+ 	else if (curr_num == 1){
+ 		$("#booktitle"+bookpid.substring(4)).text(" results in " + book_to_title[bookpid]);
+ 	}
+ }
+
+ function create_book_div(bookpid){
+ 	var book_wrapper = $(document.createElement('div'));
+ 	var book_div = $(document.createElement('div'));
+ 	book_div.css({
+ 		"height": "250px",
+ 		"overflow-y": "auto",
+ 		"margin-bottom": "20px",
+ 		"background-color" : "rgba(0,0,0,0.1)"
+ 	});
+ 	book_div.attr("id", "bookdiv"+bookpid.substring(4));
+ 	var book_title = $(document.createElement('div'))
+ 					.attr('id', "booktitle"+bookpid.substring(4));
+ 	var book_number = $(document.createElement('div'));
+ 	var header = $(document.createElement('div'));
+ 	header.css({
+ 		"height": "30px",
+ 		"width": "100%"
+ 	})
+ 	book_title.css({
+ 		"height": "30px",
+ 		"width" : "auto",
+ 		"max-width" : "97%",
+ 		"float" : "left",
+ 		"white-space":"nowrap",
+ 		"text-overflow": "ellipsis",
+ 		"overflow-x":"hidden",
+ 		"float" : "left",
+ 		"margin-left" :"2px"
+ 	});
+ 	book_title.text("results in "+ book_to_title[bookpid]);
+ 	book_number.text(0);
+ 	book_number.css({
+ 		"height": "30px",
+ 		"width" : "25px",
+ 		"float" : "left",
+ 	}).attr('id', "booknumber"+bookpid.substring(4));
+ 	header.append(book_number);
+ 	header.append(book_title);
+ 	book_wrapper.append(header);
+ 	book_wrapper.append(book_div);
+ 	$("#books").append(book_wrapper);
+ 	appended_books[bookpid] = 1;
+ }
+
+ //create one thumbnail (that is link to page or print)
+ function create_thumbnail(pagepid, bookpid){
+ 	var print = false;
+ 	if (!bookpid){
+ 		print = true;
+ 	}
+ 	var result_div = $(document.createElement('div')).css({
+ 		"width": "250px",
+ 		"float": "left",
+ 		"margin-bottom" : "10px",
+ 		"margin-top" : "30px",
+ 		"margin-left": "20px"
+ 	});
+ 	
+ 	var page_link = $(document.createElement('a'));
+ 	if (!print){ 
+ 		page_link.attr('href', '/rome/books/'+bookpid.substring(4)+'/'+pagepid.substring(4));
+ 	} else {
+ 		page_link.attr('href', '/rome/prints/'+pagepid.substring(4));
+ 	}
+ 	page_link.attr('target', '_blank');
+ 	result_div.append(page_link);
+ 	
+ 	var thumbnail = $(document.createElement('img'));
+ 	thumbnail.attr('height', '150px');
+ 	thumbnail.attr('src', "{{thumbnailquery}}"+pagepid+"/");
+ 
+ 	page_link.append(thumbnail);
+ 	
+ 	var info = $(document.createElement('div'));
+ 	info.attr('height','150px');
+ 	if (!print){
+ 		info.text("page pid: " + pagepid.substring(4));
+ 	} else {
+ 		info.text("print pid: " + pagepid.substring(4));
+ 	}
+ 	info.css({
+ 		"tex-align":"center",
+ 		"color" :"black"
+ 	})
+ 	page_link.append(info);
+
+ 	return result_div;
+ }
  </script>
 {% endblock %}
 
 {% block content %}
 	<input type="text" id="search" onkeyup="inputKeyUp(event)"></input>
 	<button id="searchbutton">Search</button>
-	<li> Number Results: <span id= "num_results"></span></li>
-	<div id = "books"></div>
-	<div id = "prints"></div>
+	<div><span id= "num_results"></span></div>
+	<div id = "books" style = "margin-top: 20px"></div>
+	<div id = "printwrapper"></div>
 {% endblock %}

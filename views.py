@@ -638,9 +638,11 @@ def breadcrumb_detail(context, view="book", title_words=4):
 def search_page(request):
     template = loader.get_template('rome_templates/search_page.html')
     context = std_context(request.path, style= "rome/css/links.css")
-    querystart = "https://%s/api/search/?q=ir_collection_id:621+object_type:annotation+display:BDR_PUBLIC" % (BDR_SERVER)
-    pagequery = "https://%s/viewers/image/thumbnail/" % (BDR_SERVER)
-    context["querystart"] = querystart
+    searchquery = "https://%s/api/search/?q=ir_collection_id:621+object_type:annotation+display:BDR_PUBLIC" % (BDR_SERVER)
+    thumbnailquery = "https://%s/viewers/image/thumbnail/" % (BDR_SERVER)
+    pagequery = "https://%s/api/items/" % (BDR_SERVER)
+    context["searchquery"] = searchquery
+    context["thumbnailquery"] = thumbnailquery
     context["pagequery"] = pagequery
     c=RequestContext(request,context)
     return HttpResponse(template.render(c))
