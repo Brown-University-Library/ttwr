@@ -156,15 +156,15 @@ function clear_results(){
 
  function add_thumbnail(bookpid,pagepid){
  	resdiv = create_thumbnail(pagepid, bookpid);
- 	$("#bookdiv"+bookpid.substring(4)).append(resdiv);
- 	var num_div = $("#booknumber"+bookpid.substring(4));
+ 	$("#bookdiv"+stripPid(bookpid)).append(resdiv);
+ 	var num_div = $("#booknumber"+stripPid(bookpid));
  	var curr_num = parseInt(num_div.text());
  	num_div.text(curr_num+1);
  	if (curr_num == 0){
- 		$("#booktitle"+bookpid.substring(4)).text(" result in " + book_to_title[bookpid]);
+ 		$("#booktitle"+stripPid(bookpid)).text(" result in " + book_to_title[bookpid]);
  	}
  	else if (curr_num == 1){
- 		$("#booktitle"+bookpid.substring(4)).text(" results in " + book_to_title[bookpid]);
+ 		$("#booktitle"+stripPid(bookpid)).text(" results in " + book_to_title[bookpid]);
  	}
  }
 
@@ -177,9 +177,9 @@ function clear_results(){
  		"margin-bottom": "20px",
  		"background-color" : "rgba(0,0,0,0.1)"
  	});
- 	book_div.attr("id", "bookdiv"+bookpid.substring(4));
+ 	book_div.attr("id", "bookdiv"+stripPid(bookpid));
  	var book_title = $(document.createElement('div'))
- 					.attr('id', "booktitle"+bookpid.substring(4));
+ 					.attr('id', "booktitle"+stripPid(bookpid));
  	var book_number = $(document.createElement('div'));
  	var header = $(document.createElement('div'));
  	header.css({
@@ -203,7 +203,7 @@ function clear_results(){
  		"height": "30px",
  		"width" : "25px",
  		"float" : "left",
- 	}).attr('id', "booknumber"+bookpid.substring(4));
+ 	}).attr('id', "booknumber"+stripPid(bookpid));
  	header.append(book_number);
  	header.append(book_title);
  	book_wrapper.append(header);
@@ -228,9 +228,9 @@ function clear_results(){
  	
  	var page_link = $(document.createElement('a'));
  	if (!print){ 
- 		page_link.attr('href', '/rome/books/'+bookpid.substring(4)+'/'+pagepid.substring(4));
+ 		page_link.attr('href', '/rome/books/'+stripPid(bookpid)+'/'+stripPid(pagepid));
  	} else {
- 		page_link.attr('href', '/rome/prints/'+pagepid.substring(4));
+ 		page_link.attr('href', '/rome/prints/'+stripPid(pagepid));
  	}
  	page_link.attr('target', '_blank');
  	result_div.append(page_link);
@@ -244,9 +244,9 @@ function clear_results(){
  	var info = $(document.createElement('div'));
  	info.attr('height','150px');
  	if (!print){
- 		info.text("page pid: " + pagepid.substring(4));
+ 		info.text("page pid: " + stripPid(pagepid));
  	} else {
- 		info.text("print pid: " + pagepid.substring(4));
+ 		info.text("print pid: " + stripPid(pagepid));
  	}
  	info.css({
  		"tex-align":"center",
@@ -256,6 +256,11 @@ function clear_results(){
 
  	return result_div;
  }
+
+ function stripPid(pid){
+ 	return pid.replace("bdr:","");
+ }
+
  </script>
 {% endblock %}
 
