@@ -186,7 +186,12 @@ function add_low_toggle_handlers(){
         {% endif %}    
         <br />
         <div id = "bookinfo">
-        <ul> Book Information: <ul/><br />
+        {% if book_mode %}
++            <ul> Book Information: <ul/><br />
++        {% endif %}
++        {% if print_mode %}
++            <ul> Print Information: <ul/><br />
++        {% endif %}
         <ul><b><i>{{ title }}</i>, {{date}}</b></ul>
         <ul>{{ authors }}</ul>
         {% if book_mode %}
@@ -195,9 +200,9 @@ function add_low_toggle_handlers(){
                 <ul>{{note}}</ul>
             {% endif %}
         {% endif %}
-            {% if print_mode %}
-                <ul><b>Print ID: </b>{{ print_id }}<a href="{{ studio_url }}" target="_blank"> [Library View]</a></ul>
-            {% endif %}
+        {% if print_mode %}
+            <ul><b>Print ID: </b>{{ print_id }}<a href="{{ studio_url }}" target="_blank"> [Library View]</a></ul>
+        {% endif %}
         <ul></ul>
         <br />
         </div>
