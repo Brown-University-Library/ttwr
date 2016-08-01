@@ -167,10 +167,12 @@ def page_detail(request, page_id, book_id=None):
             context['date']=book_json['dateCreated'][0:4]
         except:
             context['date']="n.d."
-    if 'Buonanno' in book_json['note'][0]:
-        context['note'] = "From the personal collection of Vincent J. Buonanno"
-    else:
-        context['note'] = "no note"
+    context['note'] = "no note"
+    try:
+        if 'Buonanno' in book_json['note'][0]:
+            context['note'] = "From the personal collection of Vincent J. Buonanno"
+    except (KeyError, TypeError):
+        pass
     context['lowres_url']="https://%s/fedora/objects/%s/datastreams/lowres/content" % (BDR_SERVER, page_pid)
     context['det_img_view_src']="https://%s/viewers/image/iip/%s" % (BDR_SERVER, page_pid)
 
