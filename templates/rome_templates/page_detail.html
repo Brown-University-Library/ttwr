@@ -187,11 +187,11 @@ function add_low_toggle_handlers(){
         <br />
         <div id = "bookinfo">
         {% if book_mode %}
-+            <ul> Book Information: <ul/><br />
-+        {% endif %}
-+        {% if print_mode %}
-+            <ul> Print Information: <ul/><br />
-+        {% endif %}
+            <ul> Book Information: <ul/><br />
+        {% endif %}
+        {% if print_mode %}
+            <ul> Print Information: <ul/><br />
+        {% endif %}
         <ul><b><i>{{ title }}</i>, {{date}}</b></ul>
         <ul>{{ authors }}</ul>
         {% if book_mode %}
