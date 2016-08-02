@@ -203,30 +203,9 @@ def page_detail(request, page_id, book_id=None):
     if(context['annotations']):
         context['annotations'] = sorted(context['annotations'], key=lambda annote: annotation_order(annote))
 
-    # Previous/next page links
-    # First, find the index of the page we're currently loading
-    hasPart_index = 0
-    for page in book_json['relations']['hasPart']:
-        if page['pid'] == page_pid:
-            hasPart_index = int(page['order']) - 1
-
-    # Initialize both the next page and previous page
-    prev_pid = book_json['relations']['hasPart'][hasPart_index - 1]['pid'].split(":")[-1]
-    next_pid = "none"
-    try:
-        next_pid = book_json['relations']['hasPart'][hasPart_index + 1]['pid'].split(":")[-1]
-    except (KeyError,IndexError) as e:
-        # If it's the last page in the book, there is no next pid
-        next_pid = "none"
-
-    # If it's the first page in the book
-    if hasPart_index == 0:
-        prev_pid == "none"
-
-    # assert(prev_pid != next_pid)
-
-    context['prev_pid'] = prev_pid
-    context['next_pid'] = next_pid
+    prev_id, next_id = _get_prev_next_ids(book_json, page_pid)
+    context['prev_pid'] = prev_id
+    context['next_pid'] = next_id
 
     context['essays'] = this_page.essays()
 
@@ -827,3 +806,18 @@ def new_biography(request):
     #use the same template for genre and role
     return render(request, 'rome_templates/new_record.html', {'form': form})
 
+
+def _get_prev_next_ids(book_json, page_pid):
+    prev_id = "none"
+    next_id = "none"
+    for index, page in enumerate(book_json['relations']['hasPart']):
+        if page['pid'] == page_pid:
+            try:
+                prev_id = book_json['relations']['hasPart'][index - 1]['pid'].split(":")[-1]
+            except (KeyError, IndexError):
+                pass
+            try:
+                next_id = book_json['relations']['hasPart'][index + 1]['pid'].split(":")[-1]
+            except (KeyError, IndexError):
+                pass
+    return (prev_id, next_id)
