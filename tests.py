@@ -5,6 +5,11 @@ from . import views
 
 class TestPageDetail(TestCase):
 
+    def test_index(self):
+        response = self.client.get(reverse('index'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'The Theater that was Rome')
+
     def test_1(self):
         response = self.client.get(reverse('book_page_viewer', kwargs={'book_id': '230605', 'page_id': '230606'}))
         self.assertEqual(response.status_code, 200)
