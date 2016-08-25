@@ -1,0 +1,9 @@
+pymysql==0.7.6
+django==1.8.14
+django-crispy-forms==1.5.2
+django-markdown-deux==1.0.5
+django-pagedown==0.1.1
+lxml==3.3.3
+eulxml==1.1.1
+git+git://github.com/Brown-University-Library/bdrxml.git@v0.7#egg=bdrxml
+requests==2.11.1
