@@ -11,13 +11,14 @@ class AdminBiographyForm(forms.ModelForm):
 
     class Meta:
         model = Biography
+        fields = ('name', 'trp_id', 'alternate_names', 'external_id', 'birth_date', 'death_date', 'roles', 'bio')
 
 
 class NewBiographyForm(forms.ModelForm):
 
     class Meta:
-        fields = ('name',)
         model = Biography
+        fields = ('name',)
 
 
 class EssayModelForm(forms.ModelForm):
@@ -25,6 +26,7 @@ class EssayModelForm(forms.ModelForm):
 
     class Meta:
         model = Essay
+        fields = ('slug', 'author', 'title', 'text', 'pids', 'people')
 
 
 class PersonForm(forms.Form):
@@ -98,9 +100,10 @@ class AnnotationForm(forms.Form):
 class NewGenreForm(forms.ModelForm):
     class Meta:
         model = Genre
+        fields = ('text', 'external_id')
 
 
 class NewRoleForm(forms.ModelForm):
     class Meta:
         model = Role
-
+        fields = ('text', 'external_id')
