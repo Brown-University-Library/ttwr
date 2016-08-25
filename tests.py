@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.test import TestCase, Client
+from django.test import TestCase, TransactionTestCase, Client
 from . import views
 from . import models
 
@@ -41,11 +41,33 @@ class TestStaticViews(TestCase):
         self.assertContains(response, 'Rome - Search')
 
 
-class TestPageDetail(TestCase):
+class TestBooksViews(TestCase):
 
-    def test_1(self):
+    def test_books(self):
+        response = self.client.get(reverse('books'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Rome - Books')
+
+    def test_book_thumnbail_viewer(self):
+        response = self.client.get(reverse('thumbnail_viewer', kwargs={'book_id': '230605'}))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Book 230605')
+
+    def test_book_page_viewer(self):
         response = self.client.get(reverse('book_page_viewer', kwargs={'book_id': '230605', 'page_id': '230606'}))
         self.assertEqual(response.status_code, 200)
+
+    def test_new_annotation_auth(self):
+        url = reverse('new_annotation', kwargs={'book_id': '230605', 'page_id': '230606'})
+        response = self.client.get(url)
+        self.assertRedirects(response, 'http://testserver/rome/login/?next=%s' % url)
+
+    def test_new_annotation_get(self):
+        auth_client = get_auth_client()
+        url = reverse('new_annotation', kwargs={'book_id': '230605', 'page_id': '230606'})
+        response = auth_client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'value="Submit Annotation"')
 
     def test_get_next_prev_pids(self):
         prev_id, next_id = views._get_prev_next_ids({'relations': {'hasPart': []}}, None)
@@ -67,6 +89,62 @@ class TestPageDetail(TestCase):
         prev_id, next_id = views._get_prev_next_ids({'relations': {'hasPart': hasPart_data}}, 'test:112')
         self.assertEqual(prev_id, '111')
         self.assertEqual(next_id, '113')
+
+
+class TestPrintsViews(TestCase):
+
+    def test_prints(self):
+        response = self.client.get(reverse('prints'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_specific_print(self):
+        response = self.client.get(reverse('specific_print', kwargs={'print_id': 230631}))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'ARTES ATHENIX PARTHENOPEM')
+
+    def test_new_print_annotation_auth(self):
+        url = reverse('new_print_annotation', kwargs={'print_id': '230631'})
+        response = self.client.get(url)
+        self.assertRedirects(response, 'http://testserver/rome/login/?next=%s' % url)
+
+    def test_new_print_annotation_get(self):
+        auth_client = get_auth_client()
+        url = reverse('new_print_annotation', kwargs={'print_id': '230631'})
+        response = auth_client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'value="Submit Annotation"')
+
+
+class TestEssaysViews(TestCase):
+
+    def test_essays(self):
+        response = self.client.get(reverse('essays'))
+        self.assertEqual(response.status_code, 200)
+        models.Essay.objects.create(slug='ger', author='David Ortiz', title=u'Rëd Sox')
+        response = self.client.get(reverse('essays'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, u'Rëd Sox')
+
+    def test_specific_essay(self):
+        models.Essay.objects.create(slug='ger', author='David Ortiz', title=u'Rëd Sox', text='### Red Sox lineup')
+        response = self.client.get(reverse('specific_essay', kwargs={'essay_slug': 'ger'}))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '<h3>Red Sox lineup</h3>') #makes sure that markdown was rendered
+
+
+class TestPeopleViews(TransactionTestCase):
+
+    def test_people(self):
+        models.Biography.objects.create(name=u'Frëd', trp_id='0001')
+        response = self.client.get(reverse('people'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, u'Frëd')
+
+    def test_person_detail(self):
+        models.Biography.objects.create(name=u'Frëd', trp_id='0001', bio=u'### Frëd')
+        response = self.client.get(reverse('person_detail', kwargs={'trp_id': '0001'}))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, u'<h3>Frëd</h3>')
 
 
 class TestRecordCreatorViews(TestCase):
