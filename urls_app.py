@@ -16,7 +16,7 @@ urlpatterns = patterns('',
     url(r'^about/', views.about, name='about'),
     url(r'^links/$', views.links, name='links'),
 
-    #books, prints, and essays
+    #books, prints, essays, ...
     url(r'^books/$', views.book_list, name='books'),
     url(r'^books/(?P<book_id>\d+)/$', views.book_detail, name='thumbnail_viewer'),
     url(r'^books/(?P<book_id>\d+)/(?P<page_id>\d+)/$', views.page_detail, name='book_page_viewer'),
@@ -32,8 +32,10 @@ urlpatterns = patterns('',
     url(r'^people/(?P<trp_id>\d+)/$', views.biography_detail, name='person_detail'),
     url(r'^people/(?P<trp_id>\d+)/TEI/$', views.person_detail_tei, name='person_detail_tei'),
 
+    #create new records
     url(r'^genres/new/$', views.new_genre, name='new_genre'),
     url(r'^roles/new/$', views.new_role, name='new_role'),
     url(r'^biographies/new/$', views.new_biography, name='new_biography'),
+
     url(r'^search/$', views.search_page, name= 'search_page'),
 )

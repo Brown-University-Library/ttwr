@@ -118,7 +118,8 @@ class Biography(models.Model):
             self.trp_id = self._get_trp_id()
         else:
             self.trp_id = self.format_trp_id(self.trp_id)     
-        self.roles = self.roles.replace(",",";"); 
+        if self.roles:
+            self.roles = self.roles.replace(",",";");
         try:
             super(Biography, self).save(*args, **kwargs)
         except IntegrityError as e:
