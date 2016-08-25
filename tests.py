@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
@@ -88,3 +89,42 @@ class TestRecordCreatorViews(TestCase):
         self.assertContains(response, 'opener.dismissAddAnotherPopup(window, "1", "Book");')
         self.assertEqual(len(models.Genre.objects.all()), 1)
         self.assertEqual(models.Genre.objects.all()[0].text, 'Book')
+
+    def test_new_role_auth(self):
+        response = self.client.get(reverse('new_role'))
+        self.assertRedirects(response, 'http://testserver/rome/login/?next=/rome/roles/new/')
+
+    def test_new_role(self):
+        auth_client = get_auth_client()
+        response = auth_client.get(reverse('new_role'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Text')
+
+    def test_new_role_post(self):
+        auth_client = get_auth_client()
+        self.assertEqual(len(models.Role.objects.all()), 0)
+        response = auth_client.post(reverse('new_role'), {'text': u'Auth©r'})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, u'opener.dismissAddAnotherPopup(window, "1", "Auth©r");')
+        self.assertEqual(len(models.Role.objects.all()), 1)
+        self.assertEqual(models.Role.objects.all()[0].text, u'Auth©r')
+
+    def test_new_biography_auth(self):
+        response = self.client.get(reverse('new_biography'))
+        self.assertRedirects(response, 'http://testserver/rome/login/?next=/rome/biographies/new/')
+
+    def test_new_biography(self):
+        auth_client = get_auth_client()
+        response = auth_client.get(reverse('new_biography'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Name')
+
+    def test_new_biography_post(self):
+        models.Biography.objects.create(name='Tom', trp_id='0001')
+        auth_client = get_auth_client()
+        self.assertEqual(len(models.Biography.objects.all()), 1)
+        response = auth_client.post(reverse('new_biography'), {'name': u'Säm', 'trp_id': '1'})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, u'opener.dismissAddAnotherPopup(window, "2", "Säm (0002)");')
+        self.assertEqual(len(models.Biography.objects.all()), 2)
+        self.assertEqual(models.Biography.objects.all()[0].name, u'Säm')
