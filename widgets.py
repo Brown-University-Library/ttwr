@@ -13,7 +13,6 @@ class AddAnotherWidgetWrapper(forms.Widget):
     django.contrib.admin.widgets.RelatedFieldWidgetWrapper
     """
     def __init__(self, widget, model, related_url_name):
-        self.is_hidden = widget.is_hidden
         self.needs_multipart_form = widget.needs_multipart_form
         self.attrs = widget.attrs
         self.choices = widget.choices
