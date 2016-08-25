@@ -69,6 +69,18 @@ class TestBooksViews(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'value="Submit Annotation"')
 
+    def test_edit_annotation_auth(self):
+        url = reverse('edit_annotation', kwargs={'book_id': '224807', 'page_id': '224895', 'anno_id': '228874'})
+        response = self.client.get(url)
+        self.assertRedirects(response, 'http://testserver/rome/login/?next=%s' % url)
+
+    def test_edit_annotation_get(self):
+        auth_client = get_auth_client()
+        url = reverse('edit_annotation', kwargs={'book_id': '224807', 'page_id': '224895', 'anno_id': '228874'})
+        response = auth_client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'value="Submit Annotation"')
+
     def test_get_next_prev_pids(self):
         prev_id, next_id = views._get_prev_next_ids({'relations': {'hasPart': []}}, None)
         self.assertEqual(prev_id, 'none')
@@ -110,6 +122,18 @@ class TestPrintsViews(TestCase):
     def test_new_print_annotation_get(self):
         auth_client = get_auth_client()
         url = reverse('new_print_annotation', kwargs={'print_id': '230631'})
+        response = auth_client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'value="Submit Annotation"')
+
+    def test_edit_print_annotation_auth(self):
+        url = reverse('edit_print_annotation', kwargs={'print_id': '230631', 'anno_id': '230632'})
+        response = self.client.get(url)
+        self.assertRedirects(response, 'http://testserver/rome/login/?next=%s' % url)
+
+    def test_edit_print_annotation_get(self):
+        auth_client = get_auth_client()
+        url = reverse('edit_print_annotation', kwargs={'print_id': '230631', 'anno_id': '230632'})
         response = auth_client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'value="Submit Annotation"')
