@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from django.http import Http404
 from django.db import models
 from django.core.urlresolvers import reverse
@@ -256,12 +257,11 @@ class BDRObject(object):
     def thumbnail_src(self):
         return 'https://%s/viewers/image/thumbnail/%s/' % (app_settings.BDR_SERVER, self.pid)
 
-from django.utils.datastructures import SortedDict
-# Book
+
 class Book(BDRObject):
     OBJECT_TYPE = "implicit-set"
     CUTOFF = 80
-    SORT_OPTIONS = SortedDict([
+    SORT_OPTIONS = OrderedDict([
         ( 'authors', 'authors' ),
         ( 'title', 'title_sort' ),
         ( 'date', 'date' ),
@@ -295,7 +295,7 @@ class Book(BDRObject):
 
 # Page
 class Page(BDRObject):
-    SORT_OPTIONS = SortedDict([
+    SORT_OPTIONS = OrderedDict([
         ( 'authors', 'authors' ),
         ( 'title', 'title' ),
         ( 'date', 'date' ),
