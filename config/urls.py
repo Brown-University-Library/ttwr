@@ -3,6 +3,6 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = [
-  url( r'^rome/',  include('rome_app.urls_app') ),
   url( r'^admin/',  include(admin.site.urls) ),
+  url( r'^',  include('rome_app.urls_app') ),
 ]

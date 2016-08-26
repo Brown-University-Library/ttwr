@@ -33,7 +33,6 @@ INSTALLED_APPS = (
 
 ROOT_URLCONF = 'config.urls'
 
-STATIC_URL = '/static/'
 STATIC_ROOT = os.path.normpath(os.path.join(BASE_DIR, 'assets'))
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
