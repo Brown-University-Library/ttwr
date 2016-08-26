@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError, HttpResponseRedirect
 from django.forms.formsets import formset_factory
@@ -17,7 +18,9 @@ import xml.etree.ElementTree as ET
 import re
 import requests
 from .models import Biography, Essay, Book, Annotation, Page
-from .app_settings import BDR_SERVER, BOOKS_PER_PAGE, PID_PREFIX, logger
+from .app_settings import BDR_SERVER, BOOKS_PER_PAGE, PID_PREFIX
+
+logger = logging.getLogger('rome')
 
 def annotation_order(s): 
     retval = re.sub("[^0-9]", "", first_word(s['orig_title']))
