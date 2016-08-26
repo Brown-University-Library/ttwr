@@ -31,17 +31,16 @@ def first_word(s): return s.split(" ")[0]
 
 def std_context(path, style="rome/css/content.css",title="The Theater that was Rome"):
     pathparts = path.split(u'/')
-    breadcrumbs = []
-    url = "/"
+    url = reverse('index')
+    breadcrumbs = [{'url': url, 'name': 'The Theater that was Rome'}]
 
     for node in pathparts:
         if node:
+            if node == 'rome' or node == 'projects':
+                continue
             url += node + u'/'
             obj = {"url": url, "name":node.title()}
-            if(node == "rome"):
-                obj['name'] = "The Theater that was Rome"
-            if("rome" in url):
-                breadcrumbs.append(obj)
+            breadcrumbs.append(obj)
 
     context={}
     context['common_style']="rome/css/common.css"
