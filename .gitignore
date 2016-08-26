@@ -3,3 +3,5 @@
 *.pyc
 .svn
 *.log*
+*.sqlite3
+assets
