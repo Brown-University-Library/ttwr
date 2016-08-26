@@ -46,7 +46,7 @@ class TestBooksViews(TestCase):
     def test_new_annotation_auth(self):
         url = reverse('new_annotation', kwargs={'book_id': '230605', 'page_id': '230606'})
         response = self.client.get(url)
-        self.assertRedirects(response, 'http://testserver/rome/login/?next=%s' % url)
+        self.assertRedirects(response, '%s?next=%s' % (reverse('rome_login'), url))
 
     def test_new_annotation_get(self):
         auth_client = get_auth_client()
@@ -58,7 +58,7 @@ class TestBooksViews(TestCase):
     def test_edit_annotation_auth(self):
         url = reverse('edit_annotation', kwargs={'book_id': '224807', 'page_id': '224895', 'anno_id': '228874'})
         response = self.client.get(url)
-        self.assertRedirects(response, 'http://testserver/rome/login/?next=%s' % url)
+        self.assertRedirects(response, '%s?next=%s' % (reverse('rome_login'), url))
 
     def test_get_next_prev_pids(self):
         prev_id, next_id = views._get_prev_next_ids({'relations': {'hasPart': []}}, None)
@@ -87,7 +87,7 @@ class TestPrintsViews(TestCase):
     def test_new_print_annotation_auth(self):
         url = reverse('new_print_annotation', kwargs={'print_id': '230631'})
         response = self.client.get(url)
-        self.assertRedirects(response, 'http://testserver/rome/login/?next=%s' % url)
+        self.assertRedirects(response, '%s?next=%s' % (reverse('rome_login'), url))
 
     def test_new_print_annotation_get(self):
         auth_client = get_auth_client()
@@ -99,7 +99,7 @@ class TestPrintsViews(TestCase):
     def test_edit_print_annotation_auth(self):
         url = reverse('edit_print_annotation', kwargs={'print_id': '230631', 'anno_id': '230632'})
         response = self.client.get(url)
-        self.assertRedirects(response, 'http://testserver/rome/login/?next=%s' % url)
+        self.assertRedirects(response, '%s?next=%s' % (reverse('rome_login'), url))
 
 
 class TestEssaysViews(TestCase):
@@ -131,8 +131,9 @@ class TestPeopleViews(TransactionTestCase):
 class TestRecordCreatorViews(TestCase):
 
     def test_new_genre_auth(self):
-        response = self.client.get(reverse('new_genre'))
-        self.assertRedirects(response, 'http://testserver/rome/login/?next=/rome/genres/new/')
+        url = reverse('new_genre')
+        response = self.client.get(url)
+        self.assertRedirects(response, '%s?next=%s' % (reverse('rome_login'), url))
 
     def test_new_genre(self):
         auth_client = get_auth_client()
@@ -150,8 +151,9 @@ class TestRecordCreatorViews(TestCase):
         self.assertEqual(models.Genre.objects.all()[0].text, 'Book')
 
     def test_new_role_auth(self):
-        response = self.client.get(reverse('new_role'))
-        self.assertRedirects(response, 'http://testserver/rome/login/?next=/rome/roles/new/')
+        url = reverse('new_role')
+        response = self.client.get(url)
+        self.assertRedirects(response, '%s?next=%s' % (reverse('rome_login'), url))
 
     def test_new_role(self):
         auth_client = get_auth_client()
@@ -169,8 +171,9 @@ class TestRecordCreatorViews(TestCase):
         self.assertEqual(models.Role.objects.all()[0].text, u'Auth©r')
 
     def test_new_biography_auth(self):
-        response = self.client.get(reverse('new_biography'))
-        self.assertRedirects(response, 'http://testserver/rome/login/?next=/rome/biographies/new/')
+        url = reverse('new_biography')
+        response = self.client.get(url)
+        self.assertRedirects(response, '%s?next=%s' % (reverse('rome_login'), url))
 
     def test_new_biography(self):
         auth_client = get_auth_client()
