@@ -5,7 +5,7 @@ DEBUG = True
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'unit_tests.sqlite3',
+        'NAME': 'rome.sqlite3',
     }
 }
 
