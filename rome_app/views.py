@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError, HttpResponseRedirect
 from django.forms.formsets import formset_factory
@@ -17,7 +18,9 @@ import xml.etree.ElementTree as ET
 import re
 import requests
 from .models import Biography, Essay, Book, Annotation, Page
-from .app_settings import BDR_SERVER, BOOKS_PER_PAGE, PID_PREFIX, logger
+from .app_settings import BDR_SERVER, BOOKS_PER_PAGE, PID_PREFIX
+
+logger = logging.getLogger('rome')
 
 def annotation_order(s): 
     retval = re.sub("[^0-9]", "", first_word(s['orig_title']))
@@ -28,17 +31,16 @@ def first_word(s): return s.split(" ")[0]
 
 def std_context(path, style="rome/css/content.css",title="The Theater that was Rome"):
     pathparts = path.split(u'/')
-    breadcrumbs = []
-    url = "/"
+    url = reverse('index')
+    breadcrumbs = [{'url': url, 'name': 'The Theater that was Rome'}]
 
     for node in pathparts:
         if node:
+            if node == 'rome' or node == 'projects':
+                continue
             url += node + u'/'
             obj = {"url": url, "name":node.title()}
-            if(node == "rome"):
-                obj['name'] = "The Theater that was Rome"
-            if("rome" in url):
-                breadcrumbs.append(obj)
+            breadcrumbs.append(obj)
 
     context={}
     context['common_style']="rome/css/common.css"
