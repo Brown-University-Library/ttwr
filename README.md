@@ -1,5 +1,6 @@
-ttwr
+ttwr 
 ====
+[![Build Status](https://travis-ci.org/Brown-University-Library/ttwr.svg?branch=master)](https://travis-ci.org/Brown-University-Library/ttwr)
 
 This is the django app that runs the Theater That Was Rome project website.
 
