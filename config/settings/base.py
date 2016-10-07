@@ -37,6 +37,16 @@ STATIC_ROOT = os.path.normpath(os.path.join(BASE_DIR, 'assets'))
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
+MARKDOWN_DEUX_STYLES = {
+    "default": {
+        "extras": {
+            "code-friendly": None,
+            "footnotes": None,
+        },
+        "safe_mode": "escape",
+    },
+}
+
 LOG_DIR = os.path.normpath(os.path.join(BASE_DIR, 'logs'))
 LOGGING = {
     'version': 1,
