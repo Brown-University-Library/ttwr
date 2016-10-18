@@ -311,13 +311,6 @@ class Page(BDRObject):
     def essays(self):
         return Essay.objects.filter(pids__contains = self.pid[4:])
 
-# Print
-class Print(Page):
-    OBJECT_TYPE = "image-compound"
-
-    def url(self):
-        return reverse('specific_print', args=[self.id,])
-
 class Annotation(object):
 
     @classmethod
