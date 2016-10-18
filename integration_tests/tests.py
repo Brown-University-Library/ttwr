@@ -34,6 +34,8 @@ class TestBooksViews(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_edit_annotation_get(self):
+        bio = models.Biography.objects.create(trp_id='2225')
+        role = models.Role.objects.create(text='Engraver')
         auth_client = get_auth_client()
         url = reverse('edit_annotation', kwargs={'book_id': '224807', 'page_id': '224895', 'anno_id': '228874'})
         response = auth_client.get(url)
