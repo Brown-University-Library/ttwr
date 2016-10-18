@@ -106,6 +106,8 @@ class Biography(models.Model):
 
     def _get_trp_id(self):
         ordered_bios = Biography.objects.order_by('-trp_id')
+        if not ordered_bios:
+            return '0001'
         index = 0
         last_bio = ordered_bios[index]
         while last_bio.trp_id != self.format_trp_id(last_bio.trp_id):
