@@ -487,25 +487,6 @@ def biography_detail(request, trp_id):
     context['breadcrumbs'][-1]['name'] = breadcrumb_detail(context, view="bio")
     return HttpResponse(template.render(context))
 
-def person_detail_tei(request, trp_id):
-    pid, name = _get_info_from_trp_id(trp_id)
-    if not pid:
-        return HttpResponseNotFound('Not Found')
-    r = requests.get(u'https://%s/fedora/objects/%s/datastreams/TEI/content' % (BDR_SERVER, pid))
-    if r.ok:
-        return HttpResponse(r.text)
-    else:
-        return HttpResponseServerError('Internal Server error')
-
-
-def _get_info_from_trp_id(trp_id):
-    trp_id = u'trp-%04d' % int(trp_id)
-    r = requests.get(u'http://%s/api/search?q=mods_id_trp_ssim:%s+AND+display:BDR_PUBLIC&fl=pid,name' % (BDR_SERVER, trp_id))
-    if r.ok:
-        data = json.loads(r.text)
-        if data['response']['numFound'] > 0:
-            return (data['response']['docs'][0]['pid'], data['response']['docs'][0]['name'])
-    return None, None
 
 def _get_full_title(data):
     if 'primary_title' not in data:
