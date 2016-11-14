@@ -1,55 +1,83 @@
+/* Colors
+  #000000 Text Color
+  #89775D Link Color, warm gray
+  #A89B8A Visited Link Color, cool gray
+  #D64833 Highlight color, red
+  #D38A09 Info box / highlight box outline color, burnt orange
+  #F2D69E Info box / highlight box color, beige/yellow
+  #ffffff Top bar text color
+  #DBC3AF Top bar page title highlight color, cool beige
+  #E8C577 Background, NAPLES YELLOW
+  #F9EDD2 Lightest yellow background, info box color for light book background
+*/
 
 body {
 	margin: 0;
-	}
+	background:#F9EDD2;
+
+}
 
 h1 {
-	background: #70675d url(../images/main-header-gradient.gif) repeat-x bottom; 
-	border-bottom: 2px solid #432826;
-	color: #f9f5e7;
-	font-size: 36px;
-	font-variant: small-caps;
-	font-weight: normal;
+	background: #70675d url(../images/main-header.png) repeat-x bottom;
+	background-size:contain;
+	color: #fff;
+	font-size: 24px;
+	font-family: 'Roboto', sans-serif;
+	font-weight: 200;
 	margin: 0;
-	padding: 11px 30px 7px;
-	text-align: center;
+	padding: 30px 30px 10px;
+	text-align: left;
+	box-shadow: 0 4px 2px -2px gray;
+}
+
+h2 {
+	font-size: 28px;
+	font-family: 'Roboto', sans-serif;
+	font-weight: 200;
+	color:#D64833;
+	border-bottom-color:#F9EDD2;
 }
 
 #page_body {
-	margin-left: 30px;
+
 }
 
 #sitenav {
-	float: left;
-	margin-bottom: 30px;
-	font-family: medium Georgia, "Times New Roman", Times, serif;
+	padding-top:50px;
+	margin:auto;
+	width:300px;
 }
 
 #sitenav ul {
 	list-style-type: none;
 	/*float: left;*/
+	padding:0px;
 	
 }
 
 #sitenav ul li {
 	display: block;
-	width:320px;
 	font-size: large;
 	line-height: 2em;
-	color: #999;
+	text-align:center;
+	background:#F9EDD2;
 }
 
 #sitenav ul li a{
-	border-bottom: 1px dotted #a19e96;
-	color: #3e3a2e;;
+	border-bottom: 2px solid #E8C577;;
+	color: #89775D;
+	font-weight:200;
+	font-size:26px;
 	display: block;
 	padding-left: 1px;
 	text-decoration: none;
+	padding-top:15px;
+	padding-bottom:20px;
 }
 
 #sitenav ul li a:hover {
 	text-decoration: none;
-	border-bottom: 1px solid #5d554b;
+	border-bottom: 2px solid #5d554b;
 	color: #803833;
 }
 
@@ -62,5 +90,32 @@ h1 {
 	margin: 6px 0 0 30px;
 	}
 #footer {
-	margin-top: 500px;
+	margin-top: 200px;
+	background:#E8C577;
+}
+
+#heroLeft {
+	background-image:url("../images/header-left.png");
+	background-size:cover;
+	display:block;
+	vertical-align:top;
+	width:30%;
+	height:750px;
+	float:left;
+	border-right-style:solid;
+	border-right-color:#E8C577;
+	border-right-width:50px;
+}
+
+#heroRight {
+	background-image:url("../images/header-right.png");
+	background-size:cover;
+	display:block;
+	vertical-align:top;
+	width:30%;
+	height:750px;
+	float:right;
+	border-left-style:solid;
+	border-left-color:#E8C577;
+	border-left-width:50px;
 }

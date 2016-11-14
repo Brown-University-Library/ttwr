@@ -14,16 +14,18 @@
 
     {% block extra_head %}
     {% endblock extra_head %}
+
+      <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500" rel="stylesheet">
   <head>
 
   <body>
       {% block page_head %}
       <div id="page_head">
           <h1>
-              <span class="repeatbg"><span class="leftcap">{% for b in breadcrumbs %}
+              >{% for b in breadcrumbs %}
               <a href="{{b.url}}">{{b.name}}</a>{% if not forloop.last %} - {% endif %}
               {% endfor %}
-              </span></span>
+
           </h1>
           <div class = "navigation">
             {% block navigation %}

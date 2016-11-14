@@ -1,4 +1,15 @@
-
+/* Colors
+  #000000 Text Color
+  #89775D Link Color, warm gray
+  #A89B8A Visited Link Color, cool gray
+  #D64833 Highlight color, red
+  #D38A09 Info box / highlight box outline color, burnt orange
+  #F2D69E Info box / highlight box color, beige/yellow
+  #ffffff Top bar text color
+  #DBC3AF Top bar page title highlight color, cool beige
+  #E8C577 Background, NAPLES YELLOW
+  #F9EDD2 Lightest yellow background, info box color for light book background
+/*
 /*
   * BODY
   */
@@ -6,6 +17,7 @@
 	
 #page_body {
 	clear: both;
+	background:#E8C577;
 	}
 
 #page_head ul, ol,
@@ -248,7 +260,8 @@ ul.navigationlink{
 }
 
 .metadata a {
-	font-size: 14px;
-	color: #9a2600;
+	font-size: 16px;
+	color:  #89775D;
+	font-weight:bold;
 
 }

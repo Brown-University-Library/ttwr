@@ -3,9 +3,14 @@
 
 {% block page_head %}
 <h1>{{title}}</h1>
+<div class="intro"><h2>A Virtual Roman Library</h2></div>
 {% endblock %}
 
+
+
 {% block content %}
+<div id="heroRight"></div>
+	<div id="heroLeft"></div>
 	<div id="sitenav">
 		<ul>
 			<li><a href="books">Books</a></li>
@@ -20,5 +25,5 @@
 			<!--<li class="inactive">Search</li>-->
 		</ul>
 	</div>
-	<img src="{%static home_image%}" alt="Le Antichità Romane: Tomo Secondo" name="engraving" width="359" height="321" id="engraving" /></div>
+
 {% endblock %}

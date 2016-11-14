@@ -61,10 +61,16 @@ function show_page(i)
     curr_page=i;
     
     buttons=document.getElementsByClassName("page_button");
-    for(var j=0;j<buttons.length;j++)
-        buttons[j].style.background="#aaaaaa"
-    buttons[parseInt(i)-1].style.background='#888888';
-    
+    for(var j=0;j<buttons.length;j++) {
+        buttons[j].style.background = "#F2D69E"
+        buttons[j].style.borderColor = "#89775D"
+        buttons[j].style.color = "#89775D"
+    }
+    buttons[parseInt(i)-1].style.background='#fff';
+    buttons[parseInt(i)-1].style.borderColor='#D64833';
+    buttons[parseInt(i)-1].style.color='#D64833';
+
+
     document.getElementById("prints_shown").innerHTML=((parseInt(i)-1)*prints_per_page+1)+"-"+(Math.min(parseInt(i)*prints_per_page, max_num));
     
     document.getElementById("curr_page_span").innerHTML=i;
