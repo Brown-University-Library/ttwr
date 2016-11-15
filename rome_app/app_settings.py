@@ -9,6 +9,7 @@ def get_env_setting(setting):
         raise ImproperlyConfigured(error_msg)
 
 BDR_SERVER = get_env_setting('ROME_BDR_SERVER')
+#BDR_SERVER = 'repository.library.brown.edu'
 PID_PREFIX = get_env_setting('ROME_PID_PREFIX')
 BOOKS_PER_PAGE = 20
 BDR_IDENTITY = get_env_setting('ROME_BDR_IDENTITY')
