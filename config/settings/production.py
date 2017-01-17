@@ -19,3 +19,4 @@ DATABASES = {
 SECRET_KEY = get_env_setting('SECRET_KEY')
 STATIC_URL = '/projects/rome/static/'
 ALLOWED_HOSTS = ['library.brown.edu']
+EMAIL_HOST = get_env_setting('EMAIL_HOST')
