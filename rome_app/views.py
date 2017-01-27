@@ -226,13 +226,10 @@ def get_annotation_detail(annotation):
 
     root = ET.fromstring(requests.get(curr_annot['xml_uri']).content)
     for title in root.getiterator('{http://www.loc.gov/mods/v3}titleInfo'):
-        try:
-            if title.attrib['lang']=='en':
-                curr_annot['title']=title[0].text
-            else:
-                curr_annot['orig_title']=title[0].text
-        except KeyError:
-            curr_annot['orig_title'] = title[0].text
+        if 'lang' in title.attrib and title.attrib['lang'] == 'en':
+            curr_annot['title'] = title[0].text if title[0].text else ""
+        else:
+            curr_annot['orig_title'] = title[0].text if title[0].text else "[No Title]"
         curr_annot['has_elements']['title'] += 1
 
     curr_annot['names']=[]
