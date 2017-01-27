@@ -27,7 +27,7 @@ def annotation_order(s):
     return int(retval) if retval != '' else 0
     
 
-def first_word(s): return s.split(" ")[0]
+def first_word(s): return s.split(" ")[0] if s else ""
 
 def std_context(path, style="rome/css/content.css",title="The Theater that was Rome"):
     pathparts = path.split(u'/')
