@@ -191,3 +191,14 @@ class TestRecordCreatorViews(TestCase):
         self.assertContains(response, u'opener.dismissAddAnotherPopup(window, "2", "Säm (0002)");')
         self.assertEqual(len(models.Biography.objects.all()), 2)
         self.assertEqual(models.Biography.objects.all()[0].name, u'Säm')
+
+class TestUtilityFunctions(TestCase):
+    
+    def test_firstword_content(self):
+        self.assertEqual(views.first_word("title sentence here"), "title")
+        self.assertEqual(views.first_word("title"), "title")
+
+    def test_firstword_nulls(self):
+        self.assertEqual("", views.first_word(""))
+        self.assertEqual("", views.first_word(None))
+
