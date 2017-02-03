@@ -24,7 +24,7 @@
 
 {% block javascript %}
 <script type="text/javascript">
-  var bdr_url = "http://repository.library.brown.edu/api/pub/items/"
+  var bdr_url = "http://repository.library.brown.edu/api/pub/items/";
 
   $(document).ready(function() {
     add_toggle_handlers();
@@ -34,14 +34,14 @@
     for (var i = 0; i < data.response.numFound; i++) {
       var id = data.response.docs[i].rel_is_annotation_of_ssim[0].split(":")[1];
       $("#"+id).addClass("annotated");
-    };
+    }
   }
 
   function cover_display (data) {
     if (data.relations.hasAnnotation) {
       var annot = data.relations.hasAnnotation[0];
       // Front cover has annotation and might do something about this later...
-    };
+    }
   }
 
   function add_toggle_handlers(){
