@@ -34,6 +34,7 @@ body {
 	font: 16px Roboto, sans-serif;
 	background-color: #E8C577;
 	color: #3e3a2e;
+	margin:0;
 	}
 	
 h2 {
@@ -95,7 +96,8 @@ div#page_head h1 {
 	padding: 30px 30px 20px;
 	text-align: left;
 	box-shadow: 0 4px 2px -2px gray;
-	height:80px;
+	height:100%;
+	max-height:80px;
 }
 
 #image_head {

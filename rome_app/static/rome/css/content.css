@@ -14,6 +14,7 @@
   * BODY
   */
 
+
 	
 #page_body {
 	clear: both;
@@ -28,7 +29,8 @@
 #page_head li {
 	/*margin-bottom: 6px;*/
 /*	list-style-type: square;*/
-	color: #a89983;
+	color: #D64833;
+	font-weight:300;
 	}
 	
 #page_head li .dark,

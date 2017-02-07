@@ -1,6 +1,13 @@
 
 #page_body ul{
 	padding: 0 40px 0;
+	background:#F2D69E;
+	max-width:500px;
+	border-style: solid;
+	border-color:#D38A09;
+	border-width:1px;
+	margin-right: auto;
+	margin-left: auto;
 	}
 
 #page_body li {
@@ -19,3 +26,24 @@
 	color: #3e3a2e;
 	vertical-align: -12%;
 	}
+
+#page_body {
+	max-width:800px;
+}
+
+div#page_head h1{
+	height:30px;
+	padding-top:30px;
+	padding-bottom:20px;
+}
+
+div.pagination_rome {
+
+}
+
+#image_head {
+	background: url(../images/books.png);
+	height:80px;
+}
+
+
