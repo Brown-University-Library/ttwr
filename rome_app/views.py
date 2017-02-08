@@ -27,7 +27,7 @@ def annotation_order(s):
     return int(retval) if retval != '' else 0
     
 
-def first_word(s): return s.split(" ")[0]
+def first_word(s): return s.split(" ")[0] if s else ""
 
 def std_context(path, style="rome/css/content.css",title="The Theater that was Rome"):
     pathparts = path.split(u'/')
@@ -176,7 +176,7 @@ def page_detail(request, page_id, book_id=None):
     except (KeyError, TypeError):
         pass
     context['lowres_url']="https://%s/fedora/objects/%s/datastreams/lowres/content" % (BDR_SERVER, page_pid)
-    context['det_img_view_src']="https://%s/viewers/image/iip/%s" % (BDR_SERVER, page_pid)
+    context['det_img_view_src']="https://%s/viewers/image/zoom/%s" % (BDR_SERVER, page_pid)
 
     context['breadcrumbs'][-2]['name'] = breadcrumb_detail(context, view="print")
 
@@ -226,13 +226,10 @@ def get_annotation_detail(annotation):
 
     root = ET.fromstring(requests.get(curr_annot['xml_uri']).content)
     for title in root.getiterator('{http://www.loc.gov/mods/v3}titleInfo'):
-        try:
-            if title.attrib['lang']=='en':
-                curr_annot['title']=title[0].text
-            else:
-                curr_annot['orig_title']=title[0].text
-        except KeyError:
-            curr_annot['orig_title'] = title[0].text
+        if 'lang' in title.attrib and title.attrib['lang'] == 'en':
+            curr_annot['title'] = title[0].text if title[0].text else ""
+        else:
+            curr_annot['orig_title'] = title[0].text if title[0].text else "[No Title]"
         curr_annot['has_elements']['title'] += 1
 
     curr_annot['names']=[]
@@ -345,7 +342,7 @@ def print_list(request):
             current_print['title_cut']=1
         current_print['title']=title
         current_print['short_title']=short_title
-        current_print['det_img_viewer']='https://%s/viewers/image/iip/%s' % (BDR_SERVER, pid)
+        current_print['det_img_viewer']='https://%s/viewers/image/zoom/%s' % (BDR_SERVER, pid)
         try:
             current_print['date']=Print['dateCreated'][0:4]
         except:
@@ -405,7 +402,7 @@ def print_detail(request, print_id):
 
     context['book_mode'] = 0
     context['print_mode'] = 1
-    context['det_img_view_src'] = 'https://%s/viewers/image/iip/%s/' % (BDR_SERVER, print_pid)
+    context['det_img_view_src'] = 'https://%s/viewers/image/zoom/%s/' % (BDR_SERVER, print_pid)
     if prints_list_page:
         context['back_to_print_href'] = u'%s?page=%s&collection=%s' % (reverse('prints'), prints_list_page, collection)
     else:
@@ -639,7 +636,7 @@ def new_annotation(request, book_id, page_id):
         person_formset = PersonFormSet(prefix='people')
         form = AnnotationForm()
 
-    image_link = 'https://%s/viewers/image/iip/%s' % (BDR_SERVER, page_pid)
+    image_link = 'https://%s/viewers/image/zoom/%s' % (BDR_SERVER, page_pid)
     return render(request, 'rome_templates/new_annotation.html',
             {'form': form, 'person_formset': person_formset, 'inscription_formset': inscription_formset, 'image_link': image_link})
 
@@ -672,7 +669,7 @@ def new_print_annotation(request, print_id):
         person_formset = PersonFormSet(prefix='people')
         form = AnnotationForm()
 
-    image_link = 'https://%s/viewers/image/iip/%s' % (BDR_SERVER, print_pid)
+    image_link = 'https://%s/viewers/image/zoom/%s' % (BDR_SERVER, print_pid)
     return render(request, 'rome_templates/new_annotation.html',
             {'form': form, 'person_formset': person_formset, 'inscription_formset': inscription_formset, 'image_link': image_link})
 

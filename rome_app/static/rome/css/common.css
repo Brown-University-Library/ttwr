@@ -111,7 +111,7 @@ div#page_head h1 {
 
 h1 {
 	font: 'Roboto', sans-serif;
-	weight: 100;
+	font-weight: 100;
 	height: 43px;
 	margin: 0 4px 0 4px;
 	padding: 0;
