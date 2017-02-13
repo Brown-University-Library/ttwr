@@ -25,15 +25,7 @@ h1 {
 	font-family: 'Roboto', sans-serif;
 	font-weight: 200;
 	margin: 0;
-<<<<<<< HEAD
-<<<<<<< HEAD
 	padding: 30px 30px 20px;
-=======
-	padding: 30px 30px 10px;
->>>>>>> upstream/master
-=======
-	padding: 30px 30px 10px;
->>>>>>> bfe933819e7a42aac7c50c04e4600d237296b9cb
 	text-align: left;
 	box-shadow: 0 4px 2px -2px gray;
 }
@@ -98,15 +90,7 @@ h2 {
 	margin: 6px 0 0 30px;
 	}
 #footer {
-<<<<<<< HEAD
-<<<<<<< HEAD
 	margin-top: 0px;
-=======
-	margin-top: 200px;
->>>>>>> upstream/master
-=======
-	margin-top: 0px;
->>>>>>> bfe933819e7a42aac7c50c04e4600d237296b9cb
 	background:#E8C577;
 }
 
@@ -116,17 +100,8 @@ h2 {
 	display:block;
 	vertical-align:top;
 	width:30%;
-<<<<<<< HEAD
-<<<<<<< HEAD
 	height:600px;
 	max-height:100%;
-=======
-	height:750px;
->>>>>>> upstream/master
-=======
-	height:600px;
-	max-height:100%;
->>>>>>> bfe933819e7a42aac7c50c04e4600d237296b9cb
 	float:left;
 	border-right-style:solid;
 	border-right-color:#E8C577;
@@ -139,15 +114,7 @@ h2 {
 	display:block;
 	vertical-align:top;
 	width:30%;
-<<<<<<< HEAD
-<<<<<<< HEAD
 	height:600px;
-=======
-	height:750px;
->>>>>>> upstream/master
-=======
-	height:600px;
->>>>>>> bfe933819e7a42aac7c50c04e4600d237296b9cb
 	float:right;
 	border-left-style:solid;
 	border-left-color:#E8C577;
