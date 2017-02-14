@@ -18,6 +18,49 @@
     .annotated:hover {
       background-color: rgba(154,38,0,0.4)
     }
+
+    div#page_head h1{
+        height:30px;
+        padding-top:30px;
+        padding-bottom:20px;
+    }
+
+
+    div#page_head{
+        padding-bottom:10px;
+        font-family: Roboto, sans-serif;
+        font-weight: 200;
+        font-size:14px;
+    }
+
+    div#page_body{
+        padding:15px;
+    }
+
+      #authors{
+          float:right;
+          max-width:350px;
+          background:#F2D69E;
+          margin-right:15%;
+          padding:10px;
+          border-style:solid;
+          border-width:1px;
+          border-color:#D64833;
+
+
+      }
+
+      #titledate{
+          max-width:40%;
+          display:inline-block;
+          color: #D64833;
+          font-weight:300;
+
+
+      }
+
+
+
   </style>
   
 {% endblock %}
@@ -82,8 +125,7 @@
 
 {% block cookietrail %}
 <ol>
-    <li>Book {{ book.id }}</li><br />
-    <li>Author(s): <span class="dark">{{ book.authors }}</span></li><br />
+    <div id="titledate">
     <li>Title: <span class="dark">{{ book.title }}</span></li><br />
     {% for atitle  in book.alt_titles %}
       {% if forloop.first %}
@@ -92,6 +134,11 @@
       <li>&nbsp;&nbsp;&nbsp;&nbsp;<span class="dark">{{atitle}}</span></li><br />
     {% endfor %}
     <li>Date: <span class="dark">{{ book.date }}</span></li><br />
+    </div>
+    <div id="authors">
+    <li>Author(s): <span class="dark">{{ book.authors }}</span></li><br />
+        <li>Book {{ book.id }}</li><br />
+    </div>
     {% if essays %}
       <li>Essays:<span class= "dark"><br />
           {% for essay in essays %}         

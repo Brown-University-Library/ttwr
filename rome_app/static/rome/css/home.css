@@ -25,7 +25,7 @@ h1 {
 	font-family: 'Roboto', sans-serif;
 	font-weight: 200;
 	margin: 0;
-	padding: 30px 30px 10px;
+	padding: 30px 30px 20px;
 	text-align: left;
 	box-shadow: 0 4px 2px -2px gray;
 }
@@ -90,7 +90,7 @@ h2 {
 	margin: 6px 0 0 30px;
 	}
 #footer {
-	margin-top: 200px;
+	margin-top: 0px;
 	background:#E8C577;
 }
 
@@ -100,7 +100,8 @@ h2 {
 	display:block;
 	vertical-align:top;
 	width:30%;
-	height:750px;
+	height:600px;
+	max-height:100%;
 	float:left;
 	border-right-style:solid;
 	border-right-color:#E8C577;
@@ -113,7 +114,7 @@ h2 {
 	display:block;
 	vertical-align:top;
 	width:30%;
-	height:750px;
+	height:600px;
 	float:right;
 	border-left-style:solid;
 	border-left-color:#E8C577;

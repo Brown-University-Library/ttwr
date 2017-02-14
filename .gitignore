@@ -5,3 +5,4 @@
 *.log*
 *.sqlite3
 assets
+rome_app/.idea

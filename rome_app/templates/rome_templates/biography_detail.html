@@ -30,8 +30,16 @@
 
     #page_body div#author_info li {
         color: black;
-    }
 
+    }
+    #author_info {
+        background:#F2D69E;
+        font-family:Roboto, sans-serif;
+        font-weight:300;
+        max-width:900px;
+        margin:auto;
+        padding:15px;
+    }
     li.page_list_item {
         margin-top: 25px;
         list-style: none;
@@ -44,6 +52,29 @@
     .pagination, .intro, #cookietrail {
         display: none;
     }
+
+    h2 {
+        font-family:Roboto;
+        font-size:20px;
+        color:#D64833;
+    }
+
+    h3 {
+        font-family:Roboto;
+        font-size:16px;
+        color:#D64833;
+        font-weight:800em;
+
+    }
+
+    #author_info ul, ol{
+        padding-left:50px;
+    }
+    div#page_head h1{
+        height:30px;
+        padding-top:30px;
+        padding-bottom:20px;
+    }
 </style>
 {% endblock %}
 
@@ -52,6 +83,7 @@
         <p>{{bio.bio|markdown}}</p>
     </div>
     <div id="related_sources">
+
         {% if books or prints or pages_books %}
             <h2>Related Resources</h2>
             {% if books %}
