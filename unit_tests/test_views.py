@@ -2,6 +2,8 @@
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase, TransactionTestCase, Client
+import responses
+import responses_data
 from rome_app import views
 from rome_app import models
 
@@ -128,6 +130,42 @@ class TestPeopleViews(TransactionTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, u'Frëd')
 
+    @responses.activate
+    def test_person(self):
+        base_url = 'https://localhost/api/collections/621/'
+        params = 'q=genre_aat:books+AND+name:%22Fr%C3%ABd%22&fq=object_type:implicit-set&fl=*&fq=discover:BDR_PUBLIC&rows=6000'
+        responses.add(responses.GET, '%s?%s' % (base_url, params),
+                      body=responses_data.BIO_BOOKS,
+                      status=200,
+                      content_type='application/json',
+                      match_querystring=True,
+                  )
+        prints_params = 'q=(genre_aat:%22etchings%20(prints)%22+OR+genre_aat:%22engravings%20(prints)%22)+AND+name:%22Fr%C3%ABd%22&fq=object_type:implicit-set&fl=*&fq=discover:BDR_PUBLIC&rows=6000'
+        responses.add(responses.GET, '%s?%s' % (base_url, prints_params),
+                      body=responses_data.BIO_PRINTS,
+                      status=200,
+                      content_type='application/json',
+                      match_querystring=True,
+                  )
+        anno_search_url = 'https://localhost/api/search/?q=ir_collection_id:621+AND+object_type:%22annotation%22+AND+contributor:%22Fr%C3%ABd%22+AND+display:BDR_PUBLIC&rows=6000&fl=rel_is_annotation_of_ssim,primary_title,pid,nonsort'
+        responses.add(responses.GET, anno_search_url,
+                      body=responses_data.ANNOTATIONS,
+                      status=200,
+                      content_type='application/json',
+                      match_querystring=True,
+                  )
+        pages_search_url = 'https://localhost/api/search/?q=(pid:test%5C:1234)+AND+display:BDR_PUBLIC&fl=pid,primary_title,nonsort,object_type,rel_is_part_of_ssim,rel_has_pagination_ssim&rows=50'
+        responses.add(responses.GET, pages_search_url,
+                      body=responses_data.PAGES,
+                      status=200,
+                      content_type='application/json',
+                      match_querystring=True,
+                  )
+        models.Biography.objects.create(name=u'Frëd', trp_id='0001')
+        response = self.client.get(reverse('person_detail', kwargs={'trp_id': '0001'}))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, u'Frëd')
+
 
 class TestRecordCreatorViews(TestCase):
 
@@ -192,6 +230,7 @@ class TestRecordCreatorViews(TestCase):
         self.assertEqual(len(models.Biography.objects.all()), 2)
         self.assertEqual(models.Biography.objects.all()[0].name, u'Säm')
 
+
 class TestUtilityFunctions(TestCase):
     
     def test_firstword_content(self):
@@ -201,4 +240,3 @@ class TestUtilityFunctions(TestCase):
     def test_firstword_nulls(self):
         self.assertEqual("", views.first_word(""))
         self.assertEqual("", views.first_word(None))
-

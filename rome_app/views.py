@@ -17,7 +17,7 @@ from operator import itemgetter, methodcaller
 import xml.etree.ElementTree as ET
 import re
 import requests
-from .models import Biography, Essay, Book, Annotation, Page
+from .models import Biography, Essay, Book, Annotation, Page, annotations_by_books_and_prints
 from .app_settings import BDR_SERVER, BOOKS_PER_PAGE, PID_PREFIX
 
 logger = logging.getLogger('rome')
@@ -473,7 +473,7 @@ def biography_detail(request, trp_id):
     prints_search = bio.prints()
 
     # Pages related to the person by annotation
-    (pages_books, prints_mentioned) = bio.annotations_by_books_and_prints()
+    (pages_books, prints_mentioned) = annotations_by_books_and_prints(bio.name)
     context['pages_books'] = pages_books
     # merge the two lists of prints
     prints_merged = [x for x in prints_mentioned if x not in prints_search]
