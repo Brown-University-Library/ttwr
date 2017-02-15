@@ -31,76 +31,6 @@ class Biography(models.Model):
     def prints(self):
         return Book.search(query='(genre_aat:"etchings (prints)"+OR+genre_aat:"engravings (prints)")+AND+name:"%s"' % self.name )
 
-    def annotations_by_books_and_prints(self, group_amount=50):
-        # Might need some cleaning up later, see if we can use objects here
-
-        #Look up every annotation for a person
-        num_prints_estimate = 6000
-        query_uri = 'https://%s/api/search/?q=ir_collection_id:621+AND+object_type:"annotation"+AND+contributor:"%s"+AND+display:BDR_PUBLIC&rows=%s&fl=rel_is_annotation_of_ssim,primary_title,pid,nonsort' % (app_settings.BDR_SERVER, self.name, num_prints_estimate)
-        annotations = json.loads(requests.get(query_uri).text)['response']['docs']
-        pages = dict([(page['rel_is_annotation_of_ssim'][0].split(u':')[-1], page) for page in annotations])
-        books = {}
-        prints = []
-        pages_to_look_up = []
-
-        # create a list of pages the annotations are attached to
-        for page_id in pages:
-            page = pages[page_id]
-            page['title'] = get_full_title_static(page)
-            page['page_id'] = page_id
-            page['id'] = page_id.split(u':')[-1]
-            pages_to_look_up.append(pages[page_id]['rel_is_annotation_of_ssim'][0].replace(u':', u'\:'))
-            page['thumb'] = u"https://%s/viewers/image/thumbnail/%s/"  % (app_settings.BDR_SERVER, page['rel_is_annotation_of_ssim'][0])
-
-        num_pages = len(pages_to_look_up)
-        i = 0
-        # Look up which books those pages are part of in groups of group_amount 
-        # (by default 50, any longer tends to break the request because the URL is too long)
-        while(i < num_pages):
-            group = pages_to_look_up[i : i+group_amount]
-            pids = "(pid:" + ("+OR+pid:".join(group)) + ")"
-            book_query = u"https://%s/api/search/?q=%s+AND+display:BDR_PUBLIC&fl=pid,primary_title,nonsort,object_type,rel_is_part_of_ssim,rel_has_pagination_ssim&rows=%s" % (app_settings.BDR_SERVER, pids, group_amount)
-            data = json.loads(requests.get(book_query).text)
-            book_response = data['response']['docs']
-
-            # Create a dict that maps book pids to a list of pages for that book
-            # essentially:
-            # {
-            #    "123456": {
-            #                 'pid':'123456'
-            #                 'title':"Sculpture in Rome"
-            #                 'pages': [{...}, {...}, ...] (all pages in this book with annotations)
-            #              }
-            #    "456789": {
-            #                  ...
-            #              }
-            #    ...
-            # }
-            # Also deals with any prints that came up in the search
-            for p in book_response:
-                try:
-                    pid = p['rel_is_part_of_ssim'][0].split(u':')[-1]
-                    n = int(p['rel_has_pagination_ssim'][0])
-                    
-                    if(pid not in books):
-                        books[pid] = {}
-                        books[pid]['title'] = get_full_title_static(p)
-                        books[pid]['pages'] = dict()
-                        books[pid]['pid'] = pid
-                    books[pid]['pages'][n] = pages[p['pid'].split(u':')[-1]]
-                except KeyError:
-                    pid = p['pid'].split(u':')[-1]
-                    p_obj = {}
-                    p_obj['primary_title'] = get_full_title_static(p)
-                    p_obj['pid'] = p['pid']
-                    prints.append(Print(data=p_obj))
-
-            i += group_amount
-
-        for b in books:
-            books[b]['pages'] = sorted(books[b]['pages'].items())    
-        return (books,prints)
-
     def format_trp_id(self, trp_id):
         return '%04d' % int(trp_id)
 
@@ -312,6 +242,98 @@ class Page(BDRObject):
 
     def essays(self):
         return Essay.objects.filter(pids__contains = self.pid[4:])
+
+
+class Print(Page):
+    OBJECT_TYPE = "image-compound"
+
+    def url(self):
+        return reverse('specific_print', args=[self.id,])
+
+
+def _get_annotations_for_person(bio_name):
+    #Look up every annotation for a person
+    num_prints_estimate = 6000
+    query_uri = 'https://%s/api/search/?q=ir_collection_id:621+AND+object_type:"annotation"+AND+contributor:"%s"+AND+display:BDR_PUBLIC&rows=%s&fl=rel_is_annotation_of_ssim,primary_title,pid,nonsort' % (app_settings.BDR_SERVER, bio_name, num_prints_estimate)
+    annotations = json.loads(requests.get(query_uri).text)['response']['docs']
+    return annotations
+
+
+def _get_pages_from_annotations(annotations):
+    # create a list of pages (or prints) the annotations are attached to
+    pages = dict([(page['rel_is_annotation_of_ssim'][0].split(u':')[-1], page) for page in annotations])
+    for page_id in pages:
+        page = pages[page_id]
+        page['title'] = get_full_title_static(page)
+        page['page_id'] = page_id
+        page['id'] = page_id.split(u':')[-1]
+        page['thumb'] = u"https://%s/viewers/image/thumbnail/%s/"  % (app_settings.BDR_SERVER, page['rel_is_annotation_of_ssim'][0])
+    return pages
+
+
+def _sort_book_pages(books):
+    for b in books:
+        books[b]['pages'] = sorted(books[b]['pages'].items())
+    return books
+
+
+def annotations_by_books_and_prints(bio_name, group_amount=50):
+    # Might need some cleaning up later, see if we can use objects here
+
+    annotations = _get_annotations_for_person(bio_name)
+    pages = _get_pages_from_annotations(annotations)
+    pids_of_pages_to_look_up = [a['rel_is_annotation_of_ssim'][0].replace(':', '\:') for a in annotations]
+
+    prints = []
+    books = {}
+    num_pages = len(pids_of_pages_to_look_up)
+    i = 0
+    # Look up which books those pages are part of in groups of group_amount
+    # (by default 50, any longer tends to break the request because the URL is too long)
+    while(i < num_pages):
+        group_of_pids = pids_of_pages_to_look_up[i : i+group_amount]
+        pids_query = "(pid:" + ("+OR+pid:".join(group_of_pids)) + ")"
+        book_query = u"https://%s/api/search/?q=%s+AND+display:BDR_PUBLIC&fl=pid,primary_title,nonsort,object_type,rel_is_part_of_ssim,rel_has_pagination_ssim&rows=%s" % (app_settings.BDR_SERVER, pids_query, group_amount)
+        data = json.loads(requests.get(book_query).text)
+        looked_up_pages = data['response']['docs']
+
+        # Create a dict that maps book pids to a list of pages for that book
+        # essentially:
+        # {
+        #    "123456": {
+        #                 'pid':'123456'
+        #                 'title':"Sculpture in Rome"
+        #                 'pages': [{...}, {...}, ...] (all pages in this book with annotations)
+        #              }
+        #    "456789": {
+        #                  ...
+        #              }
+        #    ...
+        # }
+        # Also deals with any prints that came up in the search
+        for page in looked_up_pages:
+            try:
+                book_id = page['rel_is_part_of_ssim'][0].split(u':')[-1]
+                n = int(page['rel_has_pagination_ssim'][0])
+
+                if(book_id not in books):
+                    #add new book to our list of books
+                    books[book_id] = {}
+                    books[book_id]['title'] = get_full_title_static(page)
+                    books[book_id]['pages'] = dict()
+                books[book_id]['pages'][n] = pages[page['pid'].split(u':')[-1]]
+            except KeyError:
+                #page has no rel_is_part_of_ssim, so it's a print
+                p_obj = {}
+                p_obj['pid'] = page['pid']
+                p_obj['primary_title'] = get_full_title_static(page)
+                prints.append(Print(data=p_obj))
+
+        i += group_amount
+
+    books = _sort_book_pages(books)
+    return (books,prints)
+
 
 class Annotation(object):
 
