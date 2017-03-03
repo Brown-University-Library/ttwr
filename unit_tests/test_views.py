@@ -240,3 +240,20 @@ class TestUtilityFunctions(TestCase):
     def test_firstword_nulls(self):
         self.assertEqual("", views.first_word(""))
         self.assertEqual("", views.first_word(None))
+
+    def test_annotation_order(self):
+        a = {
+            "orig_title":"1: Italian Words"
+        }
+        b = {
+            "orig_title":"2: French Words"
+        }
+        c = {
+            "title":"3: English Words"
+        }
+
+        l = sorted([b, c, a], key=lambda an: views.annotation_order(an))
+
+        self.assertDictEqual(l[0], a, "wrong annotation order")
+        self.assertDictEqual(l[1], b, "wrong annotation order")
+        self.assertDictEqual(l[2], c, "wrong annotation order")
