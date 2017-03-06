@@ -122,9 +122,14 @@ function add_low_toggle_handlers(){
                     
                 {% if annotation.has_elements.title %}
                 <div class="annot_title">
-                  <b>{{ annotation.orig_title }}</b>{% if user.is_authenticated %} (<a href="{{ annotation.edit_link }}">Edit</a>){% endif %}
+                  {% if annotation.orig_title %}
+                  <b>{{ annotation.orig_title }}</b>
+                  {% else %}
+                  <b>{{ annotation.title }}</b>
+                  {% endif %}
+                  {% if user.is_authenticated %} (<a href="{{ annotation.edit_link }}">Edit</a>){% endif %}
                 </div>
-                {% if annotation.title %}
+                {% if annotation.title and annotation.orig_title %}
                 <div class="annot_subtitle"><i> {{ annotation.title }} </i></div>
                 {% endif %}
                 {% endif %}

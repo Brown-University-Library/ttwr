@@ -23,7 +23,7 @@ from .app_settings import BDR_SERVER, BOOKS_PER_PAGE, PID_PREFIX
 logger = logging.getLogger('rome')
 
 def annotation_order(s): 
-    retval = re.sub("[^0-9]", "", first_word(s['orig_title']))
+    retval = re.sub("[^0-9]", "", first_word(s['orig_title'] if 'orig_title' in s else s['title']))
     return int(retval) if retval != '' else 0
     
 
