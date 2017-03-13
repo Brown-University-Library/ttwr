@@ -175,7 +175,6 @@ def page_detail(request, page_id, book_id=None):
             context['note'] = "From the personal collection of Vincent J. Buonanno"
     except (KeyError, TypeError):
         pass
-    context['lowres_url']="https://%s/fedora/objects/%s/datastreams/lowres/content" % (BDR_SERVER, page_pid)
     context['det_img_view_src']="https://%s/viewers/image/zoom/%s" % (BDR_SERVER, page_pid)
 
     context['breadcrumbs'][-2]['name'] = breadcrumb_detail(context, view="print")
