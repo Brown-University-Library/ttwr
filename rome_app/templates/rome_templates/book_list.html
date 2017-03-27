@@ -7,13 +7,20 @@
 {{result.short_title}} {% if result.partnumber %} ({{result.partnumber.0}}){% endif %}
 {% endblock %}
 
+{% block extra_head %}
+<style>
+.page_icon {
+background: url(../../static/rome/images/books.png);
+}
+</style>
+{% endblock %}
 {% block metadata%}
           <span class="dark">{% if result.name %}{% for author in result.name %}{% if forloop.last and not forloop.first %}and {{author}}.{% elif not forloop.last%}{{author}}; {% elif forloop.first and forloop.last %}{{author}}{% endif %}{% endfor %}{% else %}Anonymous{% endif %}</span><br />
           <span class="dark">{{ result.date }}</span><br />
 {% endblock %}
 
 {% block extra%}
-Full Title: <span class="dark">
+<span class="dark">Full Title:</span>
         <span num="{{forloop.parentloop.counter}}_{{forloop.counter}}">{{ result.short_title }}
             {% if result.title_cut %}
             <span class="more_button"
@@ -25,7 +32,7 @@ Full Title: <span class="dark">
         <span id="{{forloop.parentloop.counter}}_{{forloop.counter}}_full" style="display:none;">
             {{ result.title }}
         </span>
-    </span>
+
 <br />
 
 {% for atitle  in result.alt_titles %}

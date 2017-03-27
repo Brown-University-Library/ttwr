@@ -12,7 +12,17 @@
     }
 
     .annotated {
-      background-color: rgba(154,38,0,0.25)
+    -webkit-box-shadow:inset 0px 0px 0px 2px #D64833;
+        -moz-box-shadow:inset 0px 0px 0px 2px #D64833;
+        box-shadow:inset 0px 0px 0px 2px #D64833;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        margin-left:0px;
+        margin-right:3px;
+        border-radius:3px;
+        padding-bottom:2px;
+        margin-top:0px;
     }
 
     .annotated:hover {
@@ -25,9 +35,12 @@
         padding-bottom:20px;
     }
 
+    .page_icon {
+        background: url(../../static/rome/images/books.png);
+    }
 
     div#page_head{
-        padding-bottom:10px;
+        padding-bottom:20px;
         font-family: Roboto, sans-serif;
         font-weight: 200;
         font-size:14px;
@@ -48,6 +61,10 @@
           border-color:#D64833;
 
 
+      }
+
+      .img_container {
+          margin-top:9px;
       }
 
       #titledate{

@@ -25,9 +25,10 @@ h1 {
 	font-family: 'Roboto', sans-serif;
 	font-weight: 200;
 	margin: 0;
-	padding: 30px 30px 20px;
+	padding: 30px 30px 5px;
 	text-align: left;
 	box-shadow: 0 4px 2px -2px gray;
+	max-height:80px;
 }
 
 h2 {

@@ -567,7 +567,7 @@ def links(request):
 
 def essay_list(request):
     template=loader.get_template('rome_templates/essay_list.html')
-    context=std_context(request.path, style="rome/css/links.css")
+    context=std_context(request.path, style="rome/css/essays.css")
     context['page_documentation']='Listed below are essays on topics that relate to the Theater that was Rome collection of books and engravings. The majority of the essays were written by students in Brown University classes that used this material, and edited by Prof. Evelyn Lincoln.'
     c=RequestContext(request,context)
     essay_objs = Essay.objects.all()

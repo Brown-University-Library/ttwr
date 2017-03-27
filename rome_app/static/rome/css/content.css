@@ -42,9 +42,18 @@
 	/*
 	 * SORT
 	 */
-	 
+
+.sort_options{
+	font-size:14px;
+}
+.sort_options a{
+	color:#000;
+
+}
+
 .sort_active {
 	font-weight: bold;
+
 }
 ul#sort {
 	margin: -10px 10px 0;
@@ -191,7 +200,19 @@ div#image_span {
 	float:left;
 	padding-left:20px;
 	width:50%;
-	margin-bottom:20px;
+	max-width:350px;
+	margin-bottom:5px;
+	display:inline-block;
+	max-height:450px;
+}
+
+iframe {
+	margin: 0;
+	padding: 0;
+	border: none;
+	max-height:450px;
+	max-width:350px;
+
 }
 
 div.essaytogglepage{
@@ -218,15 +239,33 @@ ul.navigationlink{
 }
 
 #bookinfo {
-	background-color:rgba(0,0,0,0.1); 
-	margin-left:15px;
+	background-color:#F2D69E;
+	margin-left:20px;
 	padding-top: 1px;
+	border-style:solid;
+	border-width:1px;
+	border-color:#D64833;
+	float:left;
+	font-weight:300;
+	display:inline-block;
+	max-width:350px;
 }
 
 #metadata {
-	float:left;
-	width:40%;
-	margin-left: 15px;
+	float:right;
+	max-width:50%;
+	margin-left: 25px;
+	margin:auto;
+
+}
+
+#metadata .annot_field b{
+	color: #D64833;
+}
+
+
+.annot_title b{
+	color: #000;
 }
 
 #metadata ul {
@@ -258,7 +297,7 @@ ul.navigationlink{
  */
 
 .metadata div.extra {
- 	opacity: 0.4;
+	color: #D64833;
 }
 
 .metadata a {

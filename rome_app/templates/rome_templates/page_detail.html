@@ -4,7 +4,6 @@
 
 {% block title %}{{title}}{% endblock %}
 {% block page_title %}The Theater that was Rome{% endblock %}
-
 {% block javascript%}
 <script type="text/javascript">
 
@@ -85,6 +84,21 @@ function add_low_toggle_handlers(){
     div.intro, div.pagination_rome {
         display: none;
     }
+    .page_icon {
+        background: url(../../static/rome/images/prints.png);
+    }
+
+    #page_body {
+        max-width:750px;
+
+    }
+
+    div#page_head h1{
+        height:30px;
+        padding-top:30px;
+        padding-bottom:20px;
+    }
+
 </style>
 {% endblock %}
 
@@ -184,17 +198,19 @@ function add_low_toggle_handlers(){
             {% endfor %}
         {% endif %}    
         <br />
+        </div>
         <div id = "bookinfo">
         {% if book_mode %}
-            <ul> Book Information: <ul/><br />
+            <ul> <span style="color:#D64833">Book Information</span> <ul/><br />
         {% endif %}
         {% if print_mode %}
-            <ul> Print Information: <ul/><br />
+            <ul> <span style="color:#D64833">Print Information</span> :<ul/><br />
         {% endif %}
         <ul><b><i>{{ title }}</i>, {{date}}</b></ul>
         <ul>{{ authors }}</ul>
         {% if book_mode %}
-            <ul><b>Brown ID #: </b>{{ book_id }} <a href="{{ studio_url }}" target="_blank"> [Library View]</a></ul>
+                <br>
+            <a href="{{ studio_url }}" target="_blank"> [Library View]</a><span style="float:right;"><ul><b>Brown ID #: </b>{{ book_id }}  </ul></span>
             {% if note != "no note" %}
                 <ul>{{note}}</ul>
             {% endif %}
@@ -205,5 +221,5 @@ function add_low_toggle_handlers(){
         <ul></ul>
         <br />
         </div>
-        </div>
+
 {% endblock %}
