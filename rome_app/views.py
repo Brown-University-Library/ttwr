@@ -17,13 +17,13 @@ from operator import itemgetter, methodcaller
 import xml.etree.ElementTree as ET
 import re
 import requests
-from .models import Biography, Essay, Book, Annotation, Page
+from .models import Biography, Essay, Book, Annotation, Page, annotations_by_books_and_prints
 from .app_settings import BDR_SERVER, BOOKS_PER_PAGE, PID_PREFIX
 
 logger = logging.getLogger('rome')
 
 def annotation_order(s): 
-    retval = re.sub("[^0-9]", "", first_word(s['orig_title']))
+    retval = re.sub("[^0-9]", "", first_word(s['orig_title'] if 'orig_title' in s else s['title']))
     return int(retval) if retval != '' else 0
     
 
@@ -175,7 +175,6 @@ def page_detail(request, page_id, book_id=None):
             context['note'] = "From the personal collection of Vincent J. Buonanno"
     except (KeyError, TypeError):
         pass
-    context['lowres_url']="https://%s/fedora/objects/%s/datastreams/lowres/content" % (BDR_SERVER, page_pid)
     context['det_img_view_src']="https://%s/viewers/image/zoom/%s" % (BDR_SERVER, page_pid)
 
     context['breadcrumbs'][-2]['name'] = breadcrumb_detail(context, view="print")
@@ -473,7 +472,7 @@ def biography_detail(request, trp_id):
     prints_search = bio.prints()
 
     # Pages related to the person by annotation
-    (pages_books, prints_mentioned) = bio.annotations_by_books_and_prints()
+    (pages_books, prints_mentioned) = annotations_by_books_and_prints(bio.name)
     context['pages_books'] = pages_books
     # merge the two lists of prints
     prints_merged = [x for x in prints_mentioned if x not in prints_search]
