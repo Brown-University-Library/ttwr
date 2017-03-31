@@ -57,17 +57,7 @@ function load()
   {% endfor %}
   &nbsp showing <span id="prints_shown"></span> of {{num_results}} results; on page <span id="curr_page_span">{{ curr_page }}</span>
   <br />
-  {% if sort_options %}
-  <div class="sort_options">
-  Sort by:&nbsp;
-  {% for key,opt in sort_options.items %}
-    <a id="sort_{{opt}}" 
-      class="sort_link{% if opt == sorting %} sort_active{% endif %}"
-      href="?sort_by={{opt}}{% if filter_options %}&filter={{ filter }}{% endif %}">{{key|title}}
-    </a>{% if not forloop.last %} | {% endif %}
-  {% endfor %}
-  </div>
-  {% endif %}
+
 
   {% if filter_options %}
   <br/>
@@ -77,7 +67,7 @@ function load()
     <a id="sort_{{opt}}" 
       class="sort_link{% if opt == filter %} sort_active{% endif %}"
       href="?filter={{opt}}{% if sort_options %}&sort_by={{ sorting }}{% endif %}">{{key|title}}
-    </a>{% if not forloop.last %} | {% endif %}
+    </a>{% if not forloop.last %}  {% endif %}
   {% endfor %}
   </div>
   {% endif %}
@@ -136,9 +126,10 @@ function load()
 
 
         <div class="collection_data col-sm-2 col-sm-offset-2">
-        {% block collection_data %}
-            ID: {{ result.id }} <br />
+
           <a href={{ result.studio_uri }} target="_blank">[Library View]</a><br />
+            {% block collection_data %}
+            ID: {{ result.id }} <br />
         {% endblock %}
 
           <span style="display: none;" class="sort_by_field">

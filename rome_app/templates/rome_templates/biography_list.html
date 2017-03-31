@@ -3,6 +3,74 @@
 
 {% block page_title %}The Theater that was Rome - People{% endblock %}
 
+
+{% block extra_head %}
+<style>
+    .page_icon {
+        background: url(../../static/rome/images/people.png);
+        background-size: contain;
+        background-repeat:no-repeat;
+    }
+
+    .filter_options{
+        -moz-column-count: 4;
+        -moz-column-gap: 20px;
+        -webkit-column-count: 4;
+        -webkit-column-gap: 20px;
+        column-count: 6;
+        column-gap: 20px;
+    }
+
+    .sort_link{
+        display:block;
+    }
+
+    ul{
+        column-count:4;
+        break-inside: avoid-column;
+    }
+
+    .metadata.col-sm-8 {
+        width:90%;
+    }
+
+    div.collection_data.col-sm-2.col-sm-offset-2 {
+        position:absolute;
+        bottom:0;
+        right:0;
+        margin-left:0;
+        width:8em;
+    }
+
+    em {
+
+        font-size:12px;
+        color:  #89775D;
+        font-weight:300;
+        font-style:normal;
+        margin-left:3em;
+
+    }
+    .row {
+        min-width:200px;
+        max-width:200px;
+        padding:10px;
+        height:150px;
+        display: inline-block;
+        font-weight:300;
+        font-size:14px;
+
+    }
+
+    .results li {
+        padding:8px;
+        border-width:1.5px;
+        margin-left:5px;
+        margin-right:5px;
+        position: relative;
+    }
+</style>
+{% endblock %}
 {% block result_link%}
 
 <a href="{% url 'person_detail' result.trp_id%}">
@@ -18,15 +86,20 @@
                     {% if result.birth_date and result.death_date %} ({{ result.birth_date }} to {{ result.death_date }}){% endif %}
                     <br/>
                     {% if result.roles %} [{%for role in result.roles%}{{ role }}{% if not forloop.last %}, {%endif%}{%endfor%}]{% endif %}
+
+
 {% endblock %}
+
+
 
 {% block extra %}{% endblock %}
 
-{% block collection_data%}
-                    <em>&nbsp;ID: {{ result.trp_id }}</em>
-{% endblock %}
+
 
 {% block sort_by_field%}
 {{result.name}}
 {% endblock %}
 
+{% block collection_data%}
+<em>&nbsp;ID:{{ result.trp_id }}</em>
+{% endblock %}
