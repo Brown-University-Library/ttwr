@@ -22,20 +22,18 @@
       {% block page_head %}
       <div id="page_head">
           <h1>
-              >{% for b in breadcrumbs %}
-              <a href="{{b.url}}">{{b.name}}</a>{% if not forloop.last %} - {% endif %}
+               {% for b in breadcrumbs %}
+              <a href="{{b.url}}">{{b.name}}</a>{% if not forloop.last %} <span style="color:#000;">«</span> {% endif %}
               {% endfor %}
 
           </h1>
+          <div class = "page_icon">
+          </div>
           <div class = "navigation">
             {% block navigation %}
             {% endblock navigation %}
           </div>
-          <div class="intro">
-            {% block intro %}
-            {{page_documentation}}
-            {% endblock intro %}
-          </div>
+
           <div class="pagination_rome">
             {% block pagination %}
             {% endblock pagination %}
@@ -44,6 +42,11 @@
           <div id="cookietrail">
             {% block cookietrail %}
             {% endblock %}
+          </div>
+          <div class="intro">
+              {% block intro %}
+              {{page_documentation}}
+              {% endblock intro %}
           </div>
       </div>
       {% endblock %}

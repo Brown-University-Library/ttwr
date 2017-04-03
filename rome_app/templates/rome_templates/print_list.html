@@ -3,7 +3,13 @@
 
 {% block page_title%}The Theater that was Rome - Prints{% endblock %}
 
-
+{% block extra_head %}
+<style type="text/css">
+    .page_icon {
+        background: url(../../static/rome/images/prints.png);
+    }
+</style>
+{% endblock %}
 
 {% block result_title%}
 {{result.short_title}}
@@ -32,8 +38,8 @@
 {% endblock %}
 {% block collection_data%}
                 ID: {{ result.id }}
-                <br />
-                <a href={{ result.studio_uri }} target="_blank">[Library View]</a>
+
+
                 {% if result.in_chinea %}
                 <br />
                 This print is in the Chinea collection.
