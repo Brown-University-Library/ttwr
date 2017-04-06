@@ -1,4 +1,5 @@
 {% extends "rome_templates/base.html" %}
+{% load static from staticfiles %}
 {% load markdown_deux_tags %}
 
 {% block title %}{{book.title}}{% endblock %}
@@ -37,7 +38,7 @@
 
 
     .page_icon {
-        background: url(../../static/rome/images/books.png);
+        background: url({% static 'rome/images/books.png' %});
     }
 
     div#page_head {
