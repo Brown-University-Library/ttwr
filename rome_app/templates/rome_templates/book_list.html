@@ -1,5 +1,5 @@
 {% extends "rome_templates/result_base.html" %}
-
+{% load static from staticfiles %}
 
 {% block title%}The Theater that was Rome - Books{% endblock %}
 
@@ -10,7 +10,7 @@
 {% block extra_head %}
 <style>
 .page_icon {
-    background: url(../../static/rome/images/books.png);
+    background: url({% static 'rome/images/books.png' %});
 </style>
 {% endblock %}
 {% block metadata%}
