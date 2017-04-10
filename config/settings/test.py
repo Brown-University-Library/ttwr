@@ -16,3 +16,4 @@ DATABASES = {
 SECRET_KEY = get_env_setting('SECRET_KEY')
 STATIC_URL = '/projects/rome/static/'
 EMAIL_HOST = get_env_setting('EMAIL_HOST')
+ALLOWED_HOSTS = ['worfdev.services.brown.edu']
