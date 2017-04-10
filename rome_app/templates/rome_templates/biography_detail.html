@@ -1,4 +1,5 @@
 {% extends "rome_templates/base.html"%}
+{% load static from staticfiles %}
 {% load markdown_deux_tags %}
 
 {% block title %}{{title}}{% endblock %}
@@ -8,7 +9,7 @@
 <style type="text/css">
 
     .page_icon {
-        background: url(../../static/rome/images/people.png);
+        background: url({% static 'rome/images/people.png' %});
     }
 
     td {
