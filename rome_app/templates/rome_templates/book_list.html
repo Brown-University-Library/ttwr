@@ -11,11 +11,17 @@
 <style>
 .page_icon {
     background: url({% static 'rome/images/books.png' %});
+}
+
+
 </style>
 {% endblock %}
 {% block metadata%}
           <span class="dark">{% if result.name %}{% for author in result.name %}{% if forloop.last and not forloop.first %}and {{author}}.{% elif not forloop.last%}{{author}}; {% elif forloop.first and forloop.last %}{{author}}{% endif %}{% endfor %}{% else %}Anonymous{% endif %}</span><br />
           <span class="dark">{{ result.date }}</span><br />
+{% endblock %}
+{% block intro %}
+Click on "View" to see thumbnails of all the pages of a book. Click "Library View" to see the default repository entry for a book.
 {% endblock %}
 
 {% block extra%}

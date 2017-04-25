@@ -47,15 +47,13 @@ function load()
 </script>
 {% endblock %}
 
-{% block intro %}
-  Click on "View" to see thumbnails of all the pages of a book. Click "Library View" to see the default repository entry for a book.
-{% endblock %}
+
 
 {% block pagination %}
+<h3>showing <span id="prints_shown"></span> of {{num_results}} results; on page <span id="curr_page_span">{{ curr_page }}</span></h3>
   {% for i in page_range %}
       <button id="page_button_{{i}}" class="page_button btn btn-default" onclick="show_page({{i}})">{{i}}</button>
   {% endfor %}
-  &nbsp showing <span id="prints_shown"></span> of {{num_results}} results; on page <span id="curr_page_span">{{ curr_page }}</span>
   <br />
 
 
@@ -76,7 +74,7 @@ function load()
 {% block content %}
 {% for page in page_list %}
 <div id="page_{{forloop.counter}}" num="{{forloop.counter}}" style="display:none;">
-  <ul class="results container">
+  <ul class="results">
     {% for result in page %}
       <li {% if forloop.first %}value="{{forloop.parent.counter}}"{% endif %} class="row">
 

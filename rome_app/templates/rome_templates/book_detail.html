@@ -19,11 +19,13 @@
         box-sizing: border-box;
         -moz-box-sizing: border-box;
         -webkit-box-sizing: border-box;
-        margin-left:0px;
-        margin-right:3px;
+        /*margin-left:0px;*/
+        /*margin-right:3px;*/
         border-radius:3px;
-        padding-bottom:2px;
-        margin-top:0px;
+        /*padding-bottom:2px;*/
+        /*margin-top:0px;*/
+        margin:5px;
+        padding-left:5px;
     }
 
     .annotated:hover {
@@ -54,6 +56,8 @@
 
     div#page_body{
         padding:15px;
+        padding-left:0px;
+        margin-left: 5%;
     }
 
       #authors{
@@ -84,7 +88,11 @@
 
       }
 
-
+      #return{
+          position:absolute;
+          top:100px;
+          right:5px;
+      }
 
   </style>
   
@@ -174,10 +182,11 @@
           {% endfor %}
       </li><br />
     {% endif %}
-    <li><a href="{{back_to_book_href}}">return to book list</a></li><br />
+
 </ol>
 <br/>
 Pages marked with <span class="annotated">&nbsp;&nbsp;&nbsp;</span> are annotated.
+<div id="return"><a href="{{back_to_book_href}}">return to book list</a></div><br />
 {% endblock %}
 
 
