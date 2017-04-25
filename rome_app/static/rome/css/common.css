@@ -38,17 +38,17 @@ body {
 	}
 	
 h2 {
-	font: 18px Georgia, "Times New Roman", Times, serif;
+	font: 18px Roboto, sans-serif;
 	border-bottom: 1px solid #c2b99d;
 	margin: 15px 10px 10px;
 	padding-bottom: 2px;
 	}
 	
 h3 {
-	font: normal 14px Verdana, Arial, Helvetica, sans-serif;
+	font: 14px Roboto, sans-serif;
 	/*text-transform: uppercase;*/
-	margin: 10px 26px 10px;
 	padding-bottom: 2px;
+	margin:0;
 	}
 	
 h4 {
@@ -65,7 +65,10 @@ p {
  */
 .results {
 	list-style-type: none;
+	margin-left:5%;
+	margin-right:5%;
 }
+
 
 .results li {
 	background:#F2D69E;
@@ -93,7 +96,7 @@ div#page_head h1 {
 	font-family: 'Roboto', sans-serif;
 	font-weight: 200;
 	margin: 0;
-	padding: 30px 30px 20px;
+	padding: 30px 5% 20px;
 	text-align: left;
 	box-shadow: 0 4px 2px -2px gray;
 	height:100%;
@@ -169,7 +172,7 @@ h1 a:hover {
 
 div.pagination_rome, div.intro {
 	font-size:12px;
-	margin-left:20px;
+	margin-left:5%;
 	width:95%;
 	padding-top:15px;
 	padding-bottom:10px;
@@ -192,7 +195,7 @@ div.pagination_rome {
 	-webkit-box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.36);
 	-moz-box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.36);
 	box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.36);
-	margin:10px;
+	margin:10px 10px 10px 0px;
 }
 
 .pagination_rome > .btn {
