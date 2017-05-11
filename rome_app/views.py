@@ -455,7 +455,7 @@ def print_detail(request, print_id):
     c=RequestContext(request,context)
     #raise 404 if a certain print does not exist
     return HttpResponse(template.render(c))
-
+#Example of querying Django database for biography
 def biography_detail(request, trp_id):
     #view that pull bio information from the db, instead of the BDR
     trp_id = "%04d" % int(trp_id)
@@ -479,7 +479,7 @@ def biography_detail(request, trp_id):
     prints_merged[len(prints_merged):] = prints_search
 
     context['prints'] = prints_merged
-
+    #To use objects in the template, they must be passed to the template context
     context['breadcrumbs'][-1]['name'] = breadcrumb_detail(context, view="bio")
     return HttpResponse(template.render(context))
 

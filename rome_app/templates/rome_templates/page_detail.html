@@ -88,16 +88,17 @@ function add_low_toggle_handlers(){
         background: url({% static 'rome/images/prints.png' %});
     }
 
-    #page_body {
-        max-width:750px;
-
-    }
-
     div#page_head h1{
         height:30px;
         padding-top:30px;
         padding-bottom:20px;
     }
+    div#page_body{
+        padding:15px;
+        padding-left:0px;
+        margin-left: 5%;
+    }
+
 
 </style>
 {% endblock %}
@@ -105,27 +106,56 @@ function add_low_toggle_handlers(){
 {% block navigation %}
     {% if book_mode %}
         <br />
-        <ul class= "navigationlink"><a href="{{back_to_thumbnail_href}}" >return to book</a></ul>
-        <ul class = "navigationlink"><a href="{{back_to_book_href}}" >return to book list</a></ul>
+<ul class= "navigationlink">«<a href="{{back_to_thumbnail_href}}" >return to book</a></ul>
+        <ul class = "navigationlink">«<a href="{{back_to_book_href}}" >return to book list</a></ul>
     {% endif %}
     {% if print_mode %}
         <br />
-        <ul class = "navigationlink"><a href="{{back_to_print_href}}">return to print list</a></ul>
+        <ul class = "navigationlink">«<a href="{{back_to_print_href}}">return to print list</a></ul>
     {% endif %}
+{% if book_mode %}
 
+{% endif %}
 {% endblock %}
 
 {% block content %}
     <br />
+
+<div id = "bookinfo">
     {% if book_mode %}
-        <div id="prevnext">
-            <a id="prev_page">Loading...</a>
-            <a id="next_page">Loading...</a>
-        </div>
-    {% endif %}
-        <div id="image_span">
-        <iframe src={{ det_img_view_src}} width="100%" height="800" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-        </div>
+    <ul> <span style="color:#D64833">Book Information</span> <ul/><br />
+        {% endif %}
+        {% if print_mode %}
+        <ul> <span style="color:#D64833">Print Information</span> :<ul/><br />
+            {% endif %}
+            <ul><b><i>{{ title }}</i>, {{date}}</b></ul>
+            <ul>{{ authors }}</ul>
+            {% if book_mode %}
+            <br>
+            <a href="{{ studio_url }}" target="_blank"> [Library View]</a><span style="float:right;"><ul><b>Brown ID #: </b>{{ book_id }}  </ul></span>
+            {% if note != "no note" %}
+            <ul>{{note}}</ul>
+            {% endif %}
+            {% endif %}
+            {% if print_mode %}
+            <ul><b>Print ID: </b>{{ print_id }}<a href="{{ studio_url }}" target="_blank"> [Library View]</a></ul>
+            {% endif %}
+            <ul></ul>
+            <br />
+</div>
+
+{% if book_mode %}
+<div id="prevnext">
+    <a id="prev_page">Loading...</a>
+    <a id="next_page">Loading...</a>
+</div>
+{% endif %}
+
+<div id="detailcontainer">
+<div id="image_span">
+    <iframe src={{ det_img_view_src}} width="100%" height="800" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+</div>
+
         <div id="metadata">
             {% if user.is_authenticated %}
             <div class="new_annotation_link"><a href="{{ create_annotation_link }}">Create New Annotation</a></div>
@@ -137,9 +167,9 @@ function add_low_toggle_handlers(){
                 {% if annotation.has_elements.title %}
                 <div class="annot_title">
                   {% if annotation.orig_title %}
-                  <b>{{ annotation.orig_title }}</b>
+                  <h2>{{ annotation.orig_title }}</h2>
                   {% else %}
-                  <b>{{ annotation.title }}</b>
+                  <h2>{{ annotation.title }}</h2>
                   {% endif %}
                   {% if user.is_authenticated %} (<a href="{{ annotation.edit_link }}">Edit</a>){% endif %}
                 </div>
@@ -204,27 +234,7 @@ function add_low_toggle_handlers(){
         {% endif %}    
         <br />
         </div>
-        <div id = "bookinfo">
-        {% if book_mode %}
-            <ul> <span style="color:#D64833">Book Information</span> <ul/><br />
-        {% endif %}
-        {% if print_mode %}
-            <ul> <span style="color:#D64833">Print Information</span> :<ul/><br />
-        {% endif %}
-        <ul><b><i>{{ title }}</i>, {{date}}</b></ul>
-        <ul>{{ authors }}</ul>
-        {% if book_mode %}
-                <br>
-            <a href="{{ studio_url }}" target="_blank"> [Library View]</a><span style="float:right;"><ul><b>Brown ID #: </b>{{ book_id }}  </ul></span>
-            {% if note != "no note" %}
-                <ul>{{note}}</ul>
-            {% endif %}
-        {% endif %}
-        {% if print_mode %}
-            <ul><b>Print ID: </b>{{ print_id }}<a href="{{ studio_url }}" target="_blank"> [Library View]</a></ul>
-        {% endif %}
-        <ul></ul>
-        <br />
-        </div>
+</div>
+
 
 {% endblock %}

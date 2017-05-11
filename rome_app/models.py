@@ -250,7 +250,10 @@ class Print(Page):
     def url(self):
         return reverse('specific_print', args=[self.id,])
 
-
+#Getting Annotations for  Person
+#Returns a dict
+#Plug PID into thumbnail viewer URL
+#daxdev.services.brown.edu/viewers/image/thumbnail/test:224862/ <--- PID
 def _get_annotations_for_person(bio_name):
     #Look up every annotation for a person
     num_prints_estimate = 6000
