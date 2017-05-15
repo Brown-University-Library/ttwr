@@ -55,6 +55,17 @@ function load()
       <button id="page_button_{{i}}" class="page_button btn btn-default" onclick="show_page({{i}})">{{i}}</button>
   {% endfor %}
   <br />
+{% if sort_options %}
+<div class="sort_options">
+    Sort by:&nbsp;
+    {% for key,opt in sort_options.items %}
+    <a id="sort_{{opt}}"
+       class="sort_link{% if opt == sorting %} sort_active{% endif %}"
+       href="?sort_by={{opt}}{% if filter_options %}&filter={{ filter }}{% endif %}">{{key|title}}
+    </a>{% if not forloop.last %} | {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
 
 
   {% if filter_options %}

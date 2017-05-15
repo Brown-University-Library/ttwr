@@ -133,8 +133,12 @@ function add_low_toggle_handlers(){
             {% if book_mode %}
             <br>
             <a href="{{ studio_url }}" target="_blank"> [Library View]</a><span style="float:right;"><ul><b>Brown ID #: </b>{{ book_id }}  </ul></span>
-            {% if note != "no note" %}
-            <ul>{{note}}</ul>
+            {% if book.note != "no note" %}
+            {% for note in book.note %}
+            {% if "Vincent" in note %}
+            <li>From the collection of Vincent J. Buonnano</li>
+            {% endif %}
+            {% endfor %}
             {% endif %}
             {% endif %}
             {% if print_mode %}
