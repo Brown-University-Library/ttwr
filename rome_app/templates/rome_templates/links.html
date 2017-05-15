@@ -15,6 +15,17 @@
         background-size: contain;
         background-repeat:no-repeat;
     }
+
+    #links{
+        margin-top:5%;
+        margin-left:6.5%;
+        padding:5px;
+        font-weight: 200;
+        background:#F2D69E;
+        border-style:solid;
+        border-width:1px;
+        border-color:#D64833;
+    }
 </style>
 {% endblock %}
 
@@ -22,7 +33,8 @@
 {% endblock %}
 
 {% block content%}
-<h3>Links</h3>
+<div id="links">
+<h2>Links</h2>
     <ul>
         <li> <span><a target="_blank" href="http://formaurbis.stanford.edu">Stanford Digital Forma Urbis Romae Project</a></span></li>
         <li><span><a target="_blank" href="http://speculum.lib.uchicago.edu/index.html">Speculum Romanae Magnificentiae</a></span></li>
@@ -30,4 +42,5 @@
         <li><span><a target="_blank" href="http://nolli.uoregon.edu">Interactive Nolli Map</a></span></li>
         <li><span><a href="http://vasi.uoregon.edu/index.htm" target="_blank">Imago Urbis: Giuseppe Vasi's Grand Tour of Rome</a></span></li>
     </ul>
+</div>
 {% endblock %}

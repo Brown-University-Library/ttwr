@@ -72,7 +72,7 @@ function show_page(i)
 
 
     document.getElementById("prints_shown").innerHTML=((parseInt(i)-1)*prints_per_page+1)+"-"+(Math.min(parseInt(i)*prints_per_page, max_num));
-    
+
     document.getElementById("curr_page_span").innerHTML=i;
 }
 

@@ -6,6 +6,11 @@
     .pagination, #cookietrail {
         display: none;
     }
+
+    #page_body {
+        max-width: 100%;
+        margin-left:0;
+    }
     .page_icon {
         background: url({% static 'rome/images/essays.png' %});
         background-size: contain;
@@ -13,17 +18,92 @@
 
     }
 
+    .results {
+        margin-left:2%;
+        max-width: 100%;
+        column-count:4;
+        break-inside: avoid-column;
+        background-color: #E8C577;
+    }
+
+    .row {
+        min-width: 200px;
+        max-width: 200px;
+        padding: 10px;
+        height: 150px;
+        display: inline-block;
+        font-weight: 300;
+        font-size: 14px;
+    }
+
+    .intro {
+        display:none;
+    }
+
 
 </style>
 {% endblock %}
 
+{% block javascript %}
+<script type="text/javascript" src="{% static 'rome/js/list.js'%}"></script>
+<script type="text/javascript">
+    window.onload=load;
+    var curr_page;
+    var max_num;
+    var prints_per_page;
+
+    function load()
+    {
+        max_num={{num_results}};
+        prints_per_page={{ results_per_page }};
+
+        curr_page={% if curr_page %}{{ curr_page }}{% else %}1{% endif %};
+        show_page(curr_page);
+        show_sorting('{{ sorting }}');
+        show_filter('{{ filter }}');
+
+        expand_buttons()
+
+        $("li").hover(function(e) {
+            $(this).find(".metadata .extra").fadeTo(200, 1);
+        }, function(e) {
+            $(this).find(".metadata .extra").fadeTo(200, 0.4);
+        })
+    }
+</script>
+{% endblock %}
+
+
+
 {% block page_title%}The Theater that was Rome - Essays{% endblock %}
 
+{% block pagination %}
+<h3>showing <span id="prints_shown"></span> of {{num_results}} results; on page <span id="curr_page_span">{{ curr_page }}</span></h3>
+{% for i in page_range %}
+<button id="page_button_{{i}}" class="page_button btn btn-default" onclick="show_page({{i}})">{{i}}</button>
+{% endfor %}
+<br />
+
+
+{% if filter_options %}
+<br/>
+<div class="filter_options">
+    Filter by:&nbsp;
+    {% for key,opt in filter_options %}
+    <a id="sort_{{opt}}"
+       class="sort_link{% if opt == filter %} sort_active{% endif %}"
+       href="?filter={{opt}}{% if sort_options %}&sort_by={{ sorting }}{% endif %}">{{key|title}}
+    </a>{% if not forloop.last %}  {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
+
 {% block content %}
-<h3>Essays on Individual Books</h3>
-<ul>
+<ul class="results">
     {% for essay in essay_objs %}
-    <li><span><a href="{% url 'specific_essay' essay.slug %}">{{essay.title}}</a></span></li>
+    <li class="row"><span><a href="{% url 'specific_essay' essay.slug %}">{{essay.title}}</a></span>
+    <br> {{essay.slug}}</li>
     {% endfor %}
 </ul>
 {% endblock %}
