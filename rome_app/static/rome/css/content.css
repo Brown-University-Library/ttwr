@@ -258,16 +258,6 @@ ul.navigationlink{
 }
 
 #metadata {
-	/*float:left;*/
-	/*max-width:40%;*/
-	/*padding-top:10px;*/
-	/*padding-left:20px;*/
-	/*margin-right:auto;*/
-	/*display: -webkit-flex; !* Safari *!*/
-	/*-webkit-flex-wrap: wrap; !* Safari 6.1+ *!*/
-	/*display: flex;*/
-	/*flex-wrap: wrap;*/
-	/*align-items: flex-start;*/
 	column-count:2;
 	display:inline-block;
 
@@ -295,13 +285,6 @@ ul.navigationlink{
 	height:auto;
 	background:#F2D69E;
 	overflow:auto;
-	/*display: -webkit-flex; !* Safari *!*/
-	/*-webkit-flex-wrap: wrap; !* Safari 6.1+ *!*/
-	/*display: flex;*/
-	/*flex-wrap: wrap;*/
-	/*align-items: flex-start;*/
-	/*align-content: space-around;*/
-	/*justify-content: space-around;*/
 }
 
 #metadata .annot_field b{

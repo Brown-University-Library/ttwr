@@ -517,7 +517,6 @@ class Annotation(object):
         else:
             raise Exception('error putting update to %s: %s - %s' % (self._pid, r.status_code, r.content))
 
-# Copied this from views.py for getting titles from nonstandard queries
 def get_full_title_static(data):
     if 'primary_title' not in data:
         return 'No Title'

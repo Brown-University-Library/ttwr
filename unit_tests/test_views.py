@@ -34,7 +34,7 @@ class TestStaticViews(TestCase):
     def test_links(self):
         response = self.client.get(reverse('links'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, '<h3>Links</h3>')
+        self.assertContains(response, '<h2>Links</h2>')
 
     def test_search(self):
         #this page is static as far as the django view is concerned
