@@ -142,10 +142,13 @@ function add_low_toggle_handlers(){
             {% endif %}
             {% if print_mode %}
             <ul><b>Print ID: </b>{{ print_id }}<a href="{{ studio_url }}" target="_blank"> [Library View]</a></ul>
-            {% if note != "no note" %}
-            <ul>{{note}}</ul>
+            {% for note in print.note %}
+            {% if "Vincent" in note %}
+            <li>From the collection of Vincent J. Buonnano</li>
             {% endif %}
+            {% endfor %}
             {% endif %}
+
             <ul></ul>
             <br />
 </div>
