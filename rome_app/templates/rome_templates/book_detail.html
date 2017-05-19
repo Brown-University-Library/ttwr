@@ -171,6 +171,12 @@
     <div id="authors">
     <li>Author(s): <span class="dark">{{ book.authors }}</span></li><br />
         <li>Book {{ book.id }}</li><br />
+
+        {% for note in book.note %}
+        {% if "Vincent" in note %}
+        <li>From the collection of Vincent J. Buonnano</li>
+        {% endif %}
+        {% endfor %}
     </div>
     {% if essays %}
       <li>Essays:<span class= "dark"><br />

@@ -185,7 +185,7 @@ a#next_page {
     display: block;
     width: 30px;
     margin:5px;
-    margin-left: 46%;
+    margin-left: 60%;
     float:left;
     font-size: 12pt;
 }
@@ -194,16 +194,21 @@ div#prevnext {
     margin: 5px;
     height: 20px;
     text-align: center;
+	white-space: nowrap;
+	overflow:hidden;
+	clear:both;
+	width: 100%;
 }
 
 div#image_span {
-	float:left;
-	padding-left:20px;
-	width:50%;
-	max-width:350px;
+	float:right;
+	/*padding: 15px 0px 0px 30px;*/
+	width:100%;
 	margin-bottom:5px;
 	display:inline-block;
 	max-height:450px;
+	margin-left:auto;
+	margin-right:auto;
 }
 
 iframe {
@@ -211,7 +216,7 @@ iframe {
 	padding: 0;
 	border: none;
 	max-height:450px;
-	max-width:350px;
+	width:100%;
 
 }
 
@@ -240,7 +245,6 @@ ul.navigationlink{
 
 #bookinfo {
 	background-color:#F2D69E;
-	margin-left:20px;
 	padding-top: 1px;
 	border-style:solid;
 	border-width:1px;
@@ -248,15 +252,39 @@ ul.navigationlink{
 	float:left;
 	font-weight:300;
 	display:inline-block;
-	max-width:350px;
+	max-width:80.5%;
+	margin-bottom:15px;
+
 }
 
 #metadata {
-	float:right;
-	max-width:50%;
-	margin-left: 25px;
-	margin:auto;
+	column-count:2;
+	display:inline-block;
 
+}
+
+.annotation {
+	margin:auto;
+	display:inline-block;
+	padding:15px;
+	border-style:solid;
+	border-width:1px;
+	width:85%;
+	border-color:#c2b99d;
+	margin-bottom:10px;
+	margin-left:7.5px;
+}
+
+#detailcontainer {
+	padding-top: 1px;
+	border-style:solid;
+	border-width:1px;
+	border-color: #D38A09;
+	margin-top:10px;
+	width: 80.5%;
+	height:auto;
+	background:#F2D69E;
+	overflow:auto;
 }
 
 #metadata .annot_field b{
@@ -273,9 +301,10 @@ ul.navigationlink{
 }
 
 .annot_title {
+	width:200px;
 	margin-bottom:10px;
 	font-size:125%;
-	text-align:center;
+	margin-left:-13px;
 }
 
 .annot_subtitle {
@@ -289,7 +318,7 @@ ul.navigationlink{
 }
 
 .new_annotation_link a {
-	float: right;
+	border-bottom: 1px dotted #000;
 }
 
 /*

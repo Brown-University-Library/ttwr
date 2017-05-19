@@ -250,7 +250,6 @@ class Print(Page):
     def url(self):
         return reverse('specific_print', args=[self.id,])
 
-
 def _get_annotations_for_person(bio_name):
     #Look up every annotation for a person
     num_prints_estimate = 6000
@@ -518,7 +517,6 @@ class Annotation(object):
         else:
             raise Exception('error putting update to %s: %s - %s' % (self._pid, r.status_code, r.content))
 
-# Copied this from views.py for getting titles from nonstandard queries
 def get_full_title_static(data):
     if 'primary_title' not in data:
         return 'No Title'

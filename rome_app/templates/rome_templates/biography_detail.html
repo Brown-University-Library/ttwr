@@ -7,9 +7,17 @@
 
 {% block extra_head %}
 <style type="text/css">
+    div#page_body{
+        padding:15px;
+        padding-left:0px;
+        margin-left: 5%;
+    }
+
 
     .page_icon {
         background: url({% static 'rome/images/people.png' %});
+        background-size: contain;
+        background-repeat:no-repeat;
     }
 
     td {
@@ -43,11 +51,11 @@
         font-family:Roboto, sans-serif;
         font-weight:300;
         max-width:900px;
-        margin:auto;
         padding:15px;
     }
     li.page_list_item {
-        margin-top: 25px;
+        display:inline-block;
+        /*margin-bottom: 180px;*/
         list-style: none;
     }
 
@@ -91,7 +99,6 @@
     <div id="related_sources">
 
         {% if books or prints or pages_books %}
-            <h2>Related Resources</h2>
             {% if books %}
               <h4>Books</h4>
                 <ul>
@@ -109,20 +116,20 @@
             </ul>
             {% endif %}
             {% if pages_books%}
-            <h4>Pages</h4>
+            <h2>Pages</h2>
             <ul>
             {% for key,book in pages_books.items %}
-            <li class="page_list_item"><b>In <a href="{% url 'thumbnail_viewer' key %}" target="_blank">{{book.title}}</a> ({{ book.pages|length }}):</b><br/>
+            <li class="page_list_item"><h3><a href="{% url 'thumbnail_viewer' key %}" target="_blank">In {{book.title}}</a> ({{ book.pages|length }}):</h3><br/>
             <table>
             {% for num,page in book.pages %}
-            <tr>
-                <td class="thumbnail">
+
+                <div class="img_container">
                     <a href="{% url 'book_page_viewer' key page.id %}" target="_blank"><img height='150px' src="{{page.thumb}}"/></a>
-                </td>
-                    <td class="title">Image {{ num }}<br/>
-                    <a href="{% url 'book_page_viewer' key page.id %}" target="_blank">{{page.title}}</a>
-                </td>
-            </tr>
+                    <br/>
+                   Image {{ num }}
+                    <!--<a href="{% url 'book_page_viewer' key page.id %}" target="_blank">{{page.title}}</a>-->
+                </div>
+
             {% endfor %}
             </table>
             {% endfor %}
