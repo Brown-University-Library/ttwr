@@ -99,6 +99,22 @@ function add_low_toggle_handlers(){
         margin-left: 5%;
     }
 
+    .new_annotation_link {
+        display:inline-block;
+        margin:15px;
+        margin-top:5px;
+    }
+
+    .navigationlink {
+        display:inline;
+        font-size:15px;
+    }
+
+    .navigation {
+        padding-left:55px;
+    }
+
+
 
 </style>
 {% endblock %}
@@ -106,8 +122,9 @@ function add_low_toggle_handlers(){
 {% block navigation %}
     {% if book_mode %}
         <br />
+<ul class = "navigationlink">«<a href="{{back_to_book_href}}" >return to book list</a></ul>
 <ul class= "navigationlink">«<a href="{{back_to_thumbnail_href}}" >return to book</a></ul>
-        <ul class = "navigationlink">«<a href="{{back_to_book_href}}" >return to book list</a></ul>
+
     {% endif %}
     {% if print_mode %}
         <br />
@@ -133,7 +150,7 @@ function add_low_toggle_handlers(){
             {% if book_mode %}
             <br>
             <a href="{{ studio_url }}" target="_blank"> [Library View]</a><span style="float:right;"><ul><b>Brown ID #: </b>{{ book_id }}  </ul></span>
-
+            {{ book.note }}
             {% for note in book.note %}
             {% if "Vincent" in note %}
             <li>From the collection of Vincent J. Buonnano</li>
@@ -142,7 +159,8 @@ function add_low_toggle_handlers(){
             {% endif %}
             {% if print_mode %}
             <ul><b>Print ID: </b>{{ print_id }}<a href="{{ studio_url }}" target="_blank"> [Library View]</a></ul>
-            {% for note in print.note %}
+            {{ print.note.text }}
+            {% for note in note %}
             {% if "Vincent" in note %}
             <li>From the collection of Vincent J. Buonnano</li>
             {% endif %}
@@ -234,16 +252,22 @@ function add_low_toggle_handlers(){
                     </div>
             {% endfor %}
             <!--</ul>-->
+
         {% if essays %}
-            <ul><b>Essays:</ul></b><span>
-            {% for essay in essays %}  
+            <div id="essays">
+            <ul><b>Essays:</ul></b>
+            {% for essay in essays %}
                 <div id = "toggle{{essay.slug}}" class = "essaytogglepage"><span class = "underlinewrap" id="togspan{{essay.slug}}">{{essay.title}}</span></div>
                 <div id = "essaytext{{essay.slug}}" class = "essaytextpage">{{essay.text|markdown}}</div>
                 <a href="{% url 'specific_essay' essay.slug %}" target ="_blank" class = "essaylinkpage" id = "essaylink{{essay.slug}}"><span class = "underlinewrap">Read More<span class = "underlinewrap" id="togspan{{essay.slug}}"></a>
                 <div id = "hide{{essay.slug}}" class = "essayhidepage"><span class = "underlinewrap" id="togspanhide{{essay.slug}}">Hide Essay</span></div>
             {% endfor %}
-        {% endif %}    
+            </div>
+        {% endif %}
+
+
         <br />
+
         </div>
 </div>
 

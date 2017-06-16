@@ -14,11 +14,12 @@
 
     .filter_options{
         -moz-column-count: 4;
-        -moz-column-gap: 20px;
+        -moz-column-gap: 10px;
         -webkit-column-count: 4;
-        -webkit-column-gap: 20px;
+        -webkit-column-gap: 10px;
         column-count: 6;
-        column-gap: 20px;
+        column-gap: 10px;
+        width:60%;
     }
 
     .sort_link{
@@ -61,15 +62,22 @@
         font-size:14px;
 
     }
+    .results {
+        margin-left:3.5%;
+    }
 
     .results li {
         padding:8px;
+        padding-left:0px;
         border-width:1.5px;
         margin-left:5px;
         margin-right:5px;
         position: relative;
     }
 
+    .libraryview{
+        display:none;
+    }
 
 </style>
 {% endblock %}
