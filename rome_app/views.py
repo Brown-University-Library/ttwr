@@ -62,10 +62,14 @@ def index(request):
 
 def book_list(request):
     context = std_context(request.path, )
-    book_list = Book.search(query="genre_aat:books*")
-
+    collection = request.GET.get('filter', 'both')
     sort_by = request.GET.get('sort_by', 'title')
-  
+    buonanno = ""
+    if(collection == 'buonanno'):
+        buonanno = "+AND+(note:buonanno)"
+    elif(collection == 'library'):
+        buonanno = "+NOT+(note:buonanno)"
+    book_list=Book.search(query="genre_aat:book*"+buonanno)
     sort_by = Book.SORT_OPTIONS.get(sort_by, 'title_sort')
     book_list=sorted(book_list,key=methodcaller('sort_key', sort_by))
 
@@ -88,12 +92,8 @@ def book_list(request):
     context['num_results'] = len(book_list)
     context['results_per_page'] = BOOKS_PER_PAGE
 
-    context['filter_options'] = [("Buonnano", "buonnano"), ("Both", "both"), ("Non-Buonnano", "not")]
-#     chinea = ""
-#         if(collection == 'chinea'):
-#             chinea = "+AND+(primary_title:\"Chinea\"+OR+subtitle:\"Chinea\")"
-#         elif(collection == 'not'):
-#             chinea = "+NOT+primary_title:\"Chinea\"+NOT+subtitle:\"Chinea\""
+    context['filter_options'] = [("Buonanno", "buonanno"), ("Both", "both"), ("Library", "library")]
+    context['filter']=collection
     return render(request, 'rome_templates/book_list.html', context)
 
 
@@ -102,7 +102,6 @@ def book_detail(request, book_id):
     context = std_context(request.path)
     context['back_to_book_href'] = u'%s?page=%s' % (reverse('books'), book_list_page)
     context['book'] = Book.get_or_404(pid="%s:%s" % (PID_PREFIX, book_id))
-
     context['essays'] = context['book'].essays()
 
     context['breadcrumbs'][-1]['name'] = breadcrumb_detail(context)
@@ -214,6 +213,7 @@ def page_detail(request, page_id, book_id=None):
     context['next_pid'] = next_id
 #   #Grabbing the essays for page
     context['essays'] = this_page.essays()
+    print context['essays']
 
     context['breadcrumbs'][-1]['name'] = "Image " + page_json['rel_has_pagination_ssim'][0]
 

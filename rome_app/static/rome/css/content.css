@@ -176,7 +176,7 @@ a#prev_page {
     display: block;
     width: 30px;
     margin: 5px;
-    margin-left: 21%;
+    margin-left: 33%;
     float:left;
     font-size: 12pt;
 }
@@ -185,7 +185,7 @@ a#next_page {
     display: block;
     width: 30px;
     margin:5px;
-	margin-left:40.5%;
+	margin-left:50.3%;
     float:left;
     font-size: 12pt;
 
@@ -202,37 +202,21 @@ div#prevnext {
 
 div#image_span {
 	/*padding: 15px 0px 0px 30px;*/
-	margin-top: 10px;
-	width:30.5%;
+	width:50.5%;
 	margin-bottom:5px;
 	display:inline-block;
 	max-height:590px;
-	margin-left:28%;
+	padding-top:10px;
+	margin-left:3%;
 	position:fixed;
 }
-#bookinfo {
-	margin-top: 10px;
-	background-color:#F2D69E;
-	padding-top: 1px;
-	border-style:solid;
-	border-width:1px;
-	border-color:#D64833;
-	font-weight:300;
-	display:inline-block;
-	max-width:30.5%;
-	margin-bottom:15px;
-	vertical-align: top;
-	position:fixed;
-	margin-left:62%;
 
-
-}
 
 iframe {
 	margin: 0;
 	padding: 0;
 	border: none;
-	max-height:450px;
+	max-height:550px;
 	width:100%;
 
 }
@@ -280,17 +264,34 @@ ul.navigationlink{
 }
 
 #detailcontainer {
-	padding-top: 1px;
 	border-style:solid;
 	border-width:1px;
 	border-color: #D38A09;
 	margin-top:10px;
-	width: 26.5%;
+	max-width:30.5%;
 	height:auto;
 	background:#F2D69E;
-	overflow:auto;
+	overflow:hidden;
 	display:inline-block;
-	float:left;
+
+}
+
+#bookinfo {
+	background-color:#F2D69E;
+	padding-top: 1px;
+	border-style:solid;
+	border-width:1px;
+	border-color:#D64833;
+	font-weight:300;
+	display:inline-block;
+	/*max-width:30.5%;*/
+	margin-bottom:15px;
+
+
+	/*position:fixed;*/
+	/*margin-left:62%;*/
+
+
 }
 
 #metadata .annot_field b{
