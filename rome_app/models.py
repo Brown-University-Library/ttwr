@@ -241,7 +241,7 @@ class Page(BDRObject):
         return reverse('book_page_viewer', args=[self.parent.id, self.id])
 
     def essays(self):
-        return Essay.objects.filter(pids__contains = self.pid.split(":")[1])#self.pid[4:])
+        return Essay.objects.filter(pids__contains = self.pid.split(":")[1])
 
 
 class Print(Page):

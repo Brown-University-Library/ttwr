@@ -211,9 +211,7 @@ def page_detail(request, page_id, book_id=None):
     prev_id, next_id = _get_prev_next_ids(book_json, page_pid)
     context['prev_pid'] = prev_id
     context['next_pid'] = next_id
-#   #Grabbing the essays for page
     context['essays'] = this_page.essays()
-    print context['essays']
 
     context['breadcrumbs'][-1]['name'] = "Image " + page_json['rel_has_pagination_ssim'][0]
 
