@@ -367,6 +367,10 @@ def print_list(request):
                 authors+=author_list[i]+"; "
         current_print['authors']=authors
         current_print['id']=pid.split(":")[1]
+        json_uri = 'https://%s/api/items/%s/' % (BDR_SERVER, pid)
+        print_json = json.loads(requests.get(json_uri).text)
+        annotations=print_json['relations']['hasAnnotation']
+        current_print['has_annotations']=len(annotations)
         print_list.append(current_print)
 
 
@@ -572,6 +576,12 @@ def essay_list(request):
     c=RequestContext(request,context)
     essay_objs = Essay.objects.all()
     c['essay_objs'] = essay_objs
+    context['num_results']=len(essay_objs)
+    #temporary, until i figure out how to define an ESSAYS_PER_PAGE variable
+    context['results_per_page'] = len(essay_objs)
+    page = request.GET.get('page', 1)
+    context['curr_page'] = page
+
     return HttpResponse(template.render(c))
 
 
@@ -583,6 +593,8 @@ def essay_detail(request, essay_slug):
     template=loader.get_template('rome_templates/essay_detail.html')
     context=std_context(request.path, style="rome/css/essays.css")
     context['essay_text'] = essay.text
+    context['essay'] = essay
+
     c=RequestContext(request,context)
     return HttpResponse(template.render(c))
 

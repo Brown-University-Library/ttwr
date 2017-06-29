@@ -72,6 +72,13 @@ class Essay(models.Model):
     pids = models.CharField(max_length=254, null=True, blank=True, help_text='Comma-separated list of pids for books or prints associated with this essay.')
     people = models.ManyToManyField(Biography, null=True, blank=True, help_text='List of people associated with this essay.')
 
+    def preview(self):
+        return self.text[:254]
+
+    def pages(self):
+        return self.pids.split(",")
+
+
 
 class Genre(models.Model):
     text = models.CharField(max_length=50, unique=True)

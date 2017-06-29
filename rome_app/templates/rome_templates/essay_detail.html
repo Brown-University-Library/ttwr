@@ -22,6 +22,7 @@
         border-style:solid;
         border-width:1px;
         border-color:#D64833;
+        max-width:800px;
     }
 
     #page_body li {
@@ -62,7 +63,10 @@
 {% endblock %}
 
 {% block content %}
+
         {% block essay %}
+        {{essay.pages}}
+        {{<essay class="people"></essay>}}
         <div id="essay">
         {{essay_text|markdown}}
         </div>
