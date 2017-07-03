@@ -594,7 +594,16 @@ def essay_detail(request, essay_slug):
     context=std_context(request.path, style="rome/css/essays.css")
     context['essay_text'] = essay.text
     context['essay'] = essay
-
+    context['people'] = essay.people.all()
+    related_list=[]
+    for work in essay.related_works():
+        current_work={}
+        current_work['title']=work['primary_title']
+        current_work['creator']=work.get('creator')
+        current_work['genre']=work['genre']
+        current_work['pid']=work['pid']
+        related_list.append(current_work)
+    context['related_list']=related_list
     c=RequestContext(request,context)
     return HttpResponse(template.render(c))
 

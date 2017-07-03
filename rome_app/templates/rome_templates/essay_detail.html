@@ -15,8 +15,8 @@
 
     #essay{
         background:#F9EDD2;
-        margin-top:5%;
-        margin-left:3%;
+        margin-top:1%;
+        margin-left:3.7%;
         padding:5px;
         font-weight: 200;
         border-style:solid;
@@ -26,8 +26,6 @@
     }
 
     #page_body li {
-        padding:8px;
-        border-width:1.5px;
         margin-left:5px;
         margin-right:5px;
         position: relative;
@@ -36,11 +34,10 @@
         margin-top: 10px;
         margin-bottom: 10px;
         border-style: solid;
-        border-width: 1.5px;
+        border-width: 1px;
         border-color: #D38A09;
         min-width: 80%;
         max-width: 80%;
-        padding:10px;
         height:auto;
         display: inline-block;
         font-weight:300;
@@ -51,22 +48,110 @@
         padding-left:10px;
     }
 
+    #relatedworks {
+        display: inline-block;
+        background:#F2D69E;
+        border-style: solid;
+        border-width: 1px;
+        border-color: #D38A09;
+        padding:5px;
+    }
 
+    #relatedpeople {
+        display: inline-block;
+        max-width:50%;
+        background:#F2D69E;
+        border-style: solid;
+        border-width: 1px;
+        border-color: #D38A09;
+        padding:5px;
+        min-width:100px;
+    }
+
+    h3 {
+        color:#D64833;
+        font-weight:300;
+    }
+
+    #headright {
+        display:inline-block;
+        vertical-align: top;
+        margin:5px;
+    }
+
+    #headleft {
+        display:inline-block;
+        vertical-align: top;
+        float:left;
+        max-width:50%;
+        margin:5px;
+    }
+
+    #trail {
+        float:right;
+    }
+
+    .work {
+        border:1px solid;
+        border-color: #D38A09;
+        margin:3px;
+        padding:5px;
+    }
+
+    .work li {
+        list-style-type:none;
+    }
+
+
+    div.pagination_rome {
+        overflow:auto;
+        height:100%;
+    }
 
 </style>
 {% endblock %}
 
-{% block cookietrail %}
-    <ol>
-        <li><a href="../">Back to essays</a></li>
-    </ol>
+
+
+
+{% block pagination %}
+
+<span id="trail"><a href="../">Back to essays</a></span>
+
+
+{% if related_list %}
+<div id="headleft">
+<h3>Books and Prints</h3>
+<div id="relatedworks">
+{% for work in related_list %}
+    <div class="work">
+    <li><span style="color:#D64833;">Title:</span> {{work.title}}</li>
+    <li><span style="color:#D64833;">Author:</span> {{work.creator}}</li>
+        <li><span style="color:#D64833;">Genre:</span> {{work.genre}}</li>
+        <li>{{work.pid}}</li>
+    </div>
+{% endfor %}
+</div>
+    </div>
+{% endif %}
+
+{% if people %}
+<div id="headright">
+<h3>People</h3>
+<div id="relatedpeople">
+{% for person in people %}
+{{person}}
+{% endfor %}
+</div>
+</div>
+{% endif %}
+
 {% endblock %}
 
-{% block content %}
 
+{% block content %}
+<!--https://repository.library.brown.edu/viewers/image/thumbnail/bdr:381100/-->
         {% block essay %}
-        {{essay.pages}}
-        {{<essay class="people"></essay>}}
         <div id="essay">
         {{essay_text|markdown}}
         </div>
