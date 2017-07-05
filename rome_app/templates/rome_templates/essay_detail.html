@@ -111,6 +111,39 @@
 </style>
 {% endblock %}
 
+{% block javascript %}
+<script>
+    $(document).ready(function(){
+//        $("#description > p").css('height', 'auto');
+        var fullHeight =  $("#description > p").height();
+        $("#description > p").addClass('hide');
+        if (fullHeight < 200) {
+            $("button").hide();
+            $("#description > p").removeClass('hide');
+        }
+        // $("#description > p").height(reducedHeight);
+
+        $("button").click(function(){
+            if( $("#description > p").hasClass('hide')) {
+                $("#description > p").animate({height:fullHeight},200).removeClass('hide');
+                //$("#description > p").removeClass('hide');
+            } else {
+                //$("#description > p").addClass('hide');
+                $("#description > p").animate({height:50},200).addClass('hide');
+            }
+
+            //reducedHeight = $("#description > p").height();
+//            $("#description > p").css('height', 'auto');
+            //fullHeight =  $("#description > p").height();
+            // $("#description > p").animate({height: fullHeight}, 500).toggle();
+            // $("#description > p").slideToggle(500);
+            $("button").text(function(i, text){
+                return text === "Expand" ? "Close" : "Expand";
+            })
+        });
+    });
+</script>
+{% endblock javascript %}
 
 
 
