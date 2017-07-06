@@ -77,7 +77,7 @@ class Essay(models.Model):
 
     def related_works(self):
         num_prints_estimate = 6000
-        pidlist = ["pid:\"%s:%s\"" % (app_settings.PID_PREFIX, p) for p in pids.split(",")]
+        pidlist = ["pid:\"%s:%s\"" % (app_settings.PID_PREFIX, p) for p in self.pids.split(",")]
         query = "ir_collection_id:621+AND+display:BDR_PUBLIC+AND+(%s)&fl=primary_title,rel_has_pagination_ssim,rel_is_part_of_ssim,creator,pid,genre" % "+OR+".join(pidlist)
         query_uri = 'https://%s/api/search/?q=%s' % (app_settings.BDR_SERVER, query)
         r = requests.get(query_uri)
