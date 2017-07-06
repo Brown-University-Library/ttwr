@@ -88,6 +88,14 @@ class Essay(models.Model):
             annotations = response_data['response']['docs']
             return annotations
 
+    def _get_related_works_query(self):
+        if self.pids is None:
+            return None
+        else:
+            pidlist = ["pid:\"%s:%s\"" % (app_settings.PID_PREFIX, p) for p in self.pids.split(",")]
+            query = "ir_collection_id:621+AND+display:BDR_PUBLIC+AND+(%s)&fl=primary_title,rel_has_pagination_ssim,rel_is_part_of_ssim,creator,pid,genre" % "+OR+".join(pidlist)
+            return query
+
 class Genre(models.Model):
     text = models.CharField(max_length=50, unique=True)
     external_id = models.CharField(max_length=50, blank=True)
