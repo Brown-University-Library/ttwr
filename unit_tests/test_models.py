@@ -28,4 +28,4 @@ class TestEssay(TestCase):
        self.assertEqual(e._get_related_works_query(), query)
        #test essay with no pids
        e = models.Essay.objects.create(slug='test', author='Test Author', title='Test Title')
-       self.assertEqual(e._get_related_works_query(), ??)
+       self.assertEqual(e._get_related_works_query(), None)
