@@ -129,6 +129,11 @@ function add_low_toggle_handlers(){
 
     h2 {
         font-weight: 300;
+        margin-top:4px;
+    }
+
+    #bookinfo > ul {
+        margin-bottom:0px;
     }
 
 </style>
@@ -286,7 +291,7 @@ function add_low_toggle_handlers(){
 
 {% if essays %}
 <div id="essays">
-    <h2>Essays</h2>
+    <h2>Notes and Essays</h2>
     {% for essay in essays %}
     <div class="annotation">
         <h2>{{essay.title}}</h2>
