@@ -69,7 +69,7 @@ class Essay(models.Model):
     author = models.CharField(max_length=254)
     title = models.CharField(max_length=254)
     text = models.TextField()
-    pidlist = models.CharField(max_length=254, null=True, blank=True, help_text='Comma-separated list of pids for books or prints associated with this essay.')
+    pids = models.CharField(max_length=254, null=True, blank=True, help_text='Comma-separated list of pids for books or prints associated with this essay.')
     people = models.ManyToManyField(Biography, null=True, blank=True, help_text='List of people associated with this essay.')
 
     def preview(self):
@@ -77,8 +77,8 @@ class Essay(models.Model):
 
     def related_works(self):
         num_prints_estimate = 6000
-        self.pidlist = ["pid:\"%s:%s\"" % (app_settings.PID_PREFIX, p) for p in self.pidlist.split(",")]
-        query = "ir_collection_id:621+AND+display:BDR_PUBLIC+AND+(%s)&fl=primary_title,rel_has_pagination_ssim,rel_is_part_of_ssim,creator,pid,genre" % "+OR+".join(self.pidlist)
+        pidlist = ["pid:\"%s:%s\"" % (app_settings.PID_PREFIX, p) for p in self.pids.split(",")]
+        query = "ir_collection_id:621+AND+display:BDR_PUBLIC+AND+(%s)&fl=primary_title,rel_has_pagination_ssim,rel_is_part_of_ssim,creator,pid,genre" % "+OR+".join(pidlist)
         query_uri = 'https://%s/api/search/?q=%s' % (app_settings.BDR_SERVER, query)
         r = requests.get(query_uri)
         response_data = r.json() #automatically parses the content into json
