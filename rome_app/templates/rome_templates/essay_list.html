@@ -63,7 +63,6 @@
     {
         max_num={{num_results}};
         prints_per_page={{ results_per_page }};
-        console.log(prints_per_page);
         curr_page={% if curr_page %}{{ curr_page }}{% else %}1{% endif %};
         show_page(curr_page);
         show_sorting('{{ sorting }}');

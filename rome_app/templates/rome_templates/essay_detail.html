@@ -74,17 +74,21 @@
     }
 
     #headright {
+        position:relative;
         display:inline-block;
         vertical-align: top;
         margin:5px;
+
     }
 
     #headleft {
+        position:relative;
         display:inline-block;
         vertical-align: top;
         float:left;
         max-width:50%;
         margin:5px;
+
     }
 
     #trail {
@@ -104,8 +108,29 @@
 
 
     div.pagination_rome {
-        overflow:auto;
+        overflow:hidden;
         height:100%;
+        z-index:10;
+    }
+    #gradient{
+        position:relative;
+        height:100%;
+        width:100%;
+        -webkit-mask-image: -webkit-gradient(linear, left 10%, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)))
+    }
+
+    button{
+        width:25px;
+        height:25px;
+        font-size:25px;
+        background:#F9EDD2;
+        border-color:#D64833;
+        border-style:solid;
+        color:#D64833;
+        margin-top:-30px;
+        position:absolute;
+        margin-left:30px;
+        outline: none;
     }
 
 </style>
@@ -114,31 +139,25 @@
 {% block javascript %}
 <script>
     $(document).ready(function(){
-//        $("#description > p").css('height', 'auto');
-        var fullHeight =  $("#description > p").height();
-        $("#description > p").addClass('hide');
+        var fullHeight =  $("#page_head > div.pagination_rome").height();
+        $("#page_head > div.pagination_rome").addClass('hide');
+        $("#page_head > div.pagination_rome").css('height','50');
         if (fullHeight < 200) {
             $("button").hide();
-            $("#description > p").removeClass('hide');
+            $("#page_head > div.pagination_rome").removeClass('hide');
         }
-        // $("#description > p").height(reducedHeight);
 
         $("button").click(function(){
-            if( $("#description > p").hasClass('hide')) {
-                $("#description > p").animate({height:fullHeight},200).removeClass('hide');
-                //$("#description > p").removeClass('hide');
+            if( $("#page_head > div.pagination_rome").hasClass('hide')) {
+                $("#page_head > div.pagination_rome").animate({height:fullHeight},200).removeClass('hide');
+                $("#gradient").css("-webkit-mask-image", "-webkit-gradient(linear, left 10%, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,1)))");
             } else {
-                //$("#description > p").addClass('hide');
-                $("#description > p").animate({height:50},200).addClass('hide');
+                $("#page_head > div.pagination_rome").animate({height:50},200).addClass('hide');
+                $("#gradient").css("-webkit-mask-image", "-webkit-gradient(linear, left 10%, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)))");
             }
 
-            //reducedHeight = $("#description > p").height();
-//            $("#description > p").css('height', 'auto');
-            //fullHeight =  $("#description > p").height();
-            // $("#description > p").animate({height: fullHeight}, 500).toggle();
-            // $("#description > p").slideToggle(500);
             $("button").text(function(i, text){
-                return text === "Expand" ? "Close" : "Expand";
+                return text === "˅" ? "˄" : "˅";
             })
         });
     });
@@ -148,7 +167,7 @@
 
 
 {% block pagination %}
-
+<div id="gradient">
 <span id="trail"><a href="../">Back to essays</a></span>
 
 
@@ -178,11 +197,12 @@
 </div>
 </div>
 {% endif %}
-
+</div>
 {% endblock %}
 
 
 {% block content %}
+<button>˅</button>
 <!--https://repository.library.brown.edu/viewers/image/thumbnail/bdr:381100/-->
         {% block essay %}
         <div id="essay">
