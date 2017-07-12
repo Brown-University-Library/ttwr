@@ -1,10 +1,15 @@
 {% extends "rome_templates/base.html"%}
 {% load static from staticfiles %}
+{% load markdown_deux_tags %}
 
 {% block extra_head %}
 <style type="text/css">
     .pagination, #cookietrail {
         display: none;
+
+    }
+
+    .pagination_rome {
     }
 
     #page_body {
@@ -21,9 +26,10 @@
     .results {
         margin-left:2%;
         max-width: 100%;
-        column-count:4;
+        column-count:3;
         break-inside: avoid-column;
         background-color: #E8C577;
+        padding-left:35px;
     }
 
     .row {
@@ -34,6 +40,7 @@
         display: inline-block;
         font-weight: 300;
         font-size: 14px;
+        /*text overflow ellipses*/
     }
 
     .intro {
@@ -56,7 +63,6 @@
     {
         max_num={{num_results}};
         prints_per_page={{ results_per_page }};
-
         curr_page={% if curr_page %}{{ curr_page }}{% else %}1{% endif %};
         show_page(curr_page);
         show_sorting('{{ sorting }}');
@@ -84,6 +90,17 @@
 {% endfor %}
 <br />
 
+{% if sort_options %}
+<div class="sort_options">
+    Sort by:&nbsp;
+    {% for key,opt in sort_options.items %}
+    <a id="sort_{{opt}}"
+       class="sort_link{% if opt == sorting %} sort_active{% endif %}"
+       href="?sort_by={{opt}}{% if filter_options %}&filter={{ filter }}{% endif %}">{{key|title}}
+    </a>{% if not forloop.last %} | {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
 
 {% if filter_options %}
 <br/>
@@ -99,11 +116,12 @@
 {% endif %}
 {% endblock %}
 
+
 {% block content %}
 <ul class="results">
     {% for essay in essay_objs %}
     <li class="row"><span><a href="{% url 'specific_essay' essay.slug %}">{{essay.title}}</a></span>
-    <br> {{essay.slug}}</li>
+    <br> {{essay.slug}} <br> </li>
     {% endfor %}
 </ul>
 {% endblock %}

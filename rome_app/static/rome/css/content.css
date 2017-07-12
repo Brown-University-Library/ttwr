@@ -176,7 +176,8 @@ a#prev_page {
     display: block;
     width: 30px;
     margin: 5px;
-    margin-left: 1%;
+	margin-bottom:0px;
+    margin-left: 33%;
     float:left;
     font-size: 12pt;
 }
@@ -185,37 +186,42 @@ a#next_page {
     display: block;
     width: 30px;
     margin:5px;
-    margin-left: 60%;
+	margin-bottom:0px;
+	margin-left:50.3%;
     float:left;
     font-size: 12pt;
+
 }
 
 div#prevnext {
     margin: 5px;
+	margin-bottom:0px;
     height: 20px;
     text-align: center;
 	white-space: nowrap;
 	overflow:hidden;
-	clear:both;
-	width: 100%;
+	display:inline-block;
+	min-width:50%;
+	font-weight:300;
 }
 
 div#image_span {
-	float:right;
 	/*padding: 15px 0px 0px 30px;*/
 	width:100%;
 	margin-bottom:5px;
 	display:inline-block;
-	max-height:450px;
-	margin-left:auto;
-	margin-right:auto;
+	max-height:590px;
+	padding-top:10px;
+	margin-left:3%;
+	vertical-align: top;
 }
+
 
 iframe {
 	margin: 0;
 	padding: 0;
 	border: none;
-	max-height:450px;
+	max-height:550px;
 	width:100%;
 
 }
@@ -243,22 +249,9 @@ ul.navigationlink{
 	margin-top: 10px;
 }
 
-#bookinfo {
-	background-color:#F2D69E;
-	padding-top: 1px;
-	border-style:solid;
-	border-width:1px;
-	border-color:#D64833;
-	float:left;
-	font-weight:300;
-	display:inline-block;
-	max-width:80.5%;
-	margin-bottom:15px;
 
-}
 
 #metadata {
-	column-count:2;
 	display:inline-block;
 
 }
@@ -276,15 +269,44 @@ ul.navigationlink{
 }
 
 #detailcontainer {
-	padding-top: 1px;
 	border-style:solid;
 	border-width:1px;
 	border-color: #D38A09;
 	margin-top:10px;
-	width: 80.5%;
+	max-width:30.5%;
 	height:auto;
 	background:#F2D69E;
-	overflow:auto;
+	overflow:hidden;
+	display:inline-block;
+
+}
+
+#rightcontainer {
+	display:inline-block;
+	vertical-align: top;
+	width:57.5%;
+}
+
+
+#essays {
+	border-style:solid;
+	border-width:1px;
+	border-color: #D38A09;
+	margin-top:10px;
+	width:100%;
+	height:auto;
+	background:#F2D69E;
+	overflow:hidden;
+	display:inline-block;
+	margin-left:3%;
+}
+
+#bookinfo {
+	background-color:#F2D69E;
+	padding-top: 1px;
+	font-weight:300;
+	display:inline-block;
+
 }
 
 #metadata .annot_field b{

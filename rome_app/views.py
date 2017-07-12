@@ -62,10 +62,14 @@ def index(request):
 
 def book_list(request):
     context = std_context(request.path, )
-    book_list = Book.search(query="genre_aat:books*")
-
+    collection = request.GET.get('filter', 'both')
     sort_by = request.GET.get('sort_by', 'title')
-  
+    buonanno = ""
+    if(collection == 'buonanno'):
+        buonanno = "+AND+(note:buonanno)"
+    elif(collection == 'library'):
+        buonanno = "+NOT+(note:buonanno)"
+    book_list=Book.search(query="genre_aat:book*"+buonanno)
     sort_by = Book.SORT_OPTIONS.get(sort_by, 'title_sort')
     book_list=sorted(book_list,key=methodcaller('sort_key', sort_by))
 
@@ -88,6 +92,8 @@ def book_list(request):
     context['num_results'] = len(book_list)
     context['results_per_page'] = BOOKS_PER_PAGE
 
+    context['filter_options'] = [("Buonanno", "buonanno"), ("Both", "both"), ("Library", "library")]
+    context['filter']=collection
     return render(request, 'rome_templates/book_list.html', context)
 
 
@@ -96,7 +102,6 @@ def book_detail(request, book_id):
     context = std_context(request.path)
     context['back_to_book_href'] = u'%s?page=%s' % (reverse('books'), book_list_page)
     context['book'] = Book.get_or_404(pid="%s:%s" % (PID_PREFIX, book_id))
-
     context['essays'] = context['book'].essays()
 
     context['breadcrumbs'][-1]['name'] = breadcrumb_detail(context)
@@ -130,7 +135,6 @@ def page_detail(request, page_id, book_id=None):
 
     context['book_mode']=1
     context['print_mode']=0
-
     if book_list_page:
         context['back_to_book_href'] = u'%s?page=%s' % (reverse('books'), book_list_page)
         context['back_to_thumbnail_href'] = u'%s?book_list_page=%s' % (reverse('thumbnail_viewer', kwargs={'book_id':book_id}), book_list_page)
@@ -207,7 +211,6 @@ def page_detail(request, page_id, book_id=None):
     prev_id, next_id = _get_prev_next_ids(book_json, page_pid)
     context['prev_pid'] = prev_id
     context['next_pid'] = next_id
-
     context['essays'] = this_page.essays()
 
     context['breadcrumbs'][-1]['name'] = "Image " + page_json['rel_has_pagination_ssim'][0]
@@ -364,6 +367,10 @@ def print_list(request):
                 authors+=author_list[i]+"; "
         current_print['authors']=authors
         current_print['id']=pid.split(":")[1]
+        json_uri = 'https://%s/api/items/%s/' % (BDR_SERVER, pid)
+        print_json = json.loads(requests.get(json_uri).text)
+        annotations=print_json['relations']['hasAnnotation']
+        current_print['has_annotations']=len(annotations)
         print_list.append(current_print)
 
 
@@ -569,6 +576,12 @@ def essay_list(request):
     c=RequestContext(request,context)
     essay_objs = Essay.objects.all()
     c['essay_objs'] = essay_objs
+    context['num_results']=len(essay_objs)
+    #temporary, until i figure out how to define an ESSAYS_PER_PAGE variable
+    context['results_per_page'] = len(essay_objs)
+    page = request.GET.get('page', 1)
+    context['curr_page'] = page
+
     return HttpResponse(template.render(c))
 
 
@@ -580,6 +593,17 @@ def essay_detail(request, essay_slug):
     template=loader.get_template('rome_templates/essay_detail.html')
     context=std_context(request.path, style="rome/css/essays.css")
     context['essay_text'] = essay.text
+    context['essay'] = essay
+    context['people'] = essay.people.all()
+    related_list=[]
+    for work in essay.related_works():
+        current_work={}
+        current_work['title']=work['primary_title']
+        current_work['creator']=work.get('creator')
+        current_work['genre']=work['genre']
+        current_work['pid']=work['pid']
+        related_list.append(current_work)
+    context['related_list']=related_list
     c=RequestContext(request,context)
     return HttpResponse(template.render(c))
 

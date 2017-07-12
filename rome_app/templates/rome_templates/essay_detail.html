@@ -15,18 +15,17 @@
 
     #essay{
         background:#F9EDD2;
-        margin-top:5%;
-        margin-left:3%;
+        margin-top:1%;
+        margin-left:3.7%;
         padding:5px;
         font-weight: 200;
         border-style:solid;
         border-width:1px;
         border-color:#D64833;
+        max-width:800px;
     }
 
     #page_body li {
-        padding:8px;
-        border-width:1.5px;
         margin-left:5px;
         margin-right:5px;
         position: relative;
@@ -35,11 +34,10 @@
         margin-top: 10px;
         margin-bottom: 10px;
         border-style: solid;
-        border-width: 1.5px;
+        border-width: 1px;
         border-color: #D38A09;
         min-width: 80%;
         max-width: 80%;
-        padding:10px;
         height:auto;
         display: inline-block;
         font-weight:300;
@@ -50,18 +48,162 @@
         padding-left:10px;
     }
 
+    #relatedworks {
+        display: inline-block;
+        background:#F2D69E;
+        border-style: solid;
+        border-width: 1px;
+        border-color: #D38A09;
+        padding:5px;
+    }
 
+    #relatedpeople {
+        display: inline-block;
+        max-width:50%;
+        background:#F2D69E;
+        border-style: solid;
+        border-width: 1px;
+        border-color: #D38A09;
+        padding:5px;
+        min-width:100px;
+    }
+
+    h3 {
+        color:#D64833;
+        font-weight:300;
+    }
+
+    #headright {
+        position:relative;
+        display:inline-block;
+        vertical-align: top;
+        margin:5px;
+
+    }
+
+    #headleft {
+        position:relative;
+        display:inline-block;
+        vertical-align: top;
+        float:left;
+        max-width:50%;
+        margin:5px;
+
+    }
+
+    #trail {
+        float:right;
+    }
+
+    .work {
+        border:1px solid;
+        border-color: #c2b99d;
+        margin:3px;
+        padding:5px;
+    }
+
+    .work li {
+        list-style-type:none;
+    }
+
+
+    div.pagination_rome {
+        overflow:hidden;
+        height:100%;
+        z-index:10;
+    }
+    #gradient{
+        position:relative;
+        height:100%;
+        width:100%;
+        -webkit-mask-image: -webkit-gradient(linear, left 10%, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)))
+    }
+
+    button{
+        width:25px;
+        height:25px;
+        font-size:25px;
+        background:#F9EDD2;
+        border-color:#D64833;
+        border-style:solid;
+        color:#D64833;
+        margin-top:-30px;
+        position:absolute;
+        margin-left:30px;
+        outline: none;
+    }
 
 </style>
 {% endblock %}
 
-{% block cookietrail %}
-    <ol>
-        <li><a href="../">Back to essays</a></li>
-    </ol>
+{% block javascript %}
+<script>
+    $(document).ready(function(){
+        var fullHeight =  $("#page_head > div.pagination_rome").height();
+        $("#page_head > div.pagination_rome").addClass('hide');
+        $("#page_head > div.pagination_rome").css('height','50');
+        if (fullHeight < 200) {
+            $("button").hide();
+            $("#page_head > div.pagination_rome").removeClass('hide');
+        }
+
+        $("button").click(function(){
+            if( $("#page_head > div.pagination_rome").hasClass('hide')) {
+                $("#page_head > div.pagination_rome").animate({height:fullHeight},200).removeClass('hide');
+                $("#gradient").css("-webkit-mask-image", "-webkit-gradient(linear, left 10%, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,1)))");
+            } else {
+                $("#page_head > div.pagination_rome").animate({height:50},200).addClass('hide');
+                $("#gradient").css("-webkit-mask-image", "-webkit-gradient(linear, left 10%, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)))");
+            }
+
+            $("button").text(function(i, text){
+                return text === "˅" ? "˄" : "˅";
+            })
+        });
+    });
+</script>
+{% endblock javascript %}
+
+
+
+{% block pagination %}
+<div id="gradient">
+<span id="trail"><a href="../">Back to essays</a></span>
+
+
+{% if related_list %}
+<div id="headleft">
+<h3>Books and Prints</h3>
+<div id="relatedworks">
+{% for work in related_list %}
+    <div class="work">
+    <li><span style="color:#D64833;">Title:</span> {{work.title}}</li>
+    <li><span style="color:#D64833;">Author:</span> {{work.creator}}</li>
+        <li><span style="color:#D64833;">Genre:</span> {{work.genre}}</li>
+        <li>{{work.pid}}</li>
+    </div>
+{% endfor %}
+</div>
+    </div>
+{% endif %}
+
+{% if people %}
+<div id="headright">
+<h3>People</h3>
+<div id="relatedpeople">
+{% for person in people %}
+{{person}}
+{% endfor %}
+</div>
+</div>
+{% endif %}
+</div>
 {% endblock %}
 
+
 {% block content %}
+<button>˅</button>
+<!--https://repository.library.brown.edu/viewers/image/thumbnail/bdr:381100/-->
         {% block essay %}
         <div id="essay">
         {{essay_text|markdown}}
