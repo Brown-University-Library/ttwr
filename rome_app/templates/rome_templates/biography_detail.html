@@ -89,11 +89,73 @@
         padding-top:30px;
         padding-bottom:20px;
     }
+
+    #gradient{
+        position:relative;
+        height:100%;
+        width:100%;
+        -webkit-mask-image: -webkit-gradient(linear, left 10%, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)))
+    }
+
+    button{
+        width:25px;
+        height:25px;
+        font-size:25px;
+        background:#F9EDD2;
+        border-color:#D64833;
+        border-style:solid;
+        color:#D64833;
+        margin-top:-30px;
+        position:absolute;
+        margin-left:30px;
+        outline: none;
+    }
+
+    #roles{
+        font-weight:300;
+        margin-left:5px;
+        color:#A89B8A;
+    }
 </style>
 {% endblock %}
 
+{% block javascript %}
+<script>
+    $(document).ready(function(){
+        var fullHeight =  $("#page_head > div.pagination_rome").height();
+        $("#page_head > div.pagination_rome").addClass('hide');
+        $("#page_head > div.pagination_rome").css('height','50');
+        if (fullHeight < 200) {
+            $("button").hide();
+            $("#page_head > div.pagination_rome").removeClass('hide');
+            $("#page_head > div.pagination_rome").css('height','100%');
+            $("#page_head > div.pagination_rome").css("-webkit-mask-image", "-webkit-gradient(linear, left 10%, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,1)))");
+        }
+
+        $("button").click(function(){
+            if( $("#page_head > div.pagination_rome").hasClass('hide')) {
+                $("#page_head > div.pagination_rome").animate({height:fullHeight},200).removeClass('hide');
+                $("#gradient").css("-webkit-mask-image", "-webkit-gradient(linear, left 10%, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,1)))");
+            } else {
+                $("#page_head > div.pagination_rome").animate({height:50},200).addClass('hide');
+                $("#gradient").css("-webkit-mask-image", "-webkit-gradient(linear, left 10%, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)))");
+            }
+
+            $("button").text(function(i, text){
+                return text === "˅" ? "˄" : "˅";
+            })
+        });
+    });
+</script>
+{% endblock javascript %}
+{% block pagination %}
+<div id="gradient">
+    </div>
+{% endblock pagination %}
 {% block content %}
+<button>˅</button>
     <div id="author_info">
+        <div id="roles"><i>{{bio.roles}}</i></div>
         <p>{{bio.bio|markdown}}</p>
     </div>
     <div id="related_sources">

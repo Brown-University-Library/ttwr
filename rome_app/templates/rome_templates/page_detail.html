@@ -77,6 +77,36 @@ function add_low_toggle_handlers(){
 }
 
 </script>
+
+<script>
+    $(document).ready(function(){
+        var fullHeight =  $("#essays").height();
+        $("#essays").addClass('hide');
+        $("#essays").css('height','100');
+        if (fullHeight < 200) {
+            $("button").hide();
+            $("#essays").removeClass('hide');
+            $("#essays").removeClass('hide');
+            $("#essays").css('height','100%');
+            $("#gradient").css("-webkit-mask-image", "-webkit-gradient(linear, left 10%, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,1)))");
+        }
+
+        $("button").click(function(){
+            if( $("#essays").hasClass('hide')) {
+                $("#essays").animate({height:fullHeight},200).removeClass('hide');
+                $("#gradient").css("-webkit-mask-image", "-webkit-gradient(linear, left 10%, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,1)))");
+            } else {
+                $("#essays").animate({height:100},200).addClass('hide');
+                $("#gradient").css("-webkit-mask-image", "-webkit-gradient(linear, left 10%, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)))");
+            }
+
+            $("button").text(function(i, text){
+                return text === "˅" ? "˄" : "˅";
+            })
+        });
+    });
+</script>
+
 {% endblock javascript %}
 
 {% block extra_head %}
@@ -135,6 +165,27 @@ function add_low_toggle_handlers(){
     #bookinfo > ul {
         margin-bottom:0px;
     }
+    button{
+        width:25px;
+        height:25px;
+        font-size:25px;
+        background:#F9EDD2;
+        border-color:#D64833;
+        border-style:solid;
+        color:#D64833;
+        margin-top:0px;
+        position:absolute;
+        right:15%;
+        outline: none;
+        float:right;
+    }
+
+    #gradient{
+        position:relative;
+        height:100%;
+        width:100%;
+        -webkit-mask-image: -webkit-gradient(linear, left 10%, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)))
+    }
 
 </style>
 {% endblock %}
@@ -173,8 +224,6 @@ function add_low_toggle_handlers(){
 
     <div id = "bookinfo">
         {% if book_mode %}
-        <ul><span style="color:#D64833">Book Information</span>
-            <ul/>
             <br/>
         {% endif %}
         {% if print_mode %}
@@ -186,7 +235,7 @@ function add_low_toggle_handlers(){
         <ul>{{ authors }}</ul>
         {% if book_mode %}
             <br>
-            <a href="{{ studio_url }}" target="_blank"> [Library View]</a><span style="float:right;"><ul><b>Brown ID #: </b>{{ book_id }}  </ul></span>
+            <ul><a href="{{ studio_url }}" target="_blank"> [BDR: {{ book_id }}]</a></ul>
             {{page}}
             {% if "Vincent" in note %}
                 <br>
@@ -205,7 +254,6 @@ function add_low_toggle_handlers(){
     </div>
 
 
-    <h2>Annotations</h2>
         <div id="metadata">
 
             {% if user.is_authenticated %}
@@ -290,7 +338,10 @@ function add_low_toggle_handlers(){
 </div>
 
 {% if essays %}
+    <button>˅</button>
+
 <div id="essays">
+    <div id="gradient">
     <h2>Notes and Essays</h2>
     {% for essay in essays %}
     <div class="annotation">
@@ -300,6 +351,7 @@ function add_low_toggle_handlers(){
         <a href="{% url 'specific_essay' essay.slug %}" target ="_blank" class = "essaylinkpage" id = "essaylink{{essay.slug}}"><span class = "underlinewrap">Read More<span class = "underlinewrap" id="togspan{{essay.slug}}"></a>
     </div>
     {% endfor %}
+    </div>
 </div>
 {% endif %}
 </div>

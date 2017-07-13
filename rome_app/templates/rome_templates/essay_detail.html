@@ -106,6 +106,10 @@
         list-style-type:none;
     }
 
+    #relatedpeople li {
+        list-style-type:none;
+    }
+
 
     div.pagination_rome {
         overflow:hidden;
@@ -145,6 +149,8 @@
         if (fullHeight < 200) {
             $("button").hide();
             $("#page_head > div.pagination_rome").removeClass('hide');
+            $("#page_head > div.pagination_rome").css('height','100%');
+            $("#gradient").css("-webkit-mask-image", "-webkit-gradient(linear, left 10%, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,1)))");
         }
 
         $("button").click(function(){
@@ -177,7 +183,7 @@
 <div id="relatedworks">
 {% for work in related_list %}
     <div class="work">
-    <li><span style="color:#D64833;">Title:</span> {{work.title}}</li>
+    <li><span style="color:#D64833;">Title:</span> <a href="{% url 'thumbnail_viewer' work.pid%}">{{work.title}}</a></li>
     <li><span style="color:#D64833;">Author:</span> {{work.creator}}</li>
         <li><span style="color:#D64833;">Genre:</span> {{work.genre}}</li>
         <li>{{work.pid}}</li>
@@ -192,7 +198,9 @@
 <h3>People</h3>
 <div id="relatedpeople">
 {% for person in people %}
-{{person}}
+    <li>
+        <a href="{% url 'person_detail' person.trp_id%}">{{person}}</a>
+    </li>
 {% endfor %}
 </div>
 </div>
