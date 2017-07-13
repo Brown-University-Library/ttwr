@@ -602,6 +602,7 @@ def essay_detail(request, essay_slug):
         current_work['creator']=work.get('creator')
         current_work['genre']=work['genre']
         current_work['pid']=work['pid'].split(":")[-1]
+
         related_list.append(current_work)
     context['related_list']=related_list
     c=RequestContext(request,context)
