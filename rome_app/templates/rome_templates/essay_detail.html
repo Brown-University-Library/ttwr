@@ -88,6 +88,7 @@
         float:left;
         max-width:50%;
         margin:5px;
+        min-height:100%;
 
     }
 
@@ -175,7 +176,7 @@
         if (fullHeight < 200) {
             $("button").hide();
             $("#page_head > div.pagination_rome").removeClass('hide');
-            $("#page_head > div.pagination_rome").css('height','100%');
+            $("#page_head > div.pagination_rome").css('height',fullHeight);
             $("#gradient").css("-webkit-mask-image", "-webkit-gradient(linear, left 10%, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,1)))");
         }
 
