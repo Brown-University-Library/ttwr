@@ -193,6 +193,7 @@
 {% block pagination %}
 <div id="gradient">
     <div id="headleft">
+        {% if essays %}
     <h3>Essays</h3>
     <div id="essays">
         {% for essay in essays %}
@@ -202,6 +203,7 @@
         </div>
         {% endfor %}
     </div>
+        {% endif %}
     </div>
     </div>
 {% endblock pagination %}
