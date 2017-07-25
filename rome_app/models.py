@@ -35,7 +35,6 @@ class Biography(models.Model):
         return '%04d' % int(trp_id)
 
     def related_essays(self):
-        print self.essay_set.all()
         return self.essay_set.all()
 
     def _get_trp_id(self):
