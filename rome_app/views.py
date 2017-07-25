@@ -600,13 +600,13 @@ def essay_detail(request, essay_slug):
     related_list=[]
     for work in essay.related_works():
         current_work={}
-        current_work['title']=work['primary_title'].encode('ascii', 'ignore').decode('ascii')
+        current_work['title']=work['primary_title']
         if work.get('creator'):
-            current_work['creator']=work.get('creator')[0].encode('ascii', 'ignore').decode('ascii')
+            current_work['creator']=work.get('creator')[0]
         else:
             current_work['creator']="None"
         if 'genre' in work:
-            current_work['genre']=work['genre'][0].encode('ascii', 'ignore').decode('ascii')
+            current_work['genre']=work['genre'][0]
         current_work['pid']=work['pid'].split(":")[-1]
         related_list.append(current_work)
     context['related_list']=related_list
