@@ -29,6 +29,7 @@ def annotation_order(s):
 
 def first_word(s): return s.split(" ")[0] if s else ""
 
+
 def std_context(path, style="rome/css/content.css",title="The Theater that was Rome"):
     pathparts = path.split(u'/')
     url = reverse('index')
@@ -54,11 +55,13 @@ def std_context(path, style="rome/css/content.css",title="The Theater that was R
     context['breadcrumbs']=breadcrumbs
     return context
 
+
 def index(request):
     template=loader.get_template('rome_templates/index.html')
     context=std_context(request.path, style="rome/css/home.css")
     c=RequestContext(request,context)
     return HttpResponse(template.render(c))  
+
 
 def book_list(request):
     context = std_context(request.path, )
@@ -294,8 +297,19 @@ def get_annotation_detail(annotation):
     return curr_annot
 
 
+def _fetch_prints(chinea):
+    num_prints_estimate = 1000
+    url = 'https://%s/api/search/?q=ir_collection_id:621+AND+(genre_aat:"etchings (prints)"+OR+genre_aat:"engravings (prints)")%s&rows=%s' % (BDR_SERVER, chinea, num_prints_estimate)
+    r = requests.get(url)
+    if r.ok:
+        prints_json = json.loads(r.text)
+        return prints_json['response']['docs']
+    else:
+        logger.error('error fetching prints: %s - %s' % (r.status_code, r.content))
+        return []
+
+
 def print_list(request):
-    template=loader.get_template('rome_templates/print_list.html')
     page = request.GET.get('page', 1)
     sort_by = request.GET.get('sort_by', 'title')
     collection = request.GET.get('filter', 'both')
@@ -317,13 +331,8 @@ def print_list(request):
     context['filter_options'] = [("chinea", "chinea"), ("Both", "both"), ("Non-Chinea", "not")]
 
     # load json for all prints in the collection #
-    num_prints_estimate = 6000
-
-    url1 = 'https://%s/api/search/?q=ir_collection_id:621+AND+(genre_aat:"etchings (prints)"+OR+genre_aat:"engravings (prints)")%s&rows=%s' % (BDR_SERVER, chinea, num_prints_estimate)
-    prints_json = json.loads(requests.get(url1).text)
-    num_prints = prints_json['response']['numFound']
-    context['num_results'] = num_prints
-    prints_set = prints_json['response']['docs']
+    prints_set = _fetch_prints(chinea)
+    context['num_results'] = len(prints_set)
 
     print_list=[]
     for i in range(len(prints_set)): #create list of prints to load
@@ -392,8 +401,7 @@ def print_list(request):
     context['page_list']=page_list
     context['filter']=collection
 
-    c=RequestContext(request,context)
-    return HttpResponse(template.render(c))
+    return render(request, 'rome_templates/print_list.html', context)
 
 
 def print_detail(request, print_id):
