@@ -46,7 +46,7 @@ def std_context(path, style="rome/css/content.css",title="The Theater that was R
     context['common_style']="rome/css/common.css"
     context['usr_style']=style
     context['title']=title
-    context['cpydate']=2015
+    context['cpydate']=2017
     context['home_image']="rome/images/home.gif"
     context['brown_image']="rome/images/brown-logo.gif"
     context['stg_image']="rome/images/stg-logo.gif"
@@ -64,6 +64,7 @@ def book_list(request):
     context = std_context(request.path, )
     collection = request.GET.get('filter', 'both')
     sort_by = request.GET.get('sort_by', 'title')
+
     buonanno = ""
     if(collection == 'buonanno'):
         buonanno = "+AND+(note:buonanno)"
@@ -475,6 +476,7 @@ def biography_detail(request, trp_id):
     context['bio'] = bio
     context['trp_id'] = trp_id
     context['books'] = bio.books()
+    context['essays'] = bio.related_essays()
     prints_search = bio.prints()
 
     # Pages related to the person by annotation
@@ -599,11 +601,13 @@ def essay_detail(request, essay_slug):
     for work in essay.related_works():
         current_work={}
         current_work['title']=work['primary_title']
-        current_work['creator']=work.get('creator')
+        if work.get('creator'):
+            current_work['creator']=work.get('creator')[0]
+        else:
+            current_work['creator']="None"
         if 'genre' in work:
-            current_work['genre']=work['genre']
+            current_work['genre']=work['genre'][0]
         current_work['pid']=work['pid'].split(":")[-1]
-
         related_list.append(current_work)
     context['related_list']=related_list
     c=RequestContext(request,context)

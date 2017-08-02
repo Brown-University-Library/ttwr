@@ -52,6 +52,9 @@
         font-weight:300;
         max-width:900px;
         padding:15px;
+        border-style: solid;
+        border-width: 1px;
+        border-color: #D64833
     }
     li.page_list_item {
         display:inline-block;
@@ -116,6 +119,45 @@
         margin-left:5px;
         color:#A89B8A;
     }
+
+    #headleft {
+        /*position:relative;*/
+        /*display:inline-block;*/
+        /*vertical-align: top;*/
+        /*float:left;*/
+        max-width:50%;
+        margin:5px;
+        min-height:100%;
+
+    }
+
+    #essays{
+        display: inline-block;
+        background:#F2D69E;
+        border-style: solid;
+        border-width: 1px;
+        border-color: #D38A09;
+        padding:5px;
+        margin:0px;
+        max-width:50%;
+    }
+
+    .essay{
+        border:1px solid;
+        border-color: #c2b99d;
+        margin:3px;
+        padding:5px;
+    }
+
+    .essay li {
+        list-style-type:none;
+    }
+
+    #page_head li {
+        font-size:13px;
+        color:#553512;
+    }
+
 </style>
 {% endblock %}
 
@@ -129,7 +171,7 @@
             $("button").hide();
             $("#page_head > div.pagination_rome").removeClass('hide');
             $("#page_head > div.pagination_rome").css('height','100%');
-            $("#page_head > div.pagination_rome").css("-webkit-mask-image", "-webkit-gradient(linear, left 10%, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,1)))");
+            $("#gradient").css("-webkit-mask-image", "-webkit-gradient(linear, left 10%, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,1)))");
         }
 
         $("button").click(function(){
@@ -150,6 +192,19 @@
 {% endblock javascript %}
 {% block pagination %}
 <div id="gradient">
+    <div id="headleft">
+        {% if essays %}
+    <h3>Essays</h3>
+    <div id="essays">
+        {% for essay in essays %}
+        <div class="essay">
+            <li><span style="color:#D64833;">Title:</span> <a href="{% url 'specific_essay' essay.slug %}">{{essay.title}}</a> </li>
+            <li><span style="color:#D64833;">Author:</span> {{essay.author}}</li>
+        </div>
+        {% endfor %}
+    </div>
+        {% endif %}
+    </div>
     </div>
 {% endblock pagination %}
 {% block content %}

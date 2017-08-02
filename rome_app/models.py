@@ -34,6 +34,9 @@ class Biography(models.Model):
     def format_trp_id(self, trp_id):
         return '%04d' % int(trp_id)
 
+    def related_essays(self):
+        return self.essay_set.all()
+
     def _get_trp_id(self):
         ordered_bios = Biography.objects.order_by('-trp_id')
         if not ordered_bios:
