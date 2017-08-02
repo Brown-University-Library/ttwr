@@ -115,7 +115,9 @@ class Role(models.Model):
 
 
 # Non-Database Models
+
 class BDRObject(object):
+
     def __init__(self, data=None, parent=None):
         self.data= data or {}
         self.parent= parent
@@ -250,7 +252,6 @@ class Book(BDRObject):
         return Essay.objects.filter(pids__contains = self.pid[4:])
 
 
-# Page
 class Page(BDRObject):
     SORT_OPTIONS = OrderedDict([
         ( 'authors', 'authors' ),
@@ -274,6 +275,7 @@ class Print(Page):
 
     def url(self):
         return reverse('specific_print', args=[self.id,])
+
 
 def _get_annotations_for_person(bio_name):
     #Look up every annotation for a person
@@ -542,6 +544,7 @@ class Annotation(object):
         else:
             raise Exception('error putting update to %s: %s - %s' % (self._pid, r.status_code, r.content))
 
+
 def get_full_title_static(data):
     if 'primary_title' not in data:
         return 'No Title'
@@ -552,3 +555,4 @@ def get_full_title_static(data):
             return u'%s %s' % (data['nonsort'], data['primary_title'])
     else:
         return u'%s' % data['primary_title']
+
