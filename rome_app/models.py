@@ -271,60 +271,6 @@ class Page(BDRObject):
         return Essay.objects.filter(pids__contains = self.pid.split(":")[1])
 
 
-def _get_print_info_from_solr_doc(solr_doc, collection):
-    current_print={}
-    title = get_full_title_static(solr_doc)
-
-    current_print['in_chinea'] = 0
-    if collection == "chinea":
-        current_print['in_chinea'] = 1
-    elif (re.search(r"chinea", title, re.IGNORECASE) or (re.search(r"chinea", solr_doc[u'subtitle'][0], re.IGNORECASE) if u'subtitle' in solr_doc else False)):
-        current_print['in_chinea'] = 1
-
-    pid = solr_doc['pid']
-    current_print['id'] = pid.split(":")[1]
-    short_title = title
-    current_print['title_cut'] = 0
-    if len(title)>60:
-        short_title = title[0:57]+"..."
-        current_print['title_cut'] = 1
-    current_print['title'] = title
-    current_print['short_title'] = short_title
-
-    try:
-        current_print['date'] = solr_doc['dateCreated'][0:4]
-    except KeyError:
-        try:
-            current_print['date'] = solr_doc['dateIssued'][0:4]
-        except KeyError:
-            current_print['date'] = "n.d."
-
-    try:
-        author_list = solr_doc['contributor_display']
-    except KeyError:
-        try:
-            author_list = solr_doc['contributor']
-        except:
-            author_list = ["Unknown"];
-    authors=""
-    for i in range(len(author_list)):
-        if i == len(author_list)-1:
-            authors += author_list[i]
-        else:
-            authors += author_list[i] + "; "
-    current_print['authors'] = authors
-
-    current_print['studio_uri'] = 'https://%s/studio/item/%s/' % (app_settings.BDR_SERVER, pid)
-    current_print['thumbnail_url'] = reverse('specific_print', args=[current_print['id']])
-    current_print['det_img_viewer'] = 'https://%s/viewers/image/zoom/%s' % (app_settings.BDR_SERVER, pid)
-
-    json_uri = 'https://%s/api/items/%s/' % (app_settings.BDR_SERVER, pid)
-    r = requests.get(json_uri)
-    annotations = r.json()['relations']['hasAnnotation']
-    current_print['has_annotations'] = len(annotations)
-    return current_print
-
-
 class Print(Page):
     OBJECT_TYPE = "image-compound"
 
@@ -344,11 +290,65 @@ class Print(Page):
             prints_json = json.loads(r.text)
             prints_list = []
             for doc in prints_json['response']['docs']:
-                prints_list.append(_get_print_info_from_solr_doc(doc, collection))
+                prints_list.append(Print.get_print_info_from_solr_doc(doc, collection))
             return prints_list
         else:
             logger.error('error fetching prints: %s - %s' % (r.status_code, r.content))
             return []
+
+    @staticmethod
+    def get_print_info_from_solr_doc(solr_doc, collection):
+        current_print={}
+        title = get_full_title_static(solr_doc)
+
+        current_print['in_chinea'] = 0
+        if collection == "chinea":
+            current_print['in_chinea'] = 1
+        elif (re.search(r"chinea", title, re.IGNORECASE) or (re.search(r"chinea", solr_doc[u'subtitle'][0], re.IGNORECASE) if u'subtitle' in solr_doc else False)):
+            current_print['in_chinea'] = 1
+
+        pid = solr_doc['pid']
+        current_print['id'] = pid.split(":")[1]
+        short_title = title
+        current_print['title_cut'] = 0
+        if len(title)>60:
+            short_title = title[0:57]+"..."
+            current_print['title_cut'] = 1
+        current_print['title'] = title
+        current_print['short_title'] = short_title
+
+        try:
+            current_print['date'] = solr_doc['dateCreated'][0:4]
+        except KeyError:
+            try:
+                current_print['date'] = solr_doc['dateIssued'][0:4]
+            except KeyError:
+                current_print['date'] = "n.d."
+
+        try:
+            author_list = solr_doc['contributor_display']
+        except KeyError:
+            try:
+                author_list = solr_doc['contributor']
+            except:
+                author_list = ["Unknown"];
+        authors=""
+        for i in range(len(author_list)):
+            if i == len(author_list)-1:
+                authors += author_list[i]
+            else:
+                authors += author_list[i] + "; "
+        current_print['authors'] = authors
+
+        current_print['studio_uri'] = 'https://%s/studio/item/%s/' % (app_settings.BDR_SERVER, pid)
+        current_print['thumbnail_url'] = reverse('specific_print', args=[current_print['id']])
+        current_print['det_img_viewer'] = 'https://%s/viewers/image/zoom/%s' % (app_settings.BDR_SERVER, pid)
+
+        json_uri = 'https://%s/api/items/%s/' % (app_settings.BDR_SERVER, pid)
+        r = requests.get(json_uri)
+        annotations = r.json()['relations']['hasAnnotation']
+        current_print['has_annotations'] = len(annotations)
+        return current_print
 
     def url(self):
         return reverse('specific_print', args=[self.id,])
