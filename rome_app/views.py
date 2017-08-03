@@ -16,7 +16,7 @@ from operator import itemgetter, methodcaller
 import xml.etree.ElementTree as ET
 import re
 import requests
-from .models import Biography, Essay, Book, Annotation, Page, annotations_by_books_and_prints, Print
+from .models import Biography, Essay, Book, Annotation, Page, annotations_by_books_and_prints, Print, get_full_title_static
 from .app_settings import BDR_SERVER, BOOKS_PER_PAGE, PID_PREFIX
 
 logger = logging.getLogger('rome')
@@ -154,7 +154,7 @@ def page_detail(request, page_id, book_id=None):
         return HttpResponseServerError('Error retrieving content.')
     book_json = json.loads(r.text)
     context['short_title']=book_json['brief']['title']
-    context['title'] = _get_full_title(book_json)
+    context['title'] = get_full_title_static(book_json)
     try:
         author_list=book_json['contributor_display']
         authors=""
@@ -291,60 +291,6 @@ def get_annotation_detail(annotation):
     return curr_annot
 
 
-def _get_print_info_from_solr_doc(solr_doc, collection):
-    current_print={}
-    title = _get_full_title(solr_doc)
-
-    current_print['in_chinea'] = 0
-    if collection == "chinea":
-        current_print['in_chinea'] = 1
-    elif (re.search(r"chinea", title, re.IGNORECASE) or (re.search(r"chinea", solr_doc[u'subtitle'][0], re.IGNORECASE) if u'subtitle' in solr_doc else False)):
-        current_print['in_chinea'] = 1
-
-    pid = solr_doc['pid']
-    current_print['id'] = pid.split(":")[1]
-    short_title = title
-    current_print['title_cut'] = 0
-    if len(title)>60:
-        short_title = title[0:57]+"..."
-        current_print['title_cut'] = 1
-    current_print['title'] = title
-    current_print['short_title'] = short_title
-
-    try:
-        current_print['date'] = solr_doc['dateCreated'][0:4]
-    except KeyError:
-        try:
-            current_print['date'] = solr_doc['dateIssued'][0:4]
-        except KeyError:
-            current_print['date'] = "n.d."
-
-    try:
-        author_list = solr_doc['contributor_display']
-    except KeyError:
-        try:
-            author_list = solr_doc['contributor']
-        except:
-            author_list = ["Unknown"];
-    authors=""
-    for i in range(len(author_list)):
-        if i == len(author_list)-1:
-            authors += author_list[i]
-        else:
-            authors += author_list[i] + "; "
-    current_print['authors'] = authors
-
-    current_print['studio_uri'] = 'https://%s/studio/item/%s/' % (BDR_SERVER, pid)
-    current_print['thumbnail_url'] = reverse('specific_print', args=[current_print['id']])
-    current_print['det_img_viewer'] = 'https://%s/viewers/image/zoom/%s' % (BDR_SERVER, pid)
-
-    json_uri = 'https://%s/api/items/%s/' % (BDR_SERVER, pid)
-    r = requests.get(json_uri)
-    annotations = r.json()['relations']['hasAnnotation']
-    current_print['has_annotations'] = len(annotations)
-    return current_print
-
-
 def print_list(request):
     page = request.GET.get('page', 1)
     sort_by = request.GET.get('sort_by', 'title')
@@ -360,13 +306,8 @@ def print_list(request):
     context['sort_options'] = Page.SORT_OPTIONS
     context['filter_options'] = [("chinea", "chinea"), ("Both", "both"), ("Non-Chinea", "not")]
 
-    # load json for all prints in the collection #
-    prints_set = Print.find_prints(collection)
-    context['num_results'] = len(prints_set)
-
-    print_list=[]
-    for p in prints_set:
-        print_list.append(_get_print_info_from_solr_doc(p, collection))
+    print_list = Print.find_prints(collection)
+    context['num_results'] = len(print_list)
 
     print_list = sorted(print_list, key=itemgetter(sort_by,'authors','title','date'))
     for i, p in enumerate(print_list):
@@ -412,7 +353,7 @@ def print_detail(request, print_id):
     json_uri = 'https://%s/api/items/%s/' % (BDR_SERVER, print_pid)
     print_json = json.loads(requests.get(json_uri).text)
     context['short_title'] = print_json['brief']['title']
-    context['title'] = _get_full_title(print_json)
+    context['title'] = get_full_title_static(print_json)
     try:
         author_list=print_json['contributor_display']
         authors=""
@@ -476,18 +417,6 @@ def biography_detail(request, trp_id):
     context['prints'] = prints_merged
     context['breadcrumbs'][-1]['name'] = breadcrumb_detail(context, view="bio")
     return render(request, 'rome_templates/biography_detail.html', context)
-
-
-def _get_full_title(data):
-    if 'primary_title' not in data:
-        return 'No Title'
-    if 'nonsort' in data:
-        if data['nonsort'].endswith(u"'"):
-            return u'%s%s' % (data['nonsort'], data['primary_title'])
-        else:
-            return u'%s %s' % (data['nonsort'], data['primary_title'])
-    else:
-        return u'%s' % data['primary_title']
 
 
 def _get_book_pid_from_page_pid(page_pid):
