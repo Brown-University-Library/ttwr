@@ -16,7 +16,7 @@ from operator import itemgetter, methodcaller
 import xml.etree.ElementTree as ET
 import re
 import requests
-from .models import Biography, Essay, Book, Annotation, Page, annotations_by_books_and_prints
+from .models import Biography, Essay, Book, Annotation, Page, annotations_by_books_and_prints, Print
 from .app_settings import BDR_SERVER, BOOKS_PER_PAGE, PID_PREFIX
 
 logger = logging.getLogger('rome')
@@ -291,18 +291,6 @@ def get_annotation_detail(annotation):
     return curr_annot
 
 
-def _fetch_prints(chinea):
-    num_prints_estimate = 1000
-    url = 'https://%s/api/search/?q=ir_collection_id:621+AND+(genre_aat:"etchings (prints)"+OR+genre_aat:"engravings (prints)")%s&rows=%s' % (BDR_SERVER, chinea, num_prints_estimate)
-    r = requests.get(url)
-    if r.ok:
-        prints_json = json.loads(r.text)
-        return prints_json['response']['docs']
-    else:
-        logger.error('error fetching prints: %s - %s' % (r.status_code, r.content))
-        return []
-
-
 def _get_print_info_from_solr_doc(solr_doc, collection):
     current_print={}
     title = _get_full_title(solr_doc)
@@ -361,11 +349,6 @@ def print_list(request):
     page = request.GET.get('page', 1)
     sort_by = request.GET.get('sort_by', 'title')
     collection = request.GET.get('filter', 'both')
-    chinea = ""
-    if(collection == 'chinea'):
-        chinea = "+AND+(primary_title:\"Chinea\"+OR+subtitle:\"Chinea\")"
-    elif(collection == 'not'):
-        chinea = "+NOT+primary_title:\"Chinea\"+NOT+subtitle:\"Chinea\""
 
     context = std_context(request.path, title="The Theater that was Rome - Prints")
     context['page_documentation'] = 'Browse the prints in the Theater that was Rome collection. Click on "View" to explore a print further.'
@@ -378,17 +361,17 @@ def print_list(request):
     context['filter_options'] = [("chinea", "chinea"), ("Both", "both"), ("Non-Chinea", "not")]
 
     # load json for all prints in the collection #
-    prints_set = _fetch_prints(chinea)
+    prints_set = Print.find_prints(collection)
     context['num_results'] = len(prints_set)
 
     print_list=[]
-    for Print in prints_set:
-        print_list.append(_get_print_info_from_solr_doc(Print, collection))
+    for p in prints_set:
+        print_list.append(_get_print_info_from_solr_doc(p, collection))
 
     print_list = sorted(print_list, key=itemgetter(sort_by,'authors','title','date'))
-    for i, Print in enumerate(print_list):
-        Print['number_in_list'] = i+1
-    context['print_list']=print_list
+    for i, p in enumerate(print_list):
+        p['number_in_list'] = i+1
+    context['print_list'] = print_list
 
     prints_per_page=20
     context['results_per_page'] = prints_per_page
