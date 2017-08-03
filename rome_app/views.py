@@ -3,7 +3,6 @@ import logging
 
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError, HttpResponseRedirect
 from django.forms.formsets import formset_factory
-from django.template import Context, loader, RequestContext
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
 from django.core.urlresolvers import reverse, reverse_lazy
@@ -57,10 +56,8 @@ def std_context(path, style="rome/css/content.css",title="The Theater that was R
 
 
 def index(request):
-    template=loader.get_template('rome_templates/index.html')
     context=std_context(request.path, style="rome/css/home.css")
-    c=RequestContext(request,context)
-    return HttpResponse(template.render(c))  
+    return render(request, 'rome_templates/index.html', context)
 
 
 def book_list(request):
@@ -121,7 +118,6 @@ def book_detail(request, book_id):
 def page_detail(request, page_id, book_id=None):
     page_pid = u'%s:%s' % (PID_PREFIX, page_id)
     this_page = Page.get_or_404(page_pid)
-    template=loader.get_template('rome_templates/page_detail.html')
     context=std_context(request.path, )
     if book_id:
         book_pid = '%s:%s' % (PID_PREFIX, book_id)
@@ -218,9 +214,7 @@ def page_detail(request, page_id, book_id=None):
     context['essays'] = this_page.essays()
 
     context['breadcrumbs'][-1]['name'] = "Image " + page_json['rel_has_pagination_ssim'][0]
-
-    c=RequestContext(request,context)
-    return HttpResponse(template.render(c))
+    return render(request, 'rome_templates/page_detail.html', context)
 
 
 def get_annotation_detail(annotation):
@@ -406,7 +400,6 @@ def print_list(request):
 
 def print_detail(request, print_id):
     print_pid = '%s:%s' % (PID_PREFIX, print_id)
-    template = loader.get_template('rome_templates/page_detail.html')
     context = std_context(request.path, )
 
     if request.user.is_authenticated():
@@ -465,12 +458,10 @@ def print_detail(request, print_id):
         curr_annot = get_annotation_detail(annotation)
         context['annotations'].append(curr_annot)
 
-
     context['breadcrumbs'][-1]['name'] = breadcrumb_detail(context, view="print")
+    return render(request, 'rome_templates/page_detail.html', context)
 
-    c=RequestContext(request,context)
-    #raise 404 if a certain print does not exist
-    return HttpResponse(template.render(c))
+
 def biography_detail(request, trp_id):
     #view that pull bio information from the db, instead of the BDR
     trp_id = "%04d" % int(trp_id)
@@ -479,8 +470,6 @@ def biography_detail(request, trp_id):
     except ObjectDoesNotExist:
         return HttpResponseNotFound('Person %s Not Found' % trp_id)
     context = std_context(request.path, title="The Theater that was Rome - Biography")
-    context = RequestContext(request, context)
-    template = loader.get_template('rome_templates/biography_detail.html')
     context['bio'] = bio
     context['trp_id'] = trp_id
     context['books'] = bio.books()
@@ -496,7 +485,7 @@ def biography_detail(request, trp_id):
 
     context['prints'] = prints_merged
     context['breadcrumbs'][-1]['name'] = breadcrumb_detail(context, view="bio")
-    return HttpResponse(template.render(context))
+    return render(request, 'rome_templates/biography_detail.html', context)
 
 
 def _get_full_title(data):
@@ -523,11 +512,12 @@ def _get_book_pid_from_page_pid(page_pid):
         else:
             return None
 
+
 def filter_bios(fq, bio_list):
     return [b for b in bio_list if (b.roles and fq in b.roles)]
 
+
 def biography_list(request):
-    template = loader.get_template('rome_templates/biography_list.html')
     fq = request.GET.get('filter', 'all')
 
     bio_list = Biography.objects.all()
@@ -562,37 +552,30 @@ def biography_list(request):
     context['filter_options'].extend([(x, x) for x in sorted(role_set)])
     context['filter'] = fq
 
-    c=RequestContext(request, context)
-    return HttpResponse(template.render(c))
+    return render(request, 'rome_templates/biography_list.html', context)
 
 
 def about(request):
-    template=loader.get_template('rome_templates/about.html')
-    context=std_context(request.path, style="rome/css/links.css")
-    c=RequestContext(request,context)
-    return HttpResponse(template.render(c))
+    context = std_context(request.path, style="rome/css/links.css")
+    return render(request, 'rome_templates/about.html', context)
+
 
 def links(request):
-    template=loader.get_template('rome_templates/links.html')
     context=std_context(request.path, style="rome/css/links.css")
+    return render(request, 'rome_templates/links.html', context)
 
-    c=RequestContext(request,context)
-    return HttpResponse(template.render(c))
 
 def essay_list(request):
-    template=loader.get_template('rome_templates/essay_list.html')
     context=std_context(request.path, style="rome/css/links.css")
     context['page_documentation']='Listed below are essays on topics that relate to the Theater that was Rome collection of books and engravings. The majority of the essays were written by students in Brown University classes that used this material, and edited by Prof. Evelyn Lincoln.'
-    c=RequestContext(request,context)
     essay_objs = Essay.objects.all()
-    c['essay_objs'] = essay_objs
+    context['essay_objs'] = essay_objs
     context['num_results']=len(essay_objs)
     #temporary, until i figure out how to define an ESSAYS_PER_PAGE variable
     context['results_per_page'] = len(essay_objs)
     page = request.GET.get('page', 1)
     context['curr_page'] = page
-
-    return HttpResponse(template.render(c))
+    return render(request, 'rome_templates/essay_list.html', context)
 
 
 def essay_detail(request, essay_slug):
@@ -600,7 +583,6 @@ def essay_detail(request, essay_slug):
         essay = Essay.objects.get(slug=essay_slug)
     except ObjectDoesNotExist:
         return HttpResponseNotFound('Essay %s Not Found' % essay_slug)
-    template=loader.get_template('rome_templates/essay_detail.html')
     context=std_context(request.path, style="rome/css/essays.css")
     context['essay_text'] = essay.text
     context['essay'] = essay
@@ -618,8 +600,8 @@ def essay_detail(request, essay_slug):
         current_work['pid']=work['pid'].split(":")[-1]
         related_list.append(current_work)
     context['related_list']=related_list
-    c=RequestContext(request,context)
-    return HttpResponse(template.render(c))
+    return render(request, 'rome_templates/essay_detail.html', context)
+
 
 def breadcrumb_detail(context, view="book", title_words=4):
     if(view == "book"):
@@ -631,8 +613,8 @@ def breadcrumb_detail(context, view="book", title_words=4):
     if(view == "bio"):
         return context['bio'].name
 
+
 def search_page(request):
-    template = loader.get_template('rome_templates/search_page.html')
     context = std_context(request.path, style= "rome/css/links.css")
     searchquery = "https://%s/api/search/?q=ir_collection_id:621+object_type:annotation+display:BDR_PUBLIC" % (BDR_SERVER)
     thumbnailquery = "https://%s/viewers/image/thumbnail/" % (BDR_SERVER)
@@ -640,8 +622,8 @@ def search_page(request):
     context["searchquery"] = searchquery
     context["thumbnailquery"] = thumbnailquery
     context["pagequery"] = pagequery
-    c=RequestContext(request,context)
-    return HttpResponse(template.render(c))
+    return render(request, 'rome_templates/search_page.html', context)
+
 
 @login_required(login_url=reverse_lazy('rome_login'))
 def new_annotation(request, book_id, page_id):
