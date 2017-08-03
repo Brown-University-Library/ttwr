@@ -273,6 +273,25 @@ class Page(BDRObject):
 class Print(Page):
     OBJECT_TYPE = "image-compound"
 
+    @staticmethod
+    def find_prints(collection):
+        collection_query = ''
+        if(collection == 'chinea'):
+            collection_query = '+AND+(primary_title:"Chinea"+OR+subtitle:"Chinea")'
+        elif(collection == 'not'):
+            collection_query = '+NOT+primary_title:"Chinea"+NOT+subtitle:"Chinea"'
+
+        num_prints_estimate = 1000
+        query = 'ir_collection_id:621+AND+(genre_aat:"etchings (prints)"+OR+genre_aat:"engravings (prints)")%s' % collection_query
+        url = 'https://%s/api/search/?q=%s&rows=%s' % (app_settings.BDR_SERVER, query, num_prints_estimate)
+        r = requests.get(url)
+        if r.ok:
+            prints_json = json.loads(r.text)
+            return prints_json['response']['docs']
+        else:
+            logger.error('error fetching prints: %s - %s' % (r.status_code, r.content))
+            return []
+
     def url(self):
         return reverse('specific_print', args=[self.id,])
 
