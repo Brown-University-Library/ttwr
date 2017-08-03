@@ -303,6 +303,60 @@ def _fetch_prints(chinea):
         return []
 
 
+def _get_print_info_from_solr_doc(solr_doc, collection):
+    current_print={}
+    title = _get_full_title(solr_doc)
+
+    current_print['in_chinea'] = 0
+    if collection == "chinea":
+        current_print['in_chinea'] = 1
+    elif (re.search(r"chinea", title, re.IGNORECASE) or (re.search(r"chinea", solr_doc[u'subtitle'][0], re.IGNORECASE) if u'subtitle' in solr_doc else False)):
+        current_print['in_chinea'] = 1
+
+    pid = solr_doc['pid']
+    current_print['id'] = pid.split(":")[1]
+    short_title = title
+    current_print['title_cut'] = 0
+    if len(title)>60:
+        short_title = title[0:57]+"..."
+        current_print['title_cut'] = 1
+    current_print['title'] = title
+    current_print['short_title'] = short_title
+
+    try:
+        current_print['date'] = solr_doc['dateCreated'][0:4]
+    except KeyError:
+        try:
+            current_print['date'] = solr_doc['dateIssued'][0:4]
+        except KeyError:
+            current_print['date'] = "n.d."
+
+    try:
+        author_list = solr_doc['contributor_display']
+    except KeyError:
+        try:
+            author_list = solr_doc['contributor']
+        except:
+            author_list = ["Unknown"];
+    authors=""
+    for i in range(len(author_list)):
+        if i == len(author_list)-1:
+            authors += author_list[i]
+        else:
+            authors += author_list[i] + "; "
+    current_print['authors'] = authors
+
+    current_print['studio_uri'] = 'https://%s/studio/item/%s/' % (BDR_SERVER, pid)
+    current_print['thumbnail_url'] = reverse('specific_print', args=[current_print['id']])
+    current_print['det_img_viewer'] = 'https://%s/viewers/image/zoom/%s' % (BDR_SERVER, pid)
+
+    json_uri = 'https://%s/api/items/%s/' % (BDR_SERVER, pid)
+    r = requests.get(json_uri)
+    annotations = r.json()['relations']['hasAnnotation']
+    current_print['has_annotations'] = len(annotations)
+    return current_print
+
+
 def print_list(request):
     page = request.GET.get('page', 1)
     sort_by = request.GET.get('sort_by', 'title')
@@ -313,14 +367,13 @@ def print_list(request):
     elif(collection == 'not'):
         chinea = "+NOT+primary_title:\"Chinea\"+NOT+subtitle:\"Chinea\""
 
-    context=std_context(request.path, title="The Theater that was Rome - Prints")
-    context['page_documentation']='Browse the prints in the Theater that was Rome collection. Click on "View" to explore a print further.'
-    context['curr_page']=page
-    context['sorting']='authors'
-    if sort_by!='authors':
-        context['sorting']=sort_by
+    context = std_context(request.path, title="The Theater that was Rome - Prints")
+    context['page_documentation'] = 'Browse the prints in the Theater that was Rome collection. Click on "View" to explore a print further.'
+    context['curr_page'] = page
+    context['sorting'] = 'authors'
+    if sort_by != 'authors':
+        context['sorting'] = sort_by
 
-    # Use book object for now
     context['sort_options'] = Page.SORT_OPTIONS
     context['filter_options'] = [("chinea", "chinea"), ("Both", "both"), ("Non-Chinea", "not")]
 
@@ -329,71 +382,25 @@ def print_list(request):
     context['num_results'] = len(prints_set)
 
     print_list=[]
-    for i in range(len(prints_set)): #create list of prints to load
-        current_print={}
-        Print=prints_set[i]
-        title = _get_full_title(Print)
-        current_print['in_chinea']=0
-        if collection == "chinea":
-            current_print['in_chinea']=1
-        elif (re.search(r"chinea",title,re.IGNORECASE) or (re.search(r"chinea",Print[u'subtitle'][0],re.IGNORECASE) if u'subtitle' in Print else False)):
-            current_print['in_chinea']=1
-        pid=Print['pid']
-        current_print['studio_uri']= 'https://%s/studio/item/%s/' % (BDR_SERVER, pid)
-        short_title=title
-        current_print['title_cut']=0
-        current_print['thumbnail_url'] = reverse('specific_print', args=[pid.split(":")[1]])
-        if len(title)>60:
-            short_title=title[0:57]+"..."
-            current_print['title_cut']=1
-        current_print['title']=title
-        current_print['short_title']=short_title
-        current_print['det_img_viewer']='https://%s/viewers/image/zoom/%s' % (BDR_SERVER, pid)
-        try:
-            current_print['date']=Print['dateCreated'][0:4]
-        except:
-            try:
-                current_print['date']=Print['dateIssued'][0:4]
-            except:
-                current_print['date']="n.d."
-        try:
-            author_list=Print['contributor_display']
-        except KeyError:
-            try:
-                author_list=Print['contributor']
-            except:
-                author_list=["Unknown"];
-        authors=""
-        for i in range(len(author_list)):
-            if i==len(author_list)-1:
-                authors+=author_list[i]
-            else:
-                authors+=author_list[i]+"; "
-        current_print['authors']=authors
-        current_print['id']=pid.split(":")[1]
-        json_uri = 'https://%s/api/items/%s/' % (BDR_SERVER, pid)
-        print_json = json.loads(requests.get(json_uri).text)
-        annotations=print_json['relations']['hasAnnotation']
-        current_print['has_annotations']=len(annotations)
-        print_list.append(current_print)
+    for Print in prints_set:
+        print_list.append(_get_print_info_from_solr_doc(Print, collection))
 
-
-    print_list=sorted(print_list,key=itemgetter(sort_by,'authors','title','date'))
+    print_list = sorted(print_list, key=itemgetter(sort_by,'authors','title','date'))
     for i, Print in enumerate(print_list):
-        Print['number_in_list']=i+1
+        Print['number_in_list'] = i+1
     context['print_list']=print_list
 
     prints_per_page=20
-    context['results_per_page']=prints_per_page
-    PAGIN=Paginator(print_list,prints_per_page) #20 prints per page
-    context['num_pages']=PAGIN.num_pages
-    context['page_range']=PAGIN.page_range
-    context['PAGIN']=PAGIN
-    page_list=[]
+    context['results_per_page'] = prints_per_page
+    PAGIN = Paginator(print_list,prints_per_page) #20 prints per page
+    context['num_pages'] = PAGIN.num_pages
+    context['page_range'] = PAGIN.page_range
+    context['PAGIN'] = PAGIN
+    page_list = []
     for i in PAGIN.page_range:
         page_list.append(PAGIN.page(i).object_list)
-    context['page_list']=page_list
-    context['filter']=collection
+    context['page_list'] = page_list
+    context['filter'] = collection
 
     return render(request, 'rome_templates/print_list.html', context)
 
