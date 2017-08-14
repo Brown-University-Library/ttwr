@@ -517,6 +517,8 @@ def essay_detail(request, essay_slug):
         if 'genre' in work:
             current_work['genre']=work['genre'][0]
         current_work['pid']=work['pid'].split(":")[-1]
+        if 'rel_is_part_of_ssim' in work:
+            current_work['ppid'] = work['rel_is_part_of_ssim'][0].split(":")[-1]
         related_list.append(current_work)
     context['related_list']=related_list
     return render(request, 'rome_templates/essay_detail.html', context)
