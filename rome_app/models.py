@@ -68,7 +68,6 @@ class Biography(models.Model):
 
 
 class Essay(models.Model):
-
     slug = models.SlugField(max_length=254)
     author = models.CharField(max_length=254)
     title = models.CharField(max_length=254)

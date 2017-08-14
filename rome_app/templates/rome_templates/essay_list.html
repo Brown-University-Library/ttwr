@@ -25,23 +25,23 @@
 
     .results {
         margin-left:2%;
-        max-width: 800px;
-        column-count:3;
-        break-inside: avoid-column;
         background-color: #E8C577;
         padding-left:35px;
 
     }
 
     .row {
-        min-width: 200px;
-        max-width: 200px;
-        padding: 10px;
-        height: 150px;
+        min-width: 100%;
+        padding: 1px;
+        min-height: 100px;
         display: inline-block;
         font-weight: 300;
         font-size: 14px;
         /*text overflow ellipses*/
+    }
+
+    #page_body li {
+        padding-left:20px;
     }
 
     .intro {
@@ -121,7 +121,7 @@
 {% block content %}
 <ul class="results">
     {% for essay in essay_objs %}
-    <li class="row"><span><a href="{% url 'specific_essay' essay.slug %}">{{essay.title}}</a></span>
+    <li value class="row"><span><a href="{% url 'specific_essay' essay.slug %}">{{essay.title}}</a></span>
     <br> {{essay.slug}} <br> </li>
     {% endfor %}
 </ul>
