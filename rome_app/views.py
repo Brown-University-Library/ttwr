@@ -16,7 +16,7 @@ from operator import itemgetter, methodcaller
 import xml.etree.ElementTree as ET
 import re
 import requests
-from .models import Biography, Essay, Book, Annotation, Page, annotations_by_books_and_prints, Print, get_full_title_static
+from .models import Biography, Essay, Book, Annotation, Page, annotations_by_books_and_prints, Print, get_full_title_static, zoom_viewer_url
 from .app_settings import BDR_SERVER, BOOKS_PER_PAGE, PID_PREFIX
 
 logger = logging.getLogger('rome')
@@ -179,7 +179,7 @@ def page_detail(request, page_id, book_id=None):
             context['note'] = "From the personal collection of Vincent J. Buonanno"
     except (KeyError, TypeError):
         pass
-    context['det_img_view_src']="https://%s/viewers/image/zoom/%s" % (BDR_SERVER, page_pid)
+    context['det_img_view_src'] = this_page.embedded_viewer_src()
 
     context['breadcrumbs'][-2]['name'] = breadcrumb_detail(context, view="print")
 
@@ -341,7 +341,7 @@ def print_detail(request, print_id):
 
     context['book_mode'] = 0
     context['print_mode'] = 1
-    context['det_img_view_src'] = 'https://%s/viewers/image/zoom/%s/' % (BDR_SERVER, print_pid)
+    context['det_img_view_src'] = zoom_viewer_url(print_pid)
     if prints_list_page:
         context['back_to_print_href'] = u'%s?page=%s&collection=%s' % (reverse('prints'), prints_list_page, collection)
     else:
@@ -572,7 +572,7 @@ def new_annotation(request, book_id, page_id):
         person_formset = PersonFormSet(prefix='people')
         form = AnnotationForm()
 
-    image_link = 'https://%s/viewers/image/zoom/%s' % (BDR_SERVER, page_pid)
+    image_link = zoom_viewer_url(page_pid)
     return render(request, 'rome_templates/new_annotation.html',
             {'form': form, 'person_formset': person_formset, 'inscription_formset': inscription_formset, 'image_link': image_link})
 
@@ -605,7 +605,7 @@ def new_print_annotation(request, print_id):
         person_formset = PersonFormSet(prefix='people')
         form = AnnotationForm()
 
-    image_link = 'https://%s/viewers/image/zoom/%s' % (BDR_SERVER, print_pid)
+    image_link = zoom_viewer_url(print_pid)
     return render(request, 'rome_templates/new_annotation.html',
             {'form': form, 'person_formset': person_formset, 'inscription_formset': inscription_formset, 'image_link': image_link})
 
@@ -651,7 +651,7 @@ def edit_annotation_base(request, image_pid, anno_pid, redirect_url):
             logger.error(u'loading data to edit %s: %s' % (anno_pid, e))
             return HttpResponseServerError('Internal server error.')
 
-    image_link = 'https://%s/viewers/image/zoom/%s' % (BDR_SERVER, image_pid)
+    image_link = zoom_viewer_url(image_pid)
     context_data.update({'image_link': image_link})
     return render(request, 'rome_templates/new_annotation.html', context_data)
 
