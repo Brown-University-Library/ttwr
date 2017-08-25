@@ -142,10 +142,9 @@ def page_detail(request, page_id, book_id=None):
         context['back_to_book_href'] = reverse('books')
         context['back_to_thumbnail_href'] = reverse('thumbnail_viewer', kwargs={'book_id':book_id})
 
-    context['studio_url'] = 'https://%s/studio/item/%s/' % (BDR_SERVER, page_pid)
+    context['studio_url'] = this_page.studio_uri
     context['book_id'] = book_id
 
-    thumbnails=[]
     book_json_uri = u'https://%s/api/items/%s/' % (BDR_SERVER, book_pid)
     r = requests.get(book_json_uri, timeout=60)
     if not r.ok:
@@ -184,23 +183,16 @@ def page_detail(request, page_id, book_id=None):
     context['breadcrumbs'][-2]['name'] = breadcrumb_detail(context, view="print")
 
     # annotations/metadata
-    page_json_uri = u'https://%s/api/items/%s/' % (BDR_SERVER, page_pid)
-    r = requests.get(page_json_uri, timeout=60)
-    if not r.ok:
-        logger.error(u'TTWR - error retrieving url %s' % page_json_uri)
-        logger.error(u'TTWR - response: %s - %s' % (r.status_code, r.text))
-        return HttpResponseServerError('Error retrieving content.')
-    page_json = json.loads(r.text)
-    annotations=page_json['relations']['hasAnnotation']
-    context['has_annotations']=len(annotations)
-    context['annotation_uris']=[]
-    context['annotations']=[]
+    annotations = this_page.relations['hasAnnotation']
+    context['has_annotations'] = len(annotations)
+    context['annotation_uris'] = []
+    context['annotations'] = []
     for annotation in annotations:
         anno_id = annotation['pid'].split(':')[-1]
         if request.user.is_authenticated():
             link = reverse('edit_annotation', kwargs={'book_id': book_id, 'page_id': page_id, 'anno_id': anno_id})
             annotation['edit_link'] = link
-        annot_xml_uri='https://%s/services/getMods/%s/' % (BDR_SERVER, annotation['pid'])
+        annot_xml_uri = 'https://%s/services/getMods/%s/' % (BDR_SERVER, annotation['pid'])
         context['annotation_uris'].append(annot_xml_uri)
         annotation['xml_uri'] = annot_xml_uri
         curr_annot = get_annotation_detail(annotation)
@@ -213,7 +205,7 @@ def page_detail(request, page_id, book_id=None):
     context['next_pid'] = next_id
     context['essays'] = this_page.essays()
 
-    context['breadcrumbs'][-1]['name'] = "Image " + page_json['rel_has_pagination_ssim'][0]
+    context['breadcrumbs'][-1]['name'] = "Image " + this_page.rel_has_pagination_ssim[0]
     return render(request, 'rome_templates/page_detail.html', context)
 
 
