@@ -3,7 +3,7 @@ from collections import OrderedDict
 from django.http import Http404
 from django.db import models
 from django.core.urlresolvers import reverse
-from .  import app_settings
+from . import app_settings
 import requests
 import json
 from eulxml.xmlmap import load_xmlobject_from_string
@@ -115,6 +115,10 @@ class Role(models.Model):
 
 
 # Non-Database Models
+
+def zoom_viewer_url(pid):
+    return "https://%s/viewers/image/zoom/%s?first_child_only=1" % (app_settings.BDR_SERVER, pid)
+
 
 class BDRObject(object):
 
@@ -261,7 +265,7 @@ class Page(BDRObject):
     OBJECT_TYPE = "implicit-set" #TODO change to something more page appropriate
 
     def embedded_viewer_src(self):
-        return 'https://%s/viewers/image/zoom/%s/' % (app_settings.BDR_SERVER, self.pid)
+        return zoom_viewer_url(self.pid)
 
     def url(self):
         return reverse('book_page_viewer', args=[self.parent.id, self.id])
@@ -341,7 +345,7 @@ class Print(Page):
 
         current_print['studio_uri'] = 'https://%s/studio/item/%s/' % (app_settings.BDR_SERVER, pid)
         current_print['thumbnail_url'] = reverse('specific_print', args=[current_print['id']])
-        current_print['det_img_viewer'] = 'https://%s/viewers/image/zoom/%s' % (app_settings.BDR_SERVER, pid)
+        current_print['det_img_viewer'] = zoom_viewer_url(pid)
 
         json_uri = 'https://%s/api/items/%s/' % (app_settings.BDR_SERVER, pid)
         r = requests.get(json_uri)

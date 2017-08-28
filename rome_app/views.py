@@ -16,7 +16,7 @@ from operator import itemgetter, methodcaller
 import xml.etree.ElementTree as ET
 import re
 import requests
-from .models import Biography, Essay, Book, Annotation, Page, annotations_by_books_and_prints, Print, get_full_title_static
+from .models import Biography, Essay, Book, Annotation, Page, annotations_by_books_and_prints, Print, get_full_title_static, zoom_viewer_url
 from .app_settings import BDR_SERVER, BOOKS_PER_PAGE, PID_PREFIX
 
 logger = logging.getLogger('rome')
@@ -142,10 +142,9 @@ def page_detail(request, page_id, book_id=None):
         context['back_to_book_href'] = reverse('books')
         context['back_to_thumbnail_href'] = reverse('thumbnail_viewer', kwargs={'book_id':book_id})
 
-    context['studio_url'] = 'https://%s/studio/item/%s/' % (BDR_SERVER, page_pid)
+    context['studio_url'] = this_page.studio_uri
     context['book_id'] = book_id
 
-    thumbnails=[]
     book_json_uri = u'https://%s/api/items/%s/' % (BDR_SERVER, book_pid)
     r = requests.get(book_json_uri, timeout=60)
     if not r.ok:
@@ -179,28 +178,21 @@ def page_detail(request, page_id, book_id=None):
             context['note'] = "From the personal collection of Vincent J. Buonanno"
     except (KeyError, TypeError):
         pass
-    context['det_img_view_src']="https://%s/viewers/image/zoom/%s" % (BDR_SERVER, page_pid)
+    context['det_img_view_src'] = this_page.embedded_viewer_src()
 
     context['breadcrumbs'][-2]['name'] = breadcrumb_detail(context, view="print")
 
     # annotations/metadata
-    page_json_uri = u'https://%s/api/items/%s/' % (BDR_SERVER, page_pid)
-    r = requests.get(page_json_uri, timeout=60)
-    if not r.ok:
-        logger.error(u'TTWR - error retrieving url %s' % page_json_uri)
-        logger.error(u'TTWR - response: %s - %s' % (r.status_code, r.text))
-        return HttpResponseServerError('Error retrieving content.')
-    page_json = json.loads(r.text)
-    annotations=page_json['relations']['hasAnnotation']
-    context['has_annotations']=len(annotations)
-    context['annotation_uris']=[]
-    context['annotations']=[]
+    annotations = this_page.relations['hasAnnotation']
+    context['has_annotations'] = len(annotations)
+    context['annotation_uris'] = []
+    context['annotations'] = []
     for annotation in annotations:
         anno_id = annotation['pid'].split(':')[-1]
         if request.user.is_authenticated():
             link = reverse('edit_annotation', kwargs={'book_id': book_id, 'page_id': page_id, 'anno_id': anno_id})
             annotation['edit_link'] = link
-        annot_xml_uri='https://%s/services/getMods/%s/' % (BDR_SERVER, annotation['pid'])
+        annot_xml_uri = 'https://%s/services/getMods/%s/' % (BDR_SERVER, annotation['pid'])
         context['annotation_uris'].append(annot_xml_uri)
         annotation['xml_uri'] = annot_xml_uri
         curr_annot = get_annotation_detail(annotation)
@@ -213,7 +205,7 @@ def page_detail(request, page_id, book_id=None):
     context['next_pid'] = next_id
     context['essays'] = this_page.essays()
 
-    context['breadcrumbs'][-1]['name'] = "Image " + page_json['rel_has_pagination_ssim'][0]
+    context['breadcrumbs'][-1]['name'] = "Image " + this_page.rel_has_pagination_ssim[0]
     return render(request, 'rome_templates/page_detail.html', context)
 
 
@@ -341,7 +333,7 @@ def print_detail(request, print_id):
 
     context['book_mode'] = 0
     context['print_mode'] = 1
-    context['det_img_view_src'] = 'https://%s/viewers/image/zoom/%s/' % (BDR_SERVER, print_pid)
+    context['det_img_view_src'] = zoom_viewer_url(print_pid)
     if prints_list_page:
         context['back_to_print_href'] = u'%s?page=%s&collection=%s' % (reverse('prints'), prints_list_page, collection)
     else:
@@ -574,7 +566,7 @@ def new_annotation(request, book_id, page_id):
         person_formset = PersonFormSet(prefix='people')
         form = AnnotationForm()
 
-    image_link = 'https://%s/viewers/image/zoom/%s' % (BDR_SERVER, page_pid)
+    image_link = zoom_viewer_url(page_pid)
     return render(request, 'rome_templates/new_annotation.html',
             {'form': form, 'person_formset': person_formset, 'inscription_formset': inscription_formset, 'image_link': image_link})
 
@@ -607,7 +599,7 @@ def new_print_annotation(request, print_id):
         person_formset = PersonFormSet(prefix='people')
         form = AnnotationForm()
 
-    image_link = 'https://%s/viewers/image/zoom/%s' % (BDR_SERVER, print_pid)
+    image_link = zoom_viewer_url(print_pid)
     return render(request, 'rome_templates/new_annotation.html',
             {'form': form, 'person_formset': person_formset, 'inscription_formset': inscription_formset, 'image_link': image_link})
 
@@ -653,7 +645,7 @@ def edit_annotation_base(request, image_pid, anno_pid, redirect_url):
             logger.error(u'loading data to edit %s: %s' % (anno_pid, e))
             return HttpResponseServerError('Internal server error.')
 
-    image_link = 'https://%s/viewers/image/zoom/%s' % (BDR_SERVER, image_pid)
+    image_link = zoom_viewer_url(image_pid)
     context_data.update({'image_link': image_link})
     return render(request, 'rome_templates/new_annotation.html', context_data)
 
