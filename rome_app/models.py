@@ -74,6 +74,7 @@ class Essay(models.Model):
     text = models.TextField()
     pids = models.CharField(max_length=254, null=True, blank=True, help_text='Comma-separated list of pids for books or prints associated with this essay.')
     people = models.ManyToManyField(Biography, null=True, blank=True, help_text='List of people associated with this essay.')
+    is_note = models.BooleanField(default=False)
 
     def preview(self):
         return self.text[:254]

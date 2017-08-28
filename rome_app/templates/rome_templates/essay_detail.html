@@ -73,7 +73,7 @@
         font-weight:300;
     }
 
-    #headright {
+    .headright {
         position:relative;
         display:inline-block;
         vertical-align: top;
@@ -122,7 +122,7 @@
         position:relative;
         height:100%;
         width:100%;
-        -webkit-mask-image: -webkit-gradient(linear, left 10%, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)))
+        -webkit-mask-image: -webkit-gradient(linear, left 10%, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)));
     }
 
     button{
@@ -144,27 +144,46 @@
         height:100%;
         z-index:10;
     }
+
     #gradient{
         position:relative;
         height:100%;
         width:100%;
-        -webkit-mask-image: -webkit-gradient(linear, left 10%, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)))
+        -webkit-mask-image: -webkit-gradient(linear, left 10%, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)));
+    }
+
+    .img_container {
+        display:inline-block;
+        float: left;
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+    text-align: center;
+    }
+
+    .img_container img{
+            margin: 5px;
+    padding-left: 5px;
+    height: 150px;
     }
 </style>
 {% endblock %}
 
 {% block javascript %}
 <script>
-    $(document).ready(function(){
+    $(window).on("load", function() {
         var fullHeight =  $("#page_head > div.pagination_rome").height();
-        $("#page_head > div.pagination_rome").addClass('hide');
-        $("#page_head > div.pagination_rome").css('height','50');
+        console.log(fullHeight);
         if (fullHeight < 200) {
             $("button").hide();
             $("#page_head > div.pagination_rome").removeClass('hide');
             $("#page_head > div.pagination_rome").css('height',fullHeight);
             $("#gradient").css("-webkit-mask-image", "-webkit-gradient(linear, left 10%, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,1)))");
         }
+ 
+        $("#page_head > div.pagination_rome").addClass('hide');
+        $("#page_head > div.pagination_rome").css('height','50');
+        
+
 
         $("button").click(function(){
             if( $("#page_head > div.pagination_rome").hasClass('hide')) {
@@ -195,23 +214,25 @@
 <h3>Books and Prints</h3>
 <div id="relatedworks">
 {% for work in related_list %}
-    <div class="work">
+   
     {% if work.ppid %}
-    <li><span style="color:#D64833;">Title:</span> <a href="{% url 'book_page_viewer' work.ppid work.pid %}">{{work.title}}</a></li>
     {% else %}
+     <div class="work">
     <li><span style="color:#D64833;">Title:</span> <a href="{% url 'thumbnail_viewer' work.pid%}">{{work.title}}</a></li>
-    {% endif %}
-    <li><span style="color:#D64833;">Author:</span> {{work.creator}}</li>
+        <li><span style="color:#D64833;">Author:</span> {{work.creator}}</li>
         <li><span style="color:#D64833;">Genre:</span> {{work.genre}}</li>
         <li>{{work.pid}}</li>
-    </div>
+            </div>
+    {% endif %}
+
+
 {% endfor %}
 </div>
     </div>
 {% endif %}
 
 {% if people %}
-<div id="headright">
+<div class="headright">
 <h3>People</h3>
 <div id="relatedpeople">
 {% for person in people %}
@@ -222,7 +243,28 @@
 </div>
 </div>
 {% endif %}
+
+{% if related_list %}
+<div class="headright">
+<h3>Pages</h3>
+{% for work in related_list %}
+ {% if work.ppid %}
+ <div class="img_container">
+    <a href="{% url 'book_page_viewer' work.ppid work.pid %}"><img height="150px" src="https://repository.library.brown.edu/viewers/image/thumbnail/bdr:{{work.pid}}/"></a>
+    <br>
+    <span style="display:inline-block;color:#D64833;"></span> <a href="{% url 'book_page_viewer' work.ppid work.pid %}">{{work.pid}}</a>
+    </div>
+    {% else %}
+    {% endif %}
+{% endfor %}
 </div>
+{% endif %}
+
+
+</div>
+
+
+
 {% endblock %}
 
 
@@ -231,8 +273,9 @@
 <!--https://repository.library.brown.edu/viewers/image/thumbnail/bdr:381100/-->
 
         {% block essay %}
-        {{essay.creator}}
+
         <div id="essay">
+        <h3>Created by {{author}}</h3>
         {{essay_text|markdown}}
         </div>
         {% endblock %}

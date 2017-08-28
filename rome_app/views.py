@@ -100,8 +100,10 @@ def book_list(request):
 
 def book_detail(request, book_id):
     book_list_page = request.GET.get('book_list_page', 1)
+    book_list_sort_by = request.GET.get('book_list_sort_by', 'title')
     context = std_context(request.path)
-    context['back_to_book_href'] = u'%s?page=%s' % (reverse('books'), book_list_page)
+    #RIGHT HERE...
+    context['back_to_book_href'] = u'%ssort_by=%s?page=%s?' % (reverse('books'), book_list_sort_by, book_list_page)
     context['book'] = Book.get_or_404(pid="%s:%s" % (PID_PREFIX, book_id))
     context['essays'] = context['book'].essays()
 
@@ -497,6 +499,7 @@ def essay_detail(request, essay_slug):
     context=std_context(request.path, style="rome/css/essays.css")
     context['essay_text'] = essay.text
     context['essay'] = essay
+    context['author'] = essay.author
     context['people'] = essay.people.all()
     related_list=[]
     for work in essay.related_works():
@@ -513,6 +516,7 @@ def essay_detail(request, essay_slug):
             current_work['ppid'] = work['rel_is_part_of_ssim'][0].split(":")[-1]
         related_list.append(current_work)
     context['related_list']=related_list
+    context['breadcrumbs'][-1]['name'] = essay.title
     return render(request, 'rome_templates/essay_detail.html', context)
 
 
