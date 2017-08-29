@@ -64,10 +64,9 @@ def about(request):
     try:
         about = Static.objects.get(title="About")
     except ObjectDoesNotExist:
-        print "nope"
-        return HttpResponseNotFound('Static %s Not Found' % About)
-    context['about_text']=about.text
-    context['about_title']=about.title
+        return HttpResponseNotFound('Static %s Not Found' % 'About')
+    context['about_text'] = about.text
+    context['about_title'] = about.title
     return render(request, 'rome_templates/about.html', context)
 
 
