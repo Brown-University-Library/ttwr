@@ -99,6 +99,10 @@ class Essay(models.Model):
             query = "ir_collection_id:621+AND+display:BDR_PUBLIC+AND+(%s)&fl=primary_title,rel_has_pagination_ssim,rel_is_part_of_ssim,creator,pid,genre" % "+OR+".join(pidlist)
             return query
 
+class Static(models.Model):
+    title = models.CharField(max_length=254)
+    text = models.TextField()
+
 class Genre(models.Model):
     text = models.CharField(max_length=50, unique=True)
     external_id = models.CharField(max_length=50, blank=True)
