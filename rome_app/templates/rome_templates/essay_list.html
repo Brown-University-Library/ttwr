@@ -120,9 +120,20 @@
 
 {% block content %}
 <ul class="results">
+<h2>Essays</h2>
     {% for essay in essay_objs %}
+    {% if essay.is_note == False %}
     <li value class="row"><span><a href="{% url 'specific_essay' essay.slug %}">{{essay.title}}</a></span>
     <br> {{essay.slug}} <br> </li>
+    {% endif %}
+    {% endfor %}
+<h2>Notes</h2>
+      {% for essay in essay_objs %}
+    {% if essay.is_note == True %}
+    <li value class="row"><span><a href="{% url 'specific_essay' essay.slug %}">{{essay.title}}</a></span>
+    <br> {{essay.slug}} <br> </li>
+    {{preview}}
+    {% endif %}
     {% endfor %}
 </ul>
 {% endblock %}
