@@ -26,7 +26,7 @@ class EssayModelForm(forms.ModelForm):
 
     class Meta:
         model = Essay
-        fields = ('slug', 'author', 'title', 'text', 'pids', 'people')
+        fields = ('slug', 'author', 'title', 'text', 'pids', 'people', 'is_note')
 
 
 class PersonForm(forms.Form):

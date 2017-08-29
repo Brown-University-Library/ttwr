@@ -16,7 +16,7 @@ from operator import itemgetter, methodcaller
 import xml.etree.ElementTree as ET
 import re
 import requests
-from .models import Biography, Essay, Book, Annotation, Page, annotations_by_books_and_prints, Print, get_full_title_static, zoom_viewer_url
+from .models import Biography, Essay, Static, Book, Annotation, Page, annotations_by_books_and_prints, Print, get_full_title_static, zoom_viewer_url
 from .app_settings import BDR_SERVER, BOOKS_PER_PAGE, PID_PREFIX
 
 logger = logging.getLogger('rome')
@@ -58,6 +58,18 @@ def std_context(path, style="rome/css/content.css",title="The Theater that was R
 def index(request):
     context=std_context(request.path, style="rome/css/home.css")
     return render(request, 'rome_templates/index.html', context)
+
+def about(request):
+    context = std_context(request.path, style="rome/css/links.css")
+    try:
+        about = Static.objects.get(title="About")
+    except ObjectDoesNotExist:
+        print "nope"
+        return HttpResponseNotFound('Static %s Not Found' % About)
+    context['about_text']=about.text
+    context['about_title']=about.title
+    return render(request, 'rome_templates/about.html', context)
+
 
 
 def book_list(request):
@@ -102,7 +114,7 @@ def book_detail(request, book_id):
     book_list_page = request.GET.get('book_list_page', 1)
     book_list_sort_by = request.GET.get('book_list_sort_by', 'title')
     context = std_context(request.path)
-    #RIGHT HERE...
+    #Back to list HREF
     context['back_to_book_href'] = u'%ssort_by=%s?page=%s?' % (reverse('books'), book_list_sort_by, book_list_page)
     context['book'] = Book.get_or_404(pid="%s:%s" % (PID_PREFIX, book_id))
     context['essays'] = context['book'].essays()
@@ -466,11 +478,6 @@ def biography_list(request):
     context['filter'] = fq
 
     return render(request, 'rome_templates/biography_list.html', context)
-
-
-def about(request):
-    context = std_context(request.path, style="rome/css/links.css")
-    return render(request, 'rome_templates/about.html', context)
 
 
 def links(request):
