@@ -214,9 +214,7 @@
 <h3>Books and Prints</h3>
 <div id="relatedworks">
 {% for work in related_list %}
-   
-    {% if work.ppid %}
-    {% else %}
+    {% if not work.ppid %}
      <div class="work">
     <li><span style="color:#D64833;">Title:</span> <a href="{% url 'thumbnail_viewer' work.pid%}">{{work.title}}</a></li>
         <li><span style="color:#D64833;">Author:</span> {{work.creator}}</li>
@@ -260,13 +258,9 @@
 </div>
 {% endif %}
 
-
 </div>
 
-
-
 {% endblock %}
-
 
 {% block content %}
 <button>˅</button>
@@ -275,7 +269,7 @@
         {% block essay %}
 
         <div id="essay">
-        <h3>Created by {{author}}</h3>
+        <h3>Created by {{essay.author}}</h3>
         {{essay_text|markdown}}
         </div>
         {% endblock %}

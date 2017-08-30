@@ -505,7 +505,6 @@ def essay_detail(request, essay_slug):
     context=std_context(request.path, style="rome/css/essays.css")
     context['essay_text'] = essay.text
     context['essay'] = essay
-    context['author'] = essay.author
     context['people'] = essay.people.all()
     related_list=[]
     for work in essay.related_works():
