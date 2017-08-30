@@ -27,9 +27,10 @@ class TestStaticViews(TestCase):
         self.assertContains(response, 'The Theater that was Rome')
 
     def test_about(self):
+        models.Static.objects.create(title='About', text='### Red Sox lineup[^n1]\n\n[^n1]: footnote text')
         response = self.client.get(reverse('about'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, '<h2>About</h2>')
+        self.assertContains(response, 'Red Sox')
 
     def test_links(self):
         response = self.client.get(reverse('links'))
