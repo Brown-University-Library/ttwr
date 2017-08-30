@@ -30,7 +30,8 @@ class TestStaticViews(TestCase):
         models.Static.objects.create(title='About', text='### Red Sox lineup[^n1]\n\n[^n1]: footnote text')
         response = self.client.get(reverse('about'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Red Sox')
+        self.assertContains(response, 'Red Sox lineup') #make sure that basic markdown was rendered
+        self.assertContains(response, 'footnote text') #make sure that footnote was rendered
 
     def test_links(self):
         response = self.client.get(reverse('links'))
