@@ -494,6 +494,21 @@ def essay_list(request):
     context['results_per_page'] = len(essay_objs)
     page = request.GET.get('page', 1)
     context['curr_page'] = page
+    for essay in essay_objs:
+        essay.related_list=[]
+        for work in essay.related_works():
+            current_work={}
+            current_work['title']=work['primary_title']
+            if work.get('creator'):
+                current_work['creator']=work.get('creator')[0]
+            else:
+                current_work['creator']="None"
+            if 'genre' in work:
+                current_work['genre']=work['genre'][0]
+            current_work['pid']=work['pid'].split(":")[-1]
+            if 'rel_is_part_of_ssim' in work:
+                current_work['ppid'] = work['rel_is_part_of_ssim'][0].split(":")[-1]
+            essay.related_list.append(current_work)
     return render(request, 'rome_templates/essay_list.html', context)
 
 

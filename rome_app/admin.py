@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
 from .models import Biography, Essay, Genre, Role, Static
-from .forms import AdminBiographyForm, EssayModelForm
+from .forms import AdminBiographyForm, EssayModelForm, StaticModelForm
 
 class BiographyAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'trp_id', 'external_id']
     form = AdminBiographyForm
 
 class EssayAdmin(admin.ModelAdmin):
-    list_display = ['id', 'author', 'title', 'is_note']
+    list_display = ['is_note', 'id', 'author', 'title']
     form = EssayModelForm
 
 class GenreAdmin(admin.ModelAdmin):
@@ -19,6 +19,7 @@ class RoleAdmin(admin.ModelAdmin):
 
 class StaticAdmin(admin.ModelAdmin):
 	list_display = ['title', 'text']
+	form = StaticModelForm
 
 admin.site.register(Biography, BiographyAdmin)
 admin.site.register(Essay, EssayAdmin)
