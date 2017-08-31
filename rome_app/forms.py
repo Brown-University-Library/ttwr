@@ -2,7 +2,7 @@ from django import forms
 from pagedown.widgets import AdminPagedownWidget
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout
-from .models import Biography, Essay, Genre, Role
+from .models import Biography, Essay, Genre, Role, Static
 from .widgets import AddAnotherWidgetWrapper
 
 
@@ -26,7 +26,14 @@ class EssayModelForm(forms.ModelForm):
 
     class Meta:
         model = Essay
-        fields = ('slug', 'author', 'title', 'text', 'pids', 'people', 'is_note')
+        fields = ('is_note', 'slug', 'author', 'title', 'text', 'pids', 'people')
+
+class StaticModelForm(forms.ModelForm):
+    text = forms.CharField(widget=AdminPagedownWidget())
+
+    class Meta:
+        model = Static
+        fields = ('title', 'text')
 
 
 class PersonForm(forms.Form):

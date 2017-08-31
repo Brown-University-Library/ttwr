@@ -48,6 +48,10 @@
         display:none;
     }
 
+    .related{
+        float:right;
+    }
+
 
 </style>
 {% endblock %}
@@ -123,16 +127,23 @@
 <h2>Essays</h2>
     {% for essay in essay_objs %}
     {% if essay.is_note == False %}
-    <li value class="row"><span><a href="{% url 'specific_essay' essay.slug %}">{{essay.title}}</a></span>
-    <br> {{essay.slug}} <br> </li>
+    <li value class="row"><span>{{essay.author}}, <a href="{% url 'specific_essay' essay.slug %}">{{essay.title}}</a></span>
+    <br> {{essay.slug}} <br> 
+    {{essay.preview}}
+     <div class = "related">
+      {% if essay.related_list %}
+    {% endif %}
+    </div>
+
+    </li>
     {% endif %}
     {% endfor %}
 <h2>Notes</h2>
       {% for essay in essay_objs %}
     {% if essay.is_note == True %}
     <li value class="row"><span><a href="{% url 'specific_essay' essay.slug %}">{{essay.title}}</a></span>
-    <br> {{essay.slug}} <br> </li>
-    {{preview}}
+    <br> {{essay.slug}} <br>
+    {{essay.preview}} </li>
     {% endif %}
     {% endfor %}
 </ul>
