@@ -55,6 +55,9 @@
         right:0px;
     }
 
+    .preview {
+        max-width:70%;
+    }
 
 </style>
 {% endblock %}
@@ -132,7 +135,9 @@
     {% if essay.is_note == False %}
     <li value class="row"><span>{{essay.author}}, <a href="{% url 'specific_essay' essay.slug %}">{{essay.title}}</a></span>
     <br> {{essay.slug}} <br> 
+    <div class = "preview">
     {{essay.preview}}
+</div>
      <div class = "related">
       {% if essay.related_list %}
 
@@ -150,7 +155,9 @@
     {% if essay.is_note == True %}
     <li value class="row"><span><a href="{% url 'specific_essay' essay.slug %}">{{essay.title}}</a></span>
     <br> {{essay.slug}} <br>
+        <div class = "preview">
     {{essay.preview}} </li>
+    </div>
     {% endif %}
     {% endfor %}
 </ul>
