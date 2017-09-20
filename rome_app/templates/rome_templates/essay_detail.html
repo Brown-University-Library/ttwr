@@ -25,17 +25,17 @@
         max-width:800px;
     }
 
+    #essay ul {
+        list-style:circle inside;
+    }
     #page_body li {
         margin-left:5px;
         margin-right:5px;
         position: relative;
-        background: #F2D69E;
+
         padding: 5px;
-        margin-top: 10px;
-        margin-bottom: 10px;
-        border-style: solid;
-        border-width: 1px;
-        border-color: #D38A09;
+
+    
         min-width: 80%;
         max-width: 80%;
         height:auto;
@@ -70,6 +70,10 @@
 
     h3 {
         color:#D64833;
+        font-weight:300;
+    }
+
+    h2 {
         font-weight:300;
     }
 
@@ -165,6 +169,25 @@
     padding-left: 5px;
     height: 150px;
     }
+
+    #author {
+        margin-left:10px;
+    }
+
+    pre code {
+  background-color: #eee;
+  border: 1px solid #999;
+  display: block;
+  padding: 20px;
+  overflow-wrap: break-word;
+  overflow: scroll;
+
+}
+
+    pre > code {
+        overflow-wrap: break-word;
+        overflow: scroll;
+}
 </style>
 {% endblock %}
 
@@ -172,16 +195,17 @@
 <script>
     $(window).on("load", function() {
         var fullHeight =  $("#page_head > div.pagination_rome").height();
-        console.log(fullHeight);
+
         if (fullHeight < 200) {
             $("button").hide();
             $("#page_head > div.pagination_rome").removeClass('hide');
             $("#page_head > div.pagination_rome").css('height',fullHeight);
             $("#gradient").css("-webkit-mask-image", "-webkit-gradient(linear, left 10%, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,1)))");
         }
- 
+        else {
         $("#page_head > div.pagination_rome").addClass('hide');
         $("#page_head > div.pagination_rome").css('height','50');
+    }
         
 
 
@@ -269,7 +293,11 @@
         {% block essay %}
 
         <div id="essay">
-        <h3>Created by {{essay.author}}</h3>
+
+        <h2>{{essay.title}}</h2>
+        <div id="author">
+        <h3>{{essay.author}}</h3>
+    </div>
         {{essay_text|markdown}}
         </div>
         {% endblock %}
