@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 import os
 import sys 
-import warnings
+#import warnings
 
 
 if __name__ == '__main__':
-    warnings.filterwarnings('error')
+    #warnings.filterwarnings('error')
     import django
     from django.conf import settings
     from django.test.utils import get_runner

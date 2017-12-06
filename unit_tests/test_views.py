@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.test import TestCase, TransactionTestCase, Client
 import responses
-import responses_data
 from rome_app import views
 from rome_app import models
+from . import responses_data
 
 
 def get_auth_client():
@@ -228,7 +227,7 @@ class TestRecordCreatorViews(TestCase):
         self.assertEqual(len(models.Biography.objects.all()), 1)
         response = auth_client.post(reverse('new_biography'), {'name': u'Säm', 'trp_id': '1'})
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, u'opener.dismissAddAnotherPopup(window, "2", "Säm (0002)");')
+        self.assertContains(response, 'opener.dismissAddAnotherPopup(window, "2", "Säm (0002)");')
         self.assertEqual(len(models.Biography.objects.all()), 2)
         self.assertEqual(models.Biography.objects.all()[0].name, u'Säm')
 
