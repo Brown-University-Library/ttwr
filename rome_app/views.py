@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerEr
 from django.forms.formsets import formset_factory
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
-from django.core.urlresolvers import reverse, reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.shortcuts import render
 from django.template.response import SimpleTemplateResponse
 from django.utils.html import escape, escapejs
@@ -141,7 +141,7 @@ def page_detail(request, page_id, book_id=None):
         return HttpResponseNotFound('Book for this page not found.')
 
     context['user'] = request.user
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         context['create_annotation_link'] = reverse('new_annotation', kwargs={'book_id':book_id, 'page_id':page_id})
 
     book_list_page = request.GET.get('book_list_page', None)
@@ -202,7 +202,7 @@ def page_detail(request, page_id, book_id=None):
     context['annotations'] = []
     for annotation in annotations:
         anno_id = annotation['pid'].split(':')[-1]
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             link = reverse('edit_annotation', kwargs={'book_id': book_id, 'page_id': page_id, 'anno_id': anno_id})
             annotation['edit_link'] = link
         annot_xml_uri = 'https://%s/services/getMods/%s/' % (BDR_SERVER, annotation['pid'])
@@ -230,7 +230,7 @@ def get_annotation_detail(annotation):
     curr_annot['has_elements'] = {'inscriptions':0, 'annotations':0, 'annotator':0, 'origin':0, 'title':0, 'abstract':0, 'genre':0}
 
     root = ET.fromstring(requests.get(curr_annot['xml_uri']).content)
-    for title in root.getiterator('{http://www.loc.gov/mods/v3}titleInfo'):
+    for title in root.iter('{http://www.loc.gov/mods/v3}titleInfo'):
         if 'lang' in title.attrib and title.attrib['lang'] == 'en':
             curr_annot['title'] = title[0].text if title[0].text else ""
         else:
@@ -238,20 +238,20 @@ def get_annotation_detail(annotation):
         curr_annot['has_elements']['title'] += 1
 
     curr_annot['names']=[]
-    for name in root.getiterator('{http://www.loc.gov/mods/v3}name'):
+    for name in root.iter('{http://www.loc.gov/mods/v3}name'):
         curr_annot['names'].append({
             'name':name[0].text,
             'role':name[1][0].text.capitalize() if(name[1][0].text) else "Contributor",
             'trp_id': "%04d" % int(name.attrib['{http://www.w3.org/1999/xlink}href']),
         })
         curr_annot['names'] = sorted(curr_annot['names'], key=itemgetter("role", "name"))
-    for abstract in root.getiterator('{http://www.loc.gov/mods/v3}abstract'):
+    for abstract in root.iter('{http://www.loc.gov/mods/v3}abstract'):
         curr_annot['abstract']=abstract.text
         curr_annot['has_elements']['abstract']=1
-    for genre in root.getiterator('{http://www.loc.gov/mods/v3}genre'):
+    for genre in root.iter('{http://www.loc.gov/mods/v3}genre'):
         curr_annot['genre'] = genre.text
         curr_annot['has_elements']['genre']=1
-    for origin in root.getiterator('{http://www.loc.gov/mods/v3}originInfo'):
+    for origin in root.iter('{http://www.loc.gov/mods/v3}originInfo'):
         try:
             for impression in origin.getiterator("{http://www.loc.gov/mods/v3}dateOther"):
                 try:
@@ -266,7 +266,7 @@ def get_annotation_detail(annotation):
 
         except:
             pass
-    for impression in root.getiterator('{http://www.loc.gov/mods/v3}dateOther'):
+    for impression in root.iter('{http://www.loc.gov/mods/v3}dateOther'):
         try:
             if impression.attrib['type'] == "impression":
                 curr_annot['impression']=impression[0].text
@@ -276,7 +276,7 @@ def get_annotation_detail(annotation):
     curr_annot['inscriptions'] = []
     curr_annot['annotations'] = []
     curr_annot['annotator'] = ""
-    for note in root.getiterator('{http://www.loc.gov/mods/v3}note'):
+    for note in root.iter('{http://www.loc.gov/mods/v3}note'):
         curr_note={}
         for att in note.attrib:
             curr_note[att]=note.attrib[att]
@@ -338,7 +338,7 @@ def print_detail(request, print_id):
     print_pid = '%s:%s' % (PID_PREFIX, print_id)
     context = std_context(request.path, )
 
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         context['create_annotation_link'] = reverse('new_print_annotation', kwargs={'print_id':print_id})
 
     prints_list_page = request.GET.get('prints_list_page', None)
@@ -388,7 +388,7 @@ def print_detail(request, print_id):
         context['annotation_uris'].append(annot_xml_uri)
         annotation['xml_uri'] = annot_xml_uri
         anno_id = annotation['pid'].split(':')[-1]
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             link = reverse('edit_print_annotation', kwargs={'print_id': print_id, 'anno_id': anno_id})
             annotation['edit_link'] = link
         curr_annot = get_annotation_detail(annotation)

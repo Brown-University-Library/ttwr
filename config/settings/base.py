@@ -11,12 +11,27 @@ def get_env_setting(setting):
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
   'django.contrib.sessions.middleware.SessionMiddleware',
   'django.middleware.common.CommonMiddleware',
+  'django.middleware.csrf.CsrfViewMiddleware',
+  'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
   'django.contrib.auth.middleware.AuthenticationMiddleware',
   'django.contrib.messages.middleware.MessageMiddleware',
-)
+]
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.contrib.messages.context_processors.messages',
+                'django.contrib.auth.context_processors.auth',
+            ]
+        },
+    },
+]
 
 INSTALLED_APPS = (
     'django.contrib.auth',
