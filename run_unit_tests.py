@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 import os
 import sys 
-import django
-from django.conf import settings
-from django.test.utils import get_runner
+import warnings
 
 
 if __name__ == '__main__':
+    warnings.filterwarnings('error')
+    import django
+    from django.conf import settings
+    from django.test.utils import get_runner
     os.environ['DJANGO_SETTINGS_MODULE'] = 'config.settings.unit_tests'
     os.environ['ROME_BDR_SERVER'] ='localhost'
     os.environ['ROME_PID_PREFIX'] ='testsuite'
