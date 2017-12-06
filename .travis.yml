@@ -6,4 +6,4 @@ python:
 install: 
  - pip install -r requirements_dev.txt
 
-script: python run_unit_tests.py
+script: python -Werror run_unit_tests.py
