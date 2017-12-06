@@ -2,7 +2,7 @@ import re
 from collections import OrderedDict
 from django.http import Http404
 from django.db import models
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from . import app_settings
 import requests
 import json
@@ -73,7 +73,7 @@ class Essay(models.Model):
     title = models.CharField(max_length=254)
     text = models.TextField()
     pids = models.CharField(max_length=254, null=True, blank=True, help_text='Comma-separated list of pids for books or prints associated with this essay.')
-    people = models.ManyToManyField(Biography, null=True, blank=True, help_text='List of people associated with this essay.')
+    people = models.ManyToManyField(Biography, blank=True, help_text='List of people associated with this essay.')
     is_note = models.BooleanField(default=False)
 
     def preview(self):
