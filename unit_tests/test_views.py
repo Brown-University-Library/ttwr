@@ -87,6 +87,22 @@ class TestBooksViews(TestCase):
 
 class TestPrintsViews(TestCase):
 
+    @responses.activate
+    def test_print_detail(self):
+        responses.add(responses.GET, 'https://localhost/api/items/testsuite:123456/',
+                      body=responses_data.ITEM_API_DATA,
+                      status=200,
+                      content_type='application/json',
+                  )
+        responses.add(responses.GET, 'https://localhost/services/getMods/testsuite:234/',
+                      body=responses_data.SAMPLE_ANNOTATION_XML,
+                      status=200,
+                      content_type='text/xml',
+                  )
+        url = reverse('specific_print', kwargs={'print_id': '123456'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
     def test_new_print_annotation_auth(self):
         url = reverse('new_print_annotation', kwargs={'print_id': '230631'})
         response = self.client.get(url)
