@@ -45,9 +45,23 @@ ITEM_API_DATA = json.dumps(
         'title': ['test item']
     },
     'pid': 'testsuite:123456',
+    'rel_has_pagination_ssim': ['1'],
     'relations': {
         'hasAnnotation': [{'pid': 'testsuite:234'}]
-    }
+    },
+    'uri': 'https://localhost/studio/item/testsuite:123456/',
+}
+)
+
+BOOK_ITEM_API_DATA = json.dumps(
+{
+    'brief': {
+        'title': ['test book item']
+    },
+    'pid': 'testsuite:123',
+    'relations': {
+        'hasPart': [{'pid': 'testsuite:123456'}],
+    },
 }
 )
 
