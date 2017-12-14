@@ -99,7 +99,7 @@ class TestPageViews(TestCase):
                       status=200,
                       content_type='application/json',
                   )
-        responses.add(responses.GET, 'https://localhost/services/getMods/testsuite:234/',
+        responses.add(responses.GET, 'https://localhost/storage/testsuite:234/MODS/',
                       body=responses_data.SAMPLE_ANNOTATION_XML,
                       status=200,
                       content_type='text/xml',
@@ -118,7 +118,7 @@ class TestPrintsViews(TestCase):
                       status=200,
                       content_type='application/json',
                   )
-        responses.add(responses.GET, 'https://localhost/services/getMods/testsuite:234/',
+        responses.add(responses.GET, 'https://localhost/storage/testsuite:234/MODS/',
                       body=responses_data.SAMPLE_ANNOTATION_XML,
                       status=200,
                       content_type='text/xml',

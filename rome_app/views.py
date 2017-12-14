@@ -16,7 +16,19 @@ from operator import itemgetter, methodcaller
 import xml.etree.ElementTree as ET
 import re
 import requests
-from .models import Biography, Essay, Static, Book, Annotation, Page, annotations_by_books_and_prints, Print, get_full_title_static, zoom_viewer_url
+from .models import (
+        Biography,
+        Essay,
+        Static,
+        Book,
+        Annotation,
+        Page,
+        annotations_by_books_and_prints,
+        Print,
+        get_full_title_static,
+        zoom_viewer_url,
+        annotation_xml_url,
+    )
 from .app_settings import BDR_SERVER, BOOKS_PER_PAGE, PID_PREFIX
 
 logger = logging.getLogger('rome')
@@ -205,7 +217,7 @@ def page_detail(request, page_id, book_id=None):
         if request.user.is_authenticated:
             link = reverse('edit_annotation', kwargs={'book_id': book_id, 'page_id': page_id, 'anno_id': anno_id})
             annotation['edit_link'] = link
-        annot_xml_uri = 'https://%s/services/getMods/%s/' % (BDR_SERVER, annotation['pid'])
+        annot_xml_uri = annotation_xml_url(annotation['pid'])
         context['annotation_uris'].append(annot_xml_uri)
         annotation['xml_uri'] = annot_xml_uri
         curr_annot = get_annotation_detail(annotation)
@@ -384,7 +396,7 @@ def print_detail(request, print_id):
     context['annotation_uris']=[]
     context['annotations']=[]
     for annotation in annotations:
-        annot_xml_uri='https://%s/services/getMods/%s/' % (BDR_SERVER, annotation['pid'])
+        annot_xml_uri = annotation_xml_url(annotation['pid'])
         context['annotation_uris'].append(annot_xml_uri)
         annotation['xml_uri'] = annot_xml_uri
         anno_id = annotation['pid'].split(':')[-1]
