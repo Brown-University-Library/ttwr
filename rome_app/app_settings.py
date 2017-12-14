@@ -9,11 +9,10 @@ def get_env_setting(setting):
         raise ImproperlyConfigured(error_msg)
 
 BDR_SERVER = get_env_setting('ROME_BDR_SERVER')
-#BDR_SERVER = 'repository.library.brown.edu'
 PID_PREFIX = get_env_setting('ROME_PID_PREFIX')
 BOOKS_PER_PAGE = 20
 BDR_IDENTITY = get_env_setting('ROME_BDR_IDENTITY')
 BDR_AUTH_CODE = get_env_setting('ROME_BDR_AUTH_CODE')
 BDR_POST_URL = 'https://%s/api/items/v1/' % BDR_SERVER
 XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink'
-BDR_ANNOTATION_URL = 'https://%s/services/getMods/' % BDR_SERVER
+

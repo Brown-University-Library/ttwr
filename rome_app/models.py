@@ -122,7 +122,11 @@ class Role(models.Model):
 # Non-Database Models
 
 def zoom_viewer_url(pid):
-    return "https://%s/viewers/image/zoom/%s?first_child_only=1" % (app_settings.BDR_SERVER, pid)
+    return 'https://%s/viewers/image/zoom/%s?first_child_only=1' % (app_settings.BDR_SERVER, pid)
+
+
+def annotation_xml_url(pid):
+    return 'https://%s/storage/%s/MODS/' % (app_settings.BDR_SERVER, pid)
 
 
 class BDRObject(object):
@@ -454,7 +458,7 @@ class Annotation(object):
 
     @classmethod
     def from_pid(cls, pid):
-        r = requests.get('%s%s/' % (app_settings.BDR_ANNOTATION_URL, pid))
+        r = requests.get(annotation_xml_url(pid))
         if not r.ok:
             raise Exception('error retrieving annotation data for %s: %s - %s' % (pid, r.status_code, r.content))
         mods_obj = load_xmlobject_from_string(r.content, mods.Mods)

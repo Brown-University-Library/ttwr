@@ -85,7 +85,47 @@ class TestBooksViews(TestCase):
         self.assertEqual(next_id, '113')
 
 
+class TestPageViews(TestCase):
+
+    @responses.activate
+    def test_page_detail(self):
+        responses.add(responses.GET, 'https://localhost/api/items/testsuite:123/',
+                      body=responses_data.BOOK_ITEM_API_DATA,
+                      status=200,
+                      content_type='application/json',
+                  )
+        responses.add(responses.GET, 'https://localhost/api/items/testsuite:123456/',
+                      body=responses_data.ITEM_API_DATA,
+                      status=200,
+                      content_type='application/json',
+                  )
+        responses.add(responses.GET, 'https://localhost/storage/testsuite:234/MODS/',
+                      body=responses_data.SAMPLE_ANNOTATION_XML,
+                      status=200,
+                      content_type='text/xml',
+                  )
+        url = reverse('book_page_viewer', kwargs={'book_id': '123', 'page_id': '123456'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+
 class TestPrintsViews(TestCase):
+
+    @responses.activate
+    def test_print_detail(self):
+        responses.add(responses.GET, 'https://localhost/api/items/testsuite:123456/',
+                      body=responses_data.ITEM_API_DATA,
+                      status=200,
+                      content_type='application/json',
+                  )
+        responses.add(responses.GET, 'https://localhost/storage/testsuite:234/MODS/',
+                      body=responses_data.SAMPLE_ANNOTATION_XML,
+                      status=200,
+                      content_type='text/xml',
+                  )
+        url = reverse('specific_print', kwargs={'print_id': '123456'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
 
     def test_new_print_annotation_auth(self):
         url = reverse('new_print_annotation', kwargs={'print_id': '230631'})
