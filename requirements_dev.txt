@@ -1,2 +1,2 @@
 -r requirements.txt
-responses==0.5.1
+responses==0.8.1

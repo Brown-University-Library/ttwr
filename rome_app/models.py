@@ -63,7 +63,7 @@ class Biography(models.Model):
             self.trp_id = self._get_trp_id()
             super(Biography, self).save(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s (%s)' % (self.name, self.trp_id)
 
 
@@ -107,16 +107,16 @@ class Genre(models.Model):
     text = models.CharField(max_length=50, unique=True)
     external_id = models.CharField(max_length=50, blank=True)
 
-    def __unicode__(self):
-        return unicode(self.text)
+    def __str__(self):
+        return self.text
 
 
 class Role(models.Model):
     text = models.CharField(max_length=50, unique=True)
     external_id = models.CharField(max_length=50, blank=True)
 
-    def __unicode__(self):
-        return unicode(self.text)
+    def __str__(self):
+        return self.text
 
 
 # Non-Database Models

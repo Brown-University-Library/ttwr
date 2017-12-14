@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 import os
 import sys 
+import dotenv
 import django
 from django.conf import settings
 from django.test.utils import get_runner
 
 
 if __name__ == '__main__':
+    dotenv.read_dotenv()
     django.setup()
     TestRunner = get_runner(settings)
     test_runner = TestRunner()
