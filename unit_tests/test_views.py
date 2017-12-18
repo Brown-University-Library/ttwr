@@ -1,3 +1,4 @@
+import json
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.test import TestCase, TransactionTestCase, Client
@@ -57,6 +58,28 @@ class TestBooksViews(TestCase):
         response = auth_client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'value="Submit Annotation"')
+
+    @responses.activate
+    def test_new_annotation_post(self):
+        responses.add(responses.POST, 'https://localhost/api/items/v1/',
+                      body=json.dumps({'pid': 'testsuite:111111'}),
+                      status=200,
+                      content_type='application/json',
+                  )
+        auth_client = get_auth_client()
+        url = reverse('new_annotation', kwargs={'book_id': '1234', 'page_id': '5678'})
+        data = {
+                'title': 'tëst title',
+                'people-TOTAL_FORMS': '1',
+                'people-INITIAL_FORMS': '0',
+                'people-MAX_NUM_FORMS': '',
+                'inscriptions-TOTAL_FORMS': '1',
+                'inscriptions-INITIAL_FORMS': '0',
+                'inscriptions-MAX_NUM_FORMS': '',
+            }
+        response = auth_client.post(url, data)
+        redirect_url = reverse('book_page_viewer', kwargs={'book_id': '1234', 'page_id': '5678'})
+        self.assertRedirects(response, redirect_url, fetch_redirect_response=False)
 
     def test_edit_annotation_auth(self):
         url = reverse('edit_annotation', kwargs={'book_id': '224807', 'page_id': '224895', 'anno_id': '228874'})
