@@ -597,7 +597,7 @@ class Annotation(object):
         return self._mods_obj
 
     def to_mods_xml(self, update=False):
-        return self.get_mods_obj(update).serialize()
+        return self.get_mods_obj(update).serialize().decode('utf8')
 
     def _get_params(self):
         params = {'identity': app_settings.BDR_IDENTITY, 'authorization_code': app_settings.BDR_AUTH_CODE}

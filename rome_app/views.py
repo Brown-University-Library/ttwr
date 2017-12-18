@@ -598,7 +598,9 @@ def new_annotation(request, book_id, page_id):
                 logger.info('%s added annotation %s for %s' % (request.user.username, response['pid'], page_id))
                 return HttpResponseRedirect(reverse('book_page_viewer', kwargs={'book_id': book_id, 'page_id': page_id}))
             except Exception as e:
-                logger.error('%s' % e)
+                logger.error('error saving new annotation:')
+                import traceback
+                logger.error(traceback.format_exc())
                 return HttpResponseServerError('Internal server error. Check log.')
     else:
         inscription_formset = InscriptionFormSet(prefix='inscriptions')
