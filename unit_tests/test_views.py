@@ -47,6 +47,16 @@ class TestStaticViews(TestCase):
 
 class TestBooksViews(TestCase):
 
+    @responses.activate
+    def test_book_not_found(self):
+        responses.add(responses.GET, 'https://localhost/api/items/testsuite:123/',
+                      body='',
+                      status=404,
+                  )
+        url = reverse('thumbnail_viewer', kwargs={'book_id': '123'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
     def test_new_annotation_auth(self):
         url = reverse('new_annotation', kwargs={'book_id': '230605', 'page_id': '230606'})
         response = self.client.get(url)

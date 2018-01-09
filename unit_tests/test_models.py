@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-from django.test import TestCase
+from django.test import SimpleTestCase, TestCase
 from rome_app import models
 
 
@@ -29,3 +28,11 @@ class TestEssay(TestCase):
        #test essay with no pids
        e = models.Essay.objects.create(slug='test', author='Test Author', title='Test Title')
        self.assertEqual(e._get_related_works_query(), None)
+
+
+class TestBDRObject(SimpleTestCase):
+
+    def test_init(self):
+        b = models.BDRObject()
+        self.assertFalse(b)
+
