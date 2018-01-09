@@ -132,10 +132,10 @@ def annotation_xml_url(pid):
 class BDRObject(object):
 
     def __init__(self, data=None, parent=None):
-        self.data= data or {}
-        self.parent= parent
+        self.data = data or {}
+        self.parent = parent
 
-    def __nonzero__(self):
+    def __bool__(self):
         return bool(self.data)
 
     def __getattr__(self, name):
