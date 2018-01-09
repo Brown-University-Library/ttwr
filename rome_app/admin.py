@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.contrib import admin
 from .models import Biography, Essay, Genre, Role, Static
 from .forms import AdminBiographyForm, EssayModelForm, StaticModelForm

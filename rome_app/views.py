@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import logging
 
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError, HttpResponseRedirect
@@ -142,9 +141,9 @@ def book_detail(request, book_id):
 
 
 def page_detail(request, page_id, book_id=None):
-    page_pid = u'%s:%s' % (PID_PREFIX, page_id)
+    page_pid = '%s:%s' % (PID_PREFIX, page_id)
     this_page = Page.get_or_404(page_pid)
-    context=std_context(request.path, )
+    context = std_context(request.path, )
     if book_id:
         book_pid = '%s:%s' % (PID_PREFIX, book_id)
     else:
@@ -159,8 +158,8 @@ def page_detail(request, page_id, book_id=None):
 
     book_list_page = request.GET.get('book_list_page', None)
 
-    context['book_mode']=1
-    context['print_mode']=0
+    context['book_mode'] = 1
+    context['print_mode'] = 0
     if book_list_page:
         context['back_to_book_href'] = u'%s?page=%s' % (reverse('books'), book_list_page)
         context['back_to_thumbnail_href'] = u'%s?book_list_page=%s' % (reverse('thumbnail_viewer', kwargs={'book_id':book_id}), book_list_page)
@@ -171,33 +170,33 @@ def page_detail(request, page_id, book_id=None):
     context['studio_url'] = this_page.studio_uri
     context['book_id'] = book_id
 
-    book_json_uri = u'https://%s/api/items/%s/' % (BDR_SERVER, book_pid)
+    book_json_uri = 'https://%s/api/items/%s/' % (BDR_SERVER, book_pid)
     r = requests.get(book_json_uri, timeout=60)
     if not r.ok:
-        logger.error(u'TTWR - error retrieving url %s' % book_json_uri)
-        logger.error(u'TTWR - response: %s - %s' % (r.status_code, r.text))
+        logger.error('TTWR - error retrieving url %s' % book_json_uri)
+        logger.error('TTWR - response: %s - %s' % (r.status_code, r.text))
         return HttpResponseServerError('Error retrieving content.')
     book_json = json.loads(r.text)
     context['short_title']=book_json['brief']['title']
     context['title'] = get_full_title_static(book_json)
     try:
-        author_list=book_json['contributor_display']
-        authors=""
+        author_list = book_json['contributor_display']
+        authors = ""
         for i in range(len(author_list)):
-            if i==len(author_list)-1:
-                authors+=author_list[i]
+            if i == len(author_list)-1:
+                authors += author_list[i]
             else:
-                authors+=author_list[i]+"; "
-        context['authors']=authors
+                authors += author_list[i]+"; "
+        context['authors'] = authors
     except:
-        context['authors']="contributor(s) not available"
+        context['authors'] = "contributor(s) not available"
     try:
-        context['date']=book_json['dateIssued'][0:4]
+        context['date'] = book_json['dateIssued'][0:4]
     except:
         try:
-            context['date']=book_json['dateCreated'][0:4]
+            context['date'] = book_json['dateCreated'][0:4]
         except:
-            context['date']="n.d."
+            context['date'] = "n.d."
     context['note'] = "no note"
     try:
         if 'Buonanno' in book_json['note'][0]:

@@ -129,7 +129,7 @@ def annotation_xml_url(pid):
     return 'https://%s/storage/%s/MODS/' % (app_settings.BDR_SERVER, pid)
 
 
-class BDRObject(object):
+class BDRObject:
 
     def __init__(self, data=None, parent=None):
         self.data = data or {}
@@ -450,7 +450,7 @@ def annotations_by_books_and_prints(bio_name, group_amount=50):
     return (books,prints)
 
 
-class Annotation(object):
+class Annotation:
 
     @classmethod
     def from_form_data(cls, image_pid, annotator, form_data, person_formset_data, inscription_formset_data, pid=None):
@@ -639,9 +639,9 @@ def get_full_title_static(data):
         return 'No Title'
     if 'nonsort' in data:
         if data['nonsort'].endswith(u"'"):
-            return u'%s%s' % (data['nonsort'], data['primary_title'])
+            return '%s%s' % (data['nonsort'], data['primary_title'])
         else:
-            return u'%s %s' % (data['nonsort'], data['primary_title'])
+            return '%s %s' % (data['nonsort'], data['primary_title'])
     else:
-        return u'%s' % data['primary_title']
+        return '%s' % data['primary_title']
 

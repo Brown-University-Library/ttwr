@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.test import SimpleTestCase, TestCase
 from rome_app import models
 
