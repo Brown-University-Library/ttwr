@@ -127,8 +127,9 @@ def book_detail(request, book_id):
     context = std_context(request.path)
     #Back to list HREF
     context['back_to_book_href'] = u'%ssort_by=%s?page=%s?' % (reverse('books'), book_list_sort_by, book_list_page)
-    context['book'] = Book.get_or_404(pid="%s:%s" % (PID_PREFIX, book_id))
-    context['essays'] = context['book'].essays()
+    book = Book.get_or_404(pid="%s:%s" % (PID_PREFIX, book_id))
+    context['book'] = book
+    context['essays'] = book.essays()
 
     context['breadcrumbs'][-1]['name'] = breadcrumb_detail(context)
     grp = 20 # group size for lookups
