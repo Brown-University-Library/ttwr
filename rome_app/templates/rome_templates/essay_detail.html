@@ -82,6 +82,8 @@
         display:inline-block;
         vertical-align: top;
         margin:5px;
+        max-width:70%;
+        
 
     }
 
@@ -238,16 +240,12 @@
 <h3>Books and Prints</h3>
 <div id="relatedworks">
 {% for work in related_list %}
-    {% if not work.ppid %}
      <div class="work">
-    <li><span style="color:#D64833;">Title:</span> <a href="{% url 'thumbnail_viewer' work.pid%}">{{work.title}}</a></li>
+    <li><span style="color:#D64833;">Title:</span> <a href="{% url 'thumbnail_viewer' work.ppid%}">{{work.title}}</a></li>
         <li><span style="color:#D64833;">Author:</span> {{work.creator}}</li>
         <li><span style="color:#D64833;">Genre:</span> {{work.genre}}</li>
         <li>{{work.pid}}</li>
             </div>
-    {% endif %}
-
-
 {% endfor %}
 </div>
     </div>
@@ -269,7 +267,7 @@
 {% if related_list %}
 <div class="headright">
 <h3>Pages</h3>
-{% for work in related_list %}
+{% for work in thumbnails_list %}
  {% if work.ppid %}
  <div class="img_container">
     <a href="{% url 'book_page_viewer' work.ppid work.pid %}"><img height="150px" src="https://repository.library.brown.edu/viewers/image/thumbnail/bdr:{{work.pid}}/"></a>

@@ -494,7 +494,13 @@ def biography_list(request):
 
 
 def links(request):
-    context=std_context(request.path, style="rome/css/links.css")
+    context = std_context(request.path, style="rome/css/links.css")
+    try:
+        about = Static.objects.get(title="Links")
+    except ObjectDoesNotExist:
+        return HttpResponseNotFound('Static About Not Found')
+    context['link_text'] = about.text
+    context['link_title'] = about.title
     return render(request, 'rome_templates/links.html', context)
 
 
@@ -539,8 +545,10 @@ def essay_detail(request, essay_slug):
     context['essay'] = essay
     context['people'] = essay.people.all()
     related_list=[]
+    thumbnails_list=[]
     for work in essay.related_works():
         current_work={}
+        current_work['sibling'] = False
         current_work['title']=work['primary_title']
         if work.get('creator'):
             current_work['creator']=work.get('creator')[0]
@@ -551,9 +559,17 @@ def essay_detail(request, essay_slug):
         current_work['pid']=work['pid'].split(":")[-1]
         if 'rel_is_part_of_ssim' in work:
             current_work['ppid'] = work['rel_is_part_of_ssim'][0].split(":")[-1]
-        related_list.append(current_work)
+        for work in related_list:
+            if ('ppid' in work) and ('ppid' in current_work):
+                if current_work['ppid'] == work['ppid']:
+                    current_work['sibling'] = True
+        if (current_work['sibling'] == False):     
+            related_list.append(current_work)
+        thumbnails_list.append(current_work)
     context['related_list']=related_list
+    context['thumbnails_list']=thumbnails_list
     context['breadcrumbs'][-1]['name'] = essay.title
+    print(related_list)
     return render(request, 'rome_templates/essay_detail.html', context)
 
 
