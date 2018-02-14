@@ -1,6 +1,6 @@
 {% extends "rome_templates/base.html" %}
 {% load static from staticfiles %}
-
+{% load markdown_deux_tags %}
 {% block title %}{{title}}{% endblock %}
 {% block page_title %}The Theater that was Rome{% endblock %}
 
@@ -32,15 +32,10 @@
 {% block cookietrail %}
 {% endblock %}
 
-{% block content%}
+
+{% block content %}
 <div id="links">
-<h2>Links</h2>
-    <ul>
-        <li> <span><a target="_blank" href="http://formaurbis.stanford.edu">Stanford Digital Forma Urbis Romae Project</a></span></li>
-        <li><span><a target="_blank" href="http://speculum.lib.uchicago.edu/index.html">Speculum Romanae Magnificentiae</a></span></li>
-        <li><span><a target="_blank" href="http://www.iath.virginia.edu/rome/">Aquae Urbis Romae</a>The Waters of the City  of Rome</span></li>
-        <li><span><a target="_blank" href="http://nolli.uoregon.edu">Interactive Nolli Map</a></span></li>
-        <li><span><a href="http://vasi.uoregon.edu/index.htm" target="_blank">Imago Urbis: Giuseppe Vasi's Grand Tour of Rome</a></span></li>
-    </ul>
+    <h2>{{link_title}}</h2>
+    {{link_text|markdown}}
 </div>
-{% endblock %}
+{% endblock content %}
