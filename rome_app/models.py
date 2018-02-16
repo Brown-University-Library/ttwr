@@ -96,7 +96,7 @@ class Essay(models.Model):
             return None
         else:
             pidlist = ["pid:\"%s:%s\"" % (app_settings.PID_PREFIX, p) for p in self.pids.split(",")]
-            query = "ir_collection_id:621+AND+display:BDR_PUBLIC+AND+(%s)&fl=primary_title,rel_has_pagination_ssim,rel_is_part_of_ssim,creator,pid,genre,thumbnail" % "+OR+".join(pidlist)
+            query = "ir_collection_id:621+AND+display:BDR_PUBLIC+AND+(%s)&fl=primary_title,rel_has_pagination_ssim,rel_is_part_of_ssim,creator,pid,genre" % "+OR+".join(pidlist)
             return query
 
 class Static(models.Model):

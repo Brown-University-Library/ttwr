@@ -567,7 +567,6 @@ def essay_detail(request, essay_slug):
     context['related_list']=related_list
     context['thumbnails_list']=thumbnails_list
     context['breadcrumbs'][-1]['name'] = essay.title
-    print(related_list)
     return render(request, 'rome_templates/essay_detail.html', context)
 
 
