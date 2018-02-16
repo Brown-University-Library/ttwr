@@ -34,6 +34,7 @@ class TestStaticViews(TestCase):
         self.assertContains(response, '<p>footnote text') #make sure that footnote was rendered
 
     def test_links(self):
+        models.Static.objects.create(title='Links', text='### <h2>Links</h2>')
         response = self.client.get(reverse('links'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '<h2>Links</h2>')
