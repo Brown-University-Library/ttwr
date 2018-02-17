@@ -496,11 +496,11 @@ def biography_list(request):
 def links(request):
     context = std_context(request.path, style="rome/css/links.css")
     try:
-        about = Static.objects.get(title="Links")
+        links = Static.objects.get(title="Links")
     except ObjectDoesNotExist:
-        return HttpResponseNotFound('Static About Not Found')
-    context['link_text'] = about.text
-    context['link_title'] = about.title
+        return HttpResponseNotFound('Static Links Not Found')
+    context['link_text'] = links.text
+    context['link_title'] = links.title
     return render(request, 'rome_templates/links.html', context)
 
 
