@@ -34,10 +34,10 @@ class TestStaticViews(TestCase):
         self.assertContains(response, '<p>footnote text') #make sure that footnote was rendered
 
     def test_links(self):
-        models.Static.objects.create(title='Links', text='### <h2>Links</h2>')
+        models.Static.objects.create(title='Links', text='### Links')
         response = self.client.get(reverse('links'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, '<h2>Links</h2>')
+        self.assertContains(response, 'Links')
 
     def test_search(self):
         #this page is static as far as the django view is concerned
