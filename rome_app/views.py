@@ -512,8 +512,9 @@ def essay_list(request):
     context['results_per_page'] = len(essay_objs)
     page = request.GET.get('page', 1)
     context['curr_page'] = page
-    thumbs = []
+   
     for essay in essay_objs:
+        essay.thumbs = []
         essay.related_list=[]
         for work in essay.related_works():
             current_work={}
@@ -527,9 +528,9 @@ def essay_list(request):
             current_work['pid']=work['pid'].split(":")[-1]
             if 'rel_is_part_of_ssim' in work:
                 current_work['ppid'] = work['rel_is_part_of_ssim'][0].split(":")[-1]
-                thumbs.append([current_work['ppid'], current_work['pid']])
+                essay.thumbs.append([current_work['ppid'], current_work['pid']])
             essay.related_list.append(current_work)
-    context['thumbs'] = thumbs[:5]
+            essay.thumbs = essay.thumbs[:5]
     return render(request, 'rome_templates/essay_list.html', context)
 
 
