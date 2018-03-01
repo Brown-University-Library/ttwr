@@ -189,7 +189,13 @@ class TestEssaysViews(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, u'Rëd Sox')
 
+    @responses.activate
     def test_specific_essay(self):
+        responses.add(responses.GET, 'https://localhost/api/search',
+        body=json.dumps({'response': {'docs': [{'pid': 'testsuite:230605'}]}}),
+        status=200,
+        content_type='application/json'
+        )
         models.Essay.objects.create(slug='ger', author='David Ortiz', title=u'Rëd Sox', text='### Red Sox lineup[^n1]\n\n[^n1]: footnote text', pids="230605")
         response = self.client.get(reverse('specific_essay', kwargs={'essay_slug': 'ger'}))
         self.assertEqual(response.status_code, 200)
