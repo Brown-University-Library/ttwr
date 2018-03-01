@@ -191,7 +191,7 @@ class TestEssaysViews(TestCase):
 
     @responses.activate
     def test_specific_essay(self):
-        responses.add(responses.GET, 'https://localhost/api/search',
+        responses.add(responses.GET, 'https://localhost/api/search/',
         body=json.dumps({'response': {'docs': [{'pid': 'testsuite:230605'}]}}),
         status=200,
         content_type='application/json'
