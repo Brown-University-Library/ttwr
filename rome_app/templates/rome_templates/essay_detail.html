@@ -242,7 +242,7 @@
 <div id="relatedworks">
 {% for work in related_list %}
      <div class="work">
-    <li><span style="color:#D64833;">Title:</span> <a href="{% url 'thumbnail_viewer' work.ppid%}">{{work.title}}</a></li>
+    <li><span style="color:#D64833;">Title:</span> {% if work.ppid %}<a href="{% url 'thumbnail_viewer' work.ppid%}">{{work.title}}</a>{% else %}{{work.title}}{% endif %}</li>
         <li><span style="color:#D64833;">Author:</span> {{work.creator}}</li>
         <li><span style="color:#D64833;">Genre:</span> {{work.genre}}</li>
         <li>{{work.pid}}</li>
