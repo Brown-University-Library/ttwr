@@ -163,6 +163,24 @@ class TestPrintsViews(TestCase):
         self.assertEqual(response.status_code, 200)
 
     @responses.activate
+    def test_print_list_sort_by(self):
+        prints_search_url = 'https://localhost/api/search/?q=ir_collection_id:621+AND+(genre_aat:%22etchings%20(prints)%22+OR+genre_aat:%22engravings%20(prints)%22)&rows=1000'
+        responses.add(responses.GET, prints_search_url,
+                      body=responses_data.PRINTS,
+                      status=200,
+                      content_type='application/json',
+                      match_querystring=True,
+                  )
+        responses.add(responses.GET, 'https://localhost/api/items/testsuite:123456/',
+                      body=responses_data.ITEM_API_DATA,
+                      status=200,
+                      content_type='application/json',
+                  )
+        url = reverse('prints')
+        response = self.client.get(f'{url}?sort_by=authors_abcd')
+        self.assertEqual(response.status_code, 200)
+
+    @responses.activate
     def test_print_detail(self):
         responses.add(responses.GET, 'https://localhost/api/items/testsuite:123456/',
                       body=responses_data.ITEM_API_DATA,
