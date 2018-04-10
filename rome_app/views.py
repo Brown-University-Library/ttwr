@@ -311,6 +311,8 @@ def get_annotation_detail(annotation):
 def print_list(request):
     page = request.GET.get('page', 1)
     sort_by = request.GET.get('sort_by', 'title')
+    if sort_by not in ['title', 'authors', 'date']:
+        sort_by = 'title'
     collection = request.GET.get('filter', 'both')
 
     context = std_context(request.path, title="The Theater that was Rome - Prints")
