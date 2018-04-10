@@ -37,6 +37,15 @@ PAGES = json.dumps(
 }
 )
 
+PRINTS = json.dumps(
+{
+    'response': {
+        'numFound': 1,
+        'docs': [{'pid': 'testsuite:123456'}],
+    }
+}
+)
+
 ITEM_API_DATA = json.dumps(
 {
     'brief': {
