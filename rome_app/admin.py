@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Biography, Essay, Genre, Role, Static
+from .models import Biography, Essay, Genre, Role, Static, Shop
 from .forms import AdminBiographyForm, EssayModelForm, StaticModelForm
 
 class BiographyAdmin(admin.ModelAdmin):
@@ -20,8 +20,12 @@ class StaticAdmin(admin.ModelAdmin):
 	list_display = ['title', 'text']
 	form = StaticModelForm
 
+class ShopAdmin(admin.ModelAdmin):
+	list_display = ['title', 'text']
+
 admin.site.register(Biography, BiographyAdmin)
 admin.site.register(Essay, EssayAdmin)
 admin.site.register(Genre, GenreAdmin)
 admin.site.register(Role, GenreAdmin)
 admin.site.register(Static, StaticAdmin)
+admin.site.register(Shop, ShopAdmin)

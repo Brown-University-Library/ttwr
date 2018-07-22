@@ -7,6 +7,8 @@
 
 {% block extra_head %}
 <style type="text/css">
+
+
     div#page_body{
         padding:15px;
         padding-left:0px;
@@ -46,6 +48,24 @@
         color: black;
 
     }
+
+       #page_body li {
+        margin-left:5px;
+        margin-right:5px;
+        position: relative;
+
+        padding: 5px;
+
+    
+        min-width: 80%;
+        max-width: 80%;
+        height:auto;
+        display: inline-block;
+        font-weight:300;
+        font-size:14px;
+    }
+
+
     #author_info {
         background:#F2D69E;
         font-family:Roboto, sans-serif;
@@ -68,6 +88,15 @@
 
     .pagination, .intro, #cookietrail {
         display: none;
+    }
+
+     #relatedworks {
+        display: inline-block;
+        background:#F2D69E;
+        border-style: solid;
+        border-width: 1px;
+        border-color: #D38A09;
+        padding:5px;
     }
 
     h2 {
@@ -157,21 +186,111 @@
         color:#553512;
     }
 
+      .headright {
+        /*position is what was causing the glitch*/
+    /*    position:absolute;
+        top:0px;
+        right:0px;*/
+        float:right;
+        display:inline-block;
+        vertical-align: top;
+        margin:5px;
+        max-width:60%;
+        
+
+    }
+
+    #headleft {
+      
+        top:0px;
+        left:0px;
+        display:inline-block;
+        vertical-align: top;
+        float:left;
+        max-width:50%;
+        margin:5px;
+        min-height:100%;
+
+    }
+
+  .work {
+        border:1px solid;
+        border-color: #c2b99d;
+        margin:3px;
+        padding:5px;
+    }
+
+    .work li {
+        list-style-type:none;
+
+    }
+
+      div.pagination_rome {
+        overflow:hidden;
+        height:100%;
+        z-index:10;
+    }
+
+#relatedworks {
+        display: inline-block;
+        background:#F2D69E;
+        border-style: solid;
+        border-width: 1px;
+        border-color: #D38A09;
+        padding:5px;
+    }
+
+    #relatedpeople {
+        display: inline-block;
+        max-width:50%;
+        background:#F2D69E;
+        border-style: solid;
+        border-width: 1px;
+        border-color: #D38A09;
+        padding:5px;
+        min-width:100px;
+    }
+
+      #trail {
+        float:right;
+        padding:10px;
+    }
+
+       pre code {
+  background-color: #eee;
+  border: 1px solid #999;
+  display: block;
+  padding: 20px;
+  overflow-wrap: break-word;
+  overflow: scroll;
+
+}
+
+    pre > code {
+        overflow-wrap: break-word;
+        overflow: scroll;
+}
 </style>
+
 {% endblock %}
 
 {% block javascript %}
 <script>
-    $(document).ready(function(){
+    $(window).on("load", function() {
         var fullHeight =  $("#page_head > div.pagination_rome").height();
-        $("#page_head > div.pagination_rome").addClass('hide');
-        $("#page_head > div.pagination_rome").css('height','50');
+
         if (fullHeight < 200) {
             $("button").hide();
             $("#page_head > div.pagination_rome").removeClass('hide');
-            $("#page_head > div.pagination_rome").css('height','100%');
+            $("#page_head > div.pagination_rome").css('height',fullHeight);
             $("#gradient").css("-webkit-mask-image", "-webkit-gradient(linear, left 10%, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,1)))");
         }
+        else {
+        $("#page_head > div.pagination_rome").addClass('hide');
+        $("#page_head > div.pagination_rome").css('height','50');
+    }
+        
+
 
         $("button").click(function(){
             if( $("#page_head > div.pagination_rome").hasClass('hide')) {
@@ -191,37 +310,25 @@
 {% endblock javascript %}
 {% block pagination %}
 <div id="gradient">
-    <div id="headleft">
-        {% if essays %}
-    <h3>Essays</h3>
-    <div id="essays">
-        {% for essay in essays %}
-        <div class="essay">
-            <li><span style="color:#D64833;">Title:</span> <a href="{% url 'specific_essay' essay.slug %}">{{essay.title}}</a> </li>
-            <li><span style="color:#D64833;">Author:</span> {{essay.author}}</li>
-        </div>
-        {% endfor %}
-    </div>
-        {% endif %}
-    </div>
-    </div>
-{% endblock pagination %}
-{% block content %}
-<button>˅</button>
-    <div id="author_info">
-        <div id="roles"><i>{{bio.roles}}</i></div>
-        <p>{{bio.bio|markdown}}</p>
-    </div>
-    <div id="related_sources">
+        <span id="trail"><a href="../">Back to essays</a></span>
 
         {% if books or prints or pages_books %}
+
+        <div id="headleft"> 
+            <h3>Books and Prints</h3>
             {% if books %}
-              <h4>Books</h4>
-                <ul>
-                {% for book in books %}
-                <li><b><a href="{% url 'thumbnail_viewer' book.id %}">{{book.title}}</a></b></li>
-                {% endfor %}
-                </ul>
+            <div id="relatedworks">
+
+ {% for book in books %}
+            <div class="work">
+             <li><span style="color:#D64833;">Title:</span> {# {% if work.ppid %}<a href="{% url 'thumbnail_viewer' work.ppid%}">{{work.title}}</a>{% else %} #}{{book.title}}{# {% endif %} #}</li>
+             <li><span style="color:#D64833;">Author:</span> {{book.authors}}</li>
+            <li><span style="color:#D64833;">Genre:</span> {{book.genre}}</li>
+            <li>{{book.pid}}</li>
+            </div>
+
+           {% endfor %}
+       </div>
             {% endif %}
             {% if prints %}
             <h4>Prints</h4>
@@ -231,7 +338,10 @@
             {% endfor %}
             </ul>
             {% endif %}
-            {% if pages_books%}
+
+            </div>
+            <div id="headright">
+           {% if pages_books%}
             <h2>Pages</h2>
             <ul>
             {% for key,book in pages_books.items %}
@@ -252,6 +362,18 @@
             </ul>
             </li>
             {% endif %}
+        </div>
+         </div>
+
+            
         {% endif %}
+   </div>
+{% endblock pagination %}
+{% block content %}
+<button>˅</button>
+    <div id="author_info">
+        <div id="roles"><i>{{bio.roles}}</i></div>
+        <p>{{bio.bio|markdown}}</p>
     </div>
+  
 {% endblock %}

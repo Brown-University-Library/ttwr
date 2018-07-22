@@ -103,6 +103,33 @@ class Static(models.Model):
     title = models.CharField(max_length=254)
     text = models.TextField()
 
+class Shop(models.Model):
+    slug = models.SlugField(max_length=191)
+    title = models.CharField(max_length=254)
+    text = models.TextField()
+    people = models.ManyToManyField(Biography, blank=True, help_text='List of people associated with this Shop.')
+    pids = models.CharField(max_length=254, null=True, blank=True, help_text='Comma-separated list of pids for books or prints associated with this shop.')
+
+    def related_works(self):
+        num_prints_estimate = 6000
+        if not self.pids:
+            return {}
+        else:
+            query = self._get_related_works_query()
+            query_uri = 'https://%s/api/search/?q=%s' % (app_settings.BDR_SERVER, query)
+            r = requests.get(query_uri)
+            response_data = r.json() #automatically parses the content into json
+            annotations = response_data['response']['docs']
+            return annotations
+
+    def _get_related_works_query(self):
+        if self.pids is None:
+            return None
+        else:
+            pidlist = ["pid:\"%s:%s\"" % (app_settings.PID_PREFIX, p) for p in self.pids.split(",")]
+            query = "ir_collection_id:621+AND+display:BDR_PUBLIC+AND+(%s)&fl=primary_title,rel_has_pagination_ssim,rel_is_part_of_ssim,creator,pid,genre" % "+OR+".join(pidlist)
+            return query
+
 class Genre(models.Model):
     text = models.CharField(max_length=50, unique=True)
     external_id = models.CharField(max_length=50, blank=True)

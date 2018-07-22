@@ -294,15 +294,12 @@
 <button>˅</button>
 <!--https://repository.library.brown.edu/viewers/image/thumbnail/bdr:381100/-->
 
-        {% block essay %}
+        {% block shop_text %}
 
         <div id="essay">
 
-        <h2>{{essay.title}}</h2>
-        <div id="author">
-        <h3>{{essay.author}}</h3>
-    </div>
-        {{essay_text|markdown}}
+        <h2>{{shop.title}}</h2>
+        {{shop_text|markdown}}
         </div>
         {% endblock %}
 {% endblock %}
