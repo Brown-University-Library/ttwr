@@ -29,7 +29,6 @@ class TestEssay(TestCase):
        e = models.Essay.objects.create(slug='test', author='Test Author', title='Test Title')
        self.assertEqual(e._get_related_works_query(), None)
 
-
 class TestBDRObject(SimpleTestCase):
 
     def test_init(self):

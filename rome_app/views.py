@@ -24,6 +24,7 @@ from .models import (
         Page,
         annotations_by_books_and_prints,
         Print,
+        Shop,
         get_full_title_static,
         zoom_viewer_url,
         annotation_xml_url,
@@ -503,6 +504,61 @@ def links(request):
     context['link_title'] = links.title
     return render(request, 'rome_templates/links.html', context)
 
+def shops(request):
+    context = std_context(request.path, style="rome/css/links.css")
+    try:
+        shops = Static.objects.get(title="Shops")
+    except ObjectDoesNotExist:
+        return HttpResponseNotFound('Static Links Not Found')
+    context['shops_text'] = shops.text
+    context['shops_title'] = shops.title
+    return render(request, 'rome_templates/shops.html', context)
+
+def shop_list(request):
+    context=std_context(request.path, style="rome/css/links.css")
+    shop_objs = Shop.objects.all()
+    context['shop_objs'] = shop_objs
+    context['num_results']= len(shop_objs)
+    context['results_per_page'] = len(shop_objs)
+    page = request.GET.get('page', 1)
+    context['curr_page'] = page
+    return render(request, 'rome_templates/shop_list.html', context)
+
+def shop_detail(request, shop_slug):
+    try:
+        shop = Shop.objects.get(slug=shop_slug)
+    except ObjectDoesNotExist:
+        return HttpResponseNotFound('Shop %s Not Found' % shop_slug)
+    context=std_context(request.path, style="rome/css/essays.css")
+    context['shop_text'] = shop.text
+    context['shop'] = shop
+    context['people'] = shop.people.all()
+    related_list=[]
+    thumbnails_list=[]
+    for work in shop.related_works():
+        current_work={}
+        current_work['sibling'] = False
+        current_work['title']=work['primary_title']
+        if work.get('creator'):
+            current_work['creator']=work.get('creator')[0]
+        else:
+            current_work['creator']="None"
+        if 'genre' in work:
+            current_work['genre']=work['genre'][0]
+        current_work['pid']=work['pid'].split(":")[-1]
+        if 'rel_is_part_of_ssim' in work:
+            current_work['ppid'] = work['rel_is_part_of_ssim'][0].split(":")[-1]
+        for work in related_list:
+            if ('ppid' in work) and ('ppid' in current_work):
+                if current_work['ppid'] == work['ppid']:
+                    current_work['sibling'] = True
+        if (current_work['sibling'] == False):     
+            related_list.append(current_work)
+        thumbnails_list.append(current_work)
+    context['related_list']=related_list
+    context['thumbnails_list']=thumbnails_list
+    context['breadcrumbs'][-1]['name'] = shop.title
+    return render(request, 'rome_templates/shop_detail.html', context)
 
 def essay_list(request):
     context=std_context(request.path, style="rome/css/links.css")
