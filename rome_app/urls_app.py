@@ -29,7 +29,7 @@ urlpatterns = [
     url(r'^essays/(?P<essay_slug>\w+)/$', views.essay_detail, name='specific_essay'),
     url(r'^people/$', views.biography_list, name='people'),
     url(r'^people/(?P<trp_id>\d+)/$', views.biography_detail, name='person_detail'),
-    url(r'^shop_list/$', views.shop_list, name='shops'),
+    url(r'^shop_list/$', views.shop_list, name='shop_list'),
     url(r'^shop_list/(?P<shop_slug>\w+)/$', views.shop_detail, name='specific_shop'),
 
     #create new records
