@@ -291,9 +291,9 @@ class TestPeopleViews(TransactionTestCase):
 
 class TestShopsViews(TransactionTestCase):
 
-    def test_shops(self):
+    def test_shop_list(self):
         models.Shop.objects.create(title=u'Store', slug=u'store', text=u'foo')
-        response = self.client.get(reverse('shops'))
+        response = self.client.get(reverse('shop_list'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, u'foo')
 
