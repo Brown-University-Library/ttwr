@@ -129,6 +129,7 @@
         overflow:hidden;
         height:100%;
         z-index:10;
+        min-height:99px;
     }
     #gradient{
         position:relative;
@@ -201,10 +202,21 @@
 
 {% block javascript %}
 <script>
-    $(window).on("load", function() {
-        var fullHeight =  $("#page_head > div.pagination_rome").height();
 
-        if (fullHeight < 200) {
+var maxHeight = 0;
+   
+
+    $(window).load(function(){
+       
+       var fullHeight =  $("#page_head").outerHeight();
+   //   var fullHeight = maxHeight;
+        console.log(fullHeight);
+
+      
+       
+
+
+          if (fullHeight < 99) {
             $("button").hide();
             $("#page_head > div.pagination_rome").removeClass('hide');
             $("#page_head > div.pagination_rome").css('height',fullHeight);
@@ -212,9 +224,8 @@
         }
         else {
         $("#page_head > div.pagination_rome").addClass('hide');
-        $("#page_head > div.pagination_rome").css('height','50');
+        $("#page_head > div.pagination_rome").css('height','99');
     }
-        
 
 
         $("button").click(function(){
@@ -231,6 +242,9 @@
             })
         });
     });
+
+
+
 </script>
 {% endblock javascript %}
 
