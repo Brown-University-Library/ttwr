@@ -1,9 +1,12 @@
+dist: xenial
 language: python
 
 python:
   - "3.6"
+  - "3.7"
 
 install: 
  - pip install -r requirements_dev.txt
 
 script: python run_unit_tests.py
+
