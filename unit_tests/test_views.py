@@ -8,15 +8,38 @@ from rome_app import models
 from . import responses_data
 
 
-def get_auth_client():
+def get_auth_client(superuser=False):
     username = 'someone@brown.edu'
     password = 'pw'
     u = User.objects.create_user(username, password=password)
+    if superuser:
+        u.is_staff = True
+        u.is_superuser = True
+        u.save()
     auth_client = Client()
     logged_in = auth_client.login(username=username, password=password)
-    if not logged_in:
-        raise Exception('couldn\'t log in user')
     return auth_client
+
+
+class TestAdminViews(TestCase):
+
+    def test_auth(self):
+        url = reverse('admin:rome_app_biography_changelist')
+        response = self.client.get(url)
+        self.assertRedirects(response, '%s?next=%s' % (reverse('admin:login'), url))
+
+    def test_list_bios(self):
+        url = reverse('admin:rome_app_biography_changelist')
+        auth_client = get_auth_client(superuser=True)
+        response = auth_client.get(url)
+        self.assertContains(response, 'Select biography to change')
+
+    def test_view_bio(self):
+        bio = models.Biography.objects.create(name='Someone')
+        url = reverse('admin:rome_app_biography_change', args=(bio.id,))
+        auth_client = get_auth_client(superuser=True)
+        response = auth_client.get(url)
+        self.assertContains(response, 'Change biography')
 
 
 class TestStaticViews(TestCase):
