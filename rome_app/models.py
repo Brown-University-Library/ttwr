@@ -311,7 +311,6 @@ class Page(BDRObject):
 
 
 class Print(Page):
-    OBJECT_TYPE = "image-compound"
 
     @staticmethod
     def find_prints(collection):
