@@ -141,6 +141,15 @@ def book_detail(request, book_id):
     return render(request, 'rome_templates/book_detail.html', context)
 
 
+def _fetch_url_content(url):
+    r = requests.get(url, timeout=60)
+    if r.ok:
+        return r
+    else:
+        logger.error(f'error retrieving {url}: {r.status_code} - {r.text}')
+        raise Exception(f'{r.status_code}')
+
+
 def page_detail(request, page_id, book_id=None):
     page_pid = '%s:%s' % (PID_PREFIX, page_id)
     this_page = Page.get_or_404(page_pid)
@@ -172,13 +181,12 @@ def page_detail(request, page_id, book_id=None):
     context['book_id'] = book_id
 
     book_json_uri = 'https://%s/api/items/%s/' % (BDR_SERVER, book_pid)
-    r = requests.get(book_json_uri, timeout=60)
-    if not r.ok:
-        logger.error('TTWR - error retrieving url %s' % book_json_uri)
-        logger.error('TTWR - response: %s - %s' % (r.status_code, r.text))
+    try:
+        r = _fetch_url_content(book_json_uri)
+    except Exception:
         return HttpResponseServerError('Error retrieving content.')
     book_json = json.loads(r.text)
-    context['short_title']=book_json['brief']['title']
+    context['short_title'] = book_json['brief']['title']
     context['title'] = get_full_title_static(book_json)
     try:
         author_list = book_json['contributor_display']
@@ -242,7 +250,8 @@ def get_annotation_detail(annotation):
         curr_annot['edit_link'] = annotation['edit_link']
     curr_annot['has_elements'] = {'inscriptions':0, 'annotations':0, 'annotator':0, 'origin':0, 'title':0, 'abstract':0, 'genre':0}
 
-    root = ET.fromstring(requests.get(curr_annot['xml_uri']).content)
+    r = _fetch_url_content(curr_annot['xml_uri'])
+    root = ET.fromstring(r.content)
     for title in root.iter('{http://www.loc.gov/mods/v3}titleInfo'):
         if 'lang' in title.attrib and title.attrib['lang'] == 'en':
             curr_annot['title'] = title[0].text if title[0].text else ""
@@ -371,7 +380,11 @@ def print_detail(request, print_id):
     context['studio_url'] = 'https://%s/studio/item/%s/' % (BDR_SERVER, print_pid)
 
     json_uri = 'https://%s/api/items/%s/' % (BDR_SERVER, print_pid)
-    print_json = json.loads(requests.get(json_uri).text)
+    try:
+        r = _fetch_url_content(json_uri)
+    except Exception:
+        return HttpResponseServerError('error retrieving content')
+    print_json = json.loads(r.text)
     context['short_title'] = print_json['brief']['title']
     context['title'] = get_full_title_static(print_json)
     try:
@@ -441,15 +454,14 @@ def biography_detail(request, trp_id):
 
 def _get_book_pid_from_page_pid(page_pid):
     query = u'https://%s/api/items/%s/' % (BDR_SERVER, page_pid)
-    r = requests.get(query)
-    if r.ok:
-        data = json.loads(r.text)
-        if data['relations']['isPartOf']:
-            return data['relations']['isPartOf'][0]['pid']
-        elif data['relations']['isMemberOf']:
-            return data['relations']['isMemberOf'][0]['pid']
-        else:
-            return None
+    r = _fetch_url_content(query)
+    data = json.loads(r.text)
+    if data['relations']['isPartOf']:
+        return data['relations']['isPartOf'][0]['pid']
+    elif data['relations']['isMemberOf']:
+        return data['relations']['isMemberOf'][0]['pid']
+    else:
+        return None
 
 
 def filter_bios(fq, bio_list):

@@ -1,0 +1,8 @@
+bdrxml
+pymysql
+django~=1.11.0
+django-crispy-forms
+django-dotenv
+django-markdown-deux==1.0.5
+django-pagedown==0.1.3
+requests
