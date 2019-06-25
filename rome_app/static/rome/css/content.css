@@ -253,6 +253,8 @@ ul.navigationlink{
 
 #metadata {
 	display:inline-block;
+	width: 100%;
+    word-wrap: break-word;
 
 }
 

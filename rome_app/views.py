@@ -116,7 +116,7 @@ def book_list(request):
     context['num_results'] = len(book_list)
     context['results_per_page'] = BOOKS_PER_PAGE
 
-    context['filter_options'] = [("Buonanno", "buonanno"), ("Both", "both"), ("Library", "library")]
+    context['filter_options'] = [("Buonanno", "buonanno"), ("All", "both"), ("Library", "library")]
     context['filter']=collection
     return render(request, 'rome_templates/book_list.html', context)
 
@@ -325,6 +325,17 @@ def print_list(request):
         sort_by = 'title'
     collection = request.GET.get('filter', 'both')
 
+    # buonanno = ""
+    # if(collection == 'buonanno'):
+    #     buonanno = "+AND+(note:buonanno)"
+    #     print ("buoooo")
+    # elif(collection == 'library'):
+    #     buonanno = "+NOT+(note:buonanno)"
+
+
+    # book_list=Book.search(query="genre_aat:book*"+buonanno)
+
+
     context = std_context(request.path, title="The Theater that was Rome - Prints")
     context['page_documentation'] = 'Browse the prints in the Theater that was Rome collection. Click on "View" to explore a print further.'
     context['curr_page'] = page
@@ -333,7 +344,7 @@ def print_list(request):
         context['sorting'] = sort_by
 
     context['sort_options'] = Page.SORT_OPTIONS
-    context['filter_options'] = [("chinea", "chinea"), ("Both", "both"), ("Non-Chinea", "not")]
+    context['filter_options'] = [("chinea", "chinea"), ("All", "all"), ("Non-Chinea", "not"), ("Buonanno", "buonanno")]
 
     print_list = Print.find_prints(collection)
     context['num_results'] = len(print_list)

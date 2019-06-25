@@ -317,6 +317,8 @@ class Print(Page):
         collection_query = ''
         if(collection == 'chinea'):
             collection_query = '+AND+(primary_title:"Chinea"+OR+subtitle:"Chinea")'
+        elif(collection == 'buonanno'):
+            collection_query = '+AND+(primary_title:"Buonanno"+OR+subtitle:"Buonanno"+OR+(note:buonanno))'
         elif(collection == 'not'):
             collection_query = '+NOT+primary_title:"Chinea"+NOT+subtitle:"Chinea"'
 
@@ -345,6 +347,12 @@ class Print(Page):
         elif (re.search(r"chinea", title, re.IGNORECASE) or (re.search(r"chinea", solr_doc[u'subtitle'][0], re.IGNORECASE) if u'subtitle' in solr_doc else False)):
             current_print['in_chinea'] = 1
 
+        current_print['in_buonanno'] = 0
+        if collection == "buonanno":
+            current_print['in_buonanno'] = 1
+        elif (re.search(r"buonanno", title, re.IGNORECASE) or (re.search(r"buonanno", solr_doc[u'subtitle'][0], re.IGNORECASE) if u'subtitle' in solr_doc else False)):
+            current_print['in_buonanno'] = 1
+        
         pid = solr_doc['pid']
         current_print['id'] = pid.split(":")[1]
         short_title = title
