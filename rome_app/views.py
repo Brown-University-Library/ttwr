@@ -324,18 +324,6 @@ def print_list(request):
     if sort_by not in ['title', 'authors', 'date']:
         sort_by = 'title'
     collection = request.GET.get('filter', 'both')
-
-    # buonanno = ""
-    # if(collection == 'buonanno'):
-    #     buonanno = "+AND+(note:buonanno)"
-    #     print ("buoooo")
-    # elif(collection == 'library'):
-    #     buonanno = "+NOT+(note:buonanno)"
-
-
-    # book_list=Book.search(query="genre_aat:book*"+buonanno)
-
-
     context = std_context(request.path, title="The Theater that was Rome - Prints")
     context['page_documentation'] = 'Browse the prints in the Theater that was Rome collection. Click on "View" to explore a print further.'
     context['curr_page'] = page
