@@ -243,6 +243,22 @@ class TestPrintsViews(TestCase):
         response = self.client.get(url)
         self.assertRedirects(response, '%s?next=%s' % (reverse('rome_login'), url))
 
+    @responses.activate
+    def test_edit_print_annotation_get(self):
+        models.Biography.objects.create(name='Someone', trp_id='0260')
+        models.Role.objects.create(text='author')
+        models.Genre.objects.create(text='book')
+        responses.add(responses.GET, 'https://localhost/storage/testsuite:2/MODS/',
+                      body=responses_data.SAMPLE_ANNOTATION_XML,
+                      status=200,
+                      content_type='text/xml',
+                  )
+        auth_client = get_auth_client()
+        url = reverse('edit_print_annotation', kwargs={'print_id': '1', 'anno_id': '2'})
+        response = auth_client.get(url)
+        self.assertEqual(response.status_code, 200, f'{response.status_code} - {response.content.decode("utf8")}')
+        self.assertContains(response, 'value="Submit Annotation"')
+
 
 class TestEssaysViews(TestCase):
 
