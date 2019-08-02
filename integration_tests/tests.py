@@ -54,13 +54,6 @@ class TestPrintsViews(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'ARTES ATHENIX PARTHENOPEM')
 
-    def test_edit_print_annotation_get(self):
-        auth_client = get_auth_client()
-        url = reverse('edit_print_annotation', kwargs={'print_id': '230631', 'anno_id': '230632'})
-        response = auth_client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'value="Submit Annotation"')
-
 
 class TestPeopleViews(TransactionTestCase):
 
