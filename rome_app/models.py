@@ -386,11 +386,6 @@ class Print(Page):
         current_print['studio_uri'] = 'https://%s/studio/item/%s/' % (app_settings.BDR_SERVER, pid)
         current_print['thumbnail_url'] = reverse('specific_print', args=[current_print['id']])
         current_print['det_img_viewer'] = zoom_viewer_url(pid)
-
-        json_uri = 'https://%s/api/items/%s/' % (app_settings.BDR_SERVER, pid)
-        r = requests.get(json_uri)
-        annotations = r.json()['relations']['hasAnnotation']
-        current_print['has_annotations'] = len(annotations)
         return current_print
 
     def url(self):

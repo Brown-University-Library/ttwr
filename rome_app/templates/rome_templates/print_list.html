@@ -67,13 +67,6 @@
                 This print is in the Chinea collection.
                 {% endif %}
                 <br />
-{% if result.has_annotations > 1 %}
-{{ result.has_annotations }} Annotations.
-{% endif %}
-{% if result.has_annotations > 0 and result.has_annotations < 2 %}
-{{ result.has_annotations }} Annotation.
-{% endif %}
-            </span>
 {% endblock %}
 
 {% block sort_by_field%}
