@@ -67,6 +67,53 @@ class Biography(models.Model):
         return u'%s (%s)' % (self.name, self.trp_id)
 
 
+class Document(models.Model):
+     slug = models.SlugField(max_length=191)
+     title = models.CharField(max_length=254)
+     summary = models.TextField()
+     text = models.TextField()
+     document_file = models.FileField(blank=True)
+     people = models.ManyToManyField(Biography, blank=True, help_text='List of people associated with this essay.')
+
+     def __str__(self):
+        return 'Document: {}'.format(self.title)
+
+class Shop(models.Model):
+    slug = models.SlugField(max_length=191)
+    title = models.CharField(max_length=254)
+    text = models.TextField()
+    people = models.ManyToManyField(Biography, blank=True, help_text='List of people associated with this Shop.')
+    pids = models.CharField(max_length=254, null=True, blank=True, help_text='Comma-separated list of pids for books or prints associated with this shop.')
+    family = models.CharField(max_length=254, null=True, blank=True, help_text='Enter Family associated with shop')
+    start_date = models.CharField(max_length=25, null=True, blank=True, help_text='Optional: enter birth date as yyyy-mm-dd (for sorting and filtering)')
+    end_date = models.CharField(max_length=25, null=True, blank=True, help_text='Optional: enter death date as yyyy-mm-dd')
+    documents = models.ManyToManyField(Document, blank=True, help_text='List of documents associated with this shop.')
+     
+
+    def related_essays(self):
+        return self.essay_set.all()
+
+    def related_works(self):
+        num_prints_estimate = 6000
+        if not self.pids:
+            return {}
+        else:
+            query = self._get_related_works_query()
+            query_uri = 'https://%s/api/search/?q=%s' % (app_settings.BDR_SERVER, query)
+            r = requests.get(query_uri)
+            response_data = r.json() #automatically parses the content into json
+            annotations = response_data['response']['docs']
+            return annotations
+
+    def _get_related_works_query(self):
+        if self.pids is None:
+            return None
+        else:
+            pidlist = ["pid:\"%s:%s\"" % (app_settings.PID_PREFIX, p) for p in self.pids.split(",")]
+            query = "ir_collection_id:621+AND+display:BDR_PUBLIC+AND+(%s)&fl=primary_title,rel_has_pagination_ssim,rel_is_part_of_ssim,creator,pid,genre" % "+OR+".join(pidlist)
+            return query
+
+     
 class Essay(models.Model):
     slug = models.SlugField(max_length=191)
     author = models.CharField(max_length=254)
@@ -74,6 +121,7 @@ class Essay(models.Model):
     text = models.TextField()
     pids = models.CharField(max_length=254, null=True, blank=True, help_text='Comma-separated list of pids for books or prints associated with this essay.')
     people = models.ManyToManyField(Biography, blank=True, help_text='List of people associated with this essay.')
+    shops = models.ManyToManyField(Shop, blank=True, help_text='List of shops associated with this essay.')
     is_note = models.BooleanField(default=False)
 
     def preview(self):
@@ -103,32 +151,6 @@ class Static(models.Model):
     title = models.CharField(max_length=254)
     text = models.TextField()
 
-class Shop(models.Model):
-    slug = models.SlugField(max_length=191)
-    title = models.CharField(max_length=254)
-    text = models.TextField()
-    people = models.ManyToManyField(Biography, blank=True, help_text='List of people associated with this Shop.')
-    pids = models.CharField(max_length=254, null=True, blank=True, help_text='Comma-separated list of pids for books or prints associated with this shop.')
-
-    def related_works(self):
-        num_prints_estimate = 6000
-        if not self.pids:
-            return {}
-        else:
-            query = self._get_related_works_query()
-            query_uri = 'https://%s/api/search/?q=%s' % (app_settings.BDR_SERVER, query)
-            r = requests.get(query_uri)
-            response_data = r.json() #automatically parses the content into json
-            annotations = response_data['response']['docs']
-            return annotations
-
-    def _get_related_works_query(self):
-        if self.pids is None:
-            return None
-        else:
-            pidlist = ["pid:\"%s:%s\"" % (app_settings.PID_PREFIX, p) for p in self.pids.split(",")]
-            query = "ir_collection_id:621+AND+display:BDR_PUBLIC+AND+(%s)&fl=primary_title,rel_has_pagination_ssim,rel_is_part_of_ssim,creator,pid,genre" % "+OR+".join(pidlist)
-            return query
 
 class Genre(models.Model):
     text = models.CharField(max_length=50, unique=True)
@@ -329,8 +351,13 @@ class Print(Page):
         if r.ok:
             prints_json = json.loads(r.text)
             prints_list = []
-            for doc in prints_json['response']['docs']:
-                prints_list.append(Print.get_print_info_from_solr_doc(doc, collection))
+            pages = []
+            pages1 = []
+            for index, doc in enumerate(prints_json['response']['docs']):
+                pages.append(Print.get_print_info_from_solr_doc(doc, collection))
+                if index > 1:
+                    pages1.append(Print.get_print_info_from_solr_doc(doc, collection))
+            prints_list = [pages, pages1]
             return prints_list
         else:
             logger.error('error fetching prints: %s - %s' % (r.status_code, r.content))

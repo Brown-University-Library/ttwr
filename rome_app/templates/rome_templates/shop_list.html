@@ -33,7 +33,7 @@
     .row {
         min-width: 100%;
         padding: 1px;
-        min-height: 100px;
+        min-height: 50px;
         display: inline-block;
         font-weight: 300;
         font-size: 14px;
@@ -88,6 +88,7 @@
         })
     }
 </script>
+
 {% endblock %}
 
 
@@ -132,9 +133,24 @@
 <ul class="results">
 <h2>Print Shops</h2>
     {% for shop in shop_objs %}
-    <li value class="row"><span> <a href="{% url 'specific_shop' shop.slug %}">{{shop.title}}</a></span>
-    <br> {{essay.slug}} <br> 
+    <li value class="row">
+
+         <span style="font-size: 16px;
+    color: #89775D;
+    font-weight: bold;"> <a href="{% url 'specific_shop' shop.slug %}">{{shop.title}}</a></span>
+
+    <br>
+
+        <span style="color:#D64833; font-size:16px; margin-left:2px;">{{shop.family.0}}</span>
+
+        {% if shop.start_date %}
+        <br>
+        <span style="margin-left:2px">
+        <i>{{shop.start_date}}</i> — <i>{{shop.end_date}}</i>
+    </span>
+        {% endif %}
      <div class = "related">
+     
       {% if shop.related_list %}
 
       {% for work in shop.thumbs %}

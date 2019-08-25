@@ -17,6 +17,7 @@ import re
 import requests
 from .models import (
         Biography,
+        Document,
         Essay,
         Static,
         Book,
@@ -337,12 +338,15 @@ def print_list(request):
     print_list = Print.find_prints(collection)
     context['num_results'] = len(print_list)
 
-    print_list = sorted(print_list, key=itemgetter(sort_by,'authors','title','date'))
+    # page = request.GET.get('page', 1)
+    # PAGIN=Paginator(book_list, BOOKS_PER_PAGE);
+
+    print_list = sorted(print_list[1], key=itemgetter(sort_by,'authors','title','date'))
     for i, p in enumerate(print_list):
         p['number_in_list'] = i+1
     context['print_list'] = print_list
 
-    prints_per_page=20
+    prints_per_page=1
     context['results_per_page'] = prints_per_page
     PAGIN = Paginator(print_list,prints_per_page) #20 prints per page
     context['num_pages'] = PAGIN.num_pages
@@ -528,6 +532,13 @@ def shops(request):
 def shop_list(request):
     context=std_context(request.path, style="rome/css/links.css")
     shop_objs = Shop.objects.all()
+    family_set = set()
+
+    for shop in shop_objs:
+        if shop.family:
+            shop.family = [family.strip(" ") for family in shop.family.split(';') if family.strip(" ") != '']
+            family_set |= set(shop.family)
+
     context['shop_objs'] = shop_objs
     context['num_results']= len(shop_objs)
     context['results_per_page'] = len(shop_objs)
@@ -544,6 +555,7 @@ def shop_detail(request, shop_slug):
     context['shop_text'] = shop.text
     context['shop'] = shop
     context['people'] = shop.people.all()
+    context['documents'] = shop.documents.all()
     related_list=[]
     thumbnails_list=[]
     for work in shop.related_works():
@@ -639,6 +651,18 @@ def essay_detail(request, essay_slug):
     context['breadcrumbs'][-1]['name'] = essay.title
     return render(request, 'rome_templates/essay_detail.html', context)
 
+def document_detail(request, document_slug):
+    try:
+        document = Document.objects.get(slug=document_slug)
+    except ObjectDoesNotExist:
+        return HttpResponseNotFound('Document %s Not Found' % document_slug)
+    context=std_context(request.path, style="rome/css/essays.css")
+    context['document_text'] = document.text
+    context['document_summary'] = document.summary
+    context['document'] = document
+    context['people'] = document.people.all()
+    context['breadcrumbs'][-1]['name'] = document.title
+    return render(request, 'rome_templates/document_detail.html', context)
 
 def breadcrumb_detail(context, view="book", title_words=4):
     if(view == "book"):
