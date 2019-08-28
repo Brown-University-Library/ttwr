@@ -531,7 +531,7 @@ def shops(request):
 
 def shop_list(request):
     context=std_context(request.path, style="rome/css/links.css")
-    shop_objs = Shop.objects.all()
+    shop_objs = Shop.objects.order_by('family')
     family_set = set()
 
     for shop in shop_objs:
@@ -650,6 +650,10 @@ def essay_detail(request, essay_slug):
     context['thumbnails_list']=thumbnails_list
     context['breadcrumbs'][-1]['name'] = essay.title
     return render(request, 'rome_templates/essay_detail.html', context)
+
+def documents(request):
+    return render(request, 'rome_templates/documents.html')
+
 
 def document_detail(request, document_slug):
     try:

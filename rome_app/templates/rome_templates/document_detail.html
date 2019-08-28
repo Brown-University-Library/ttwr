@@ -229,8 +229,12 @@
         <div id="essay">
 
         <h2>{{document.title}}</h2>
+        {% if document.consagra %}
+        <i>This document belongs to the Consagra collection. </i>
+        {% endif %}
         <h3>Summary</h3>
         {{document.summary}}
+        {% if people %}
         <h3>People</h3>
         <div id="people">
 {% for person in people %}
@@ -238,9 +242,23 @@
         <a href="{% url 'person_detail' person.trp_id%}">{{person}}</a>
     </li>
 {% endfor %}
-<h3>Text</h3>
 </div>
-        {{document_text|markdown}}
+ {% endif %}
+ <h3>Text</h3>
+        {{document_text|markdown}}  
+
+    {% if document.document_file or document.document_link %}
+        <h3>Files</h3>
+    {% endif %}
+    {% if document.document_file %}
+           <a href="/media/{{document.document_file.url}}" target="_blank">PDF</a> <br>
+    {% endif %}
+    {% if document.document_link %}
+             <a href="{{document.document_link}}" target="_blank">External Document</a>
+    {% endif %}
+
+
+
         </div>
      
         {% endblock %}
