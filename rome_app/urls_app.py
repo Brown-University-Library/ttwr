@@ -31,7 +31,9 @@ urlpatterns = [
     url(r'^people/(?P<trp_id>\d+)/$', views.biography_detail, name='person_detail'),
     url(r'^shop_list/$', views.shop_list, name='shop_list'),
     url(r'^shop_list/(?P<shop_slug>\w+)/$', views.shop_detail, name='specific_shop'),
+    url(r'^documents/$', views.documents, name='documents'),
     url(r'^documents/(?P<document_slug>\w+)/$', views.document_detail, name='specific_document'),
+
 
     #create new records
     url(r'^genres/new/$', views.new_genre, name='new_genre'),

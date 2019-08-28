@@ -73,7 +73,9 @@ class Document(models.Model):
      summary = models.TextField()
      text = models.TextField()
      document_file = models.FileField(blank=True)
+     document_link = models.URLField()
      people = models.ManyToManyField(Biography, blank=True, help_text='List of people associated with this essay.')
+     consagra = models.BooleanField()
 
      def __str__(self):
         return 'Document: {}'.format(self.title)

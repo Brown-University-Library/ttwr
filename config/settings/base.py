@@ -50,6 +50,8 @@ ROOT_URLCONF = 'config.urls'
 
 STATIC_ROOT = os.path.normpath(os.path.join(BASE_DIR, 'assets'))
 
+MEDIA_ROOT = os.path.normpath(os.path.join(BASE_DIR, 'media'))
+
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 MARKDOWN_DEUX_STYLES = {
