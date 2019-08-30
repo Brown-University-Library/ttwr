@@ -353,8 +353,12 @@ class TestShopsViews(TransactionTestCase):
 
 class TestDocumentViews(TransactionTestCase):
 
+    def test_documents(self):
+        response = self.client.get(reverse('documents'))
+        self.assertEqual(response.status_code, 200)
+
     def test_specific_document(self):
-        models.Document.objects.create(slug='ger', consagra='0', title=u'Rëd Sox', text='### Red Sox lineup[^n1]\n\n[^n1]: footnote text')
+        models.Document.objects.create(slug='ger', consagra='0', title='Rëd Sox', text='### Red Sox lineup[^n1]\n\n[^n1]: footnote text')
         response = self.client.get(reverse('specific_document', kwargs={'document_slug': 'ger'}))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '<h3>Red Sox lineup') #make sure that basic markdown was rendered

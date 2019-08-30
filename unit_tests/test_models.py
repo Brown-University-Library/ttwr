@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from django.test import SimpleTestCase, TestCase
 from rome_app import models
 
@@ -14,6 +15,7 @@ class TestBiography(TestCase):
         b = models.Biography.objects.create(roles='author,painter')
         self.assertEqual(b.roles, 'author;painter')
 
+
 class TestEssay(TestCase):
 
     def test_preview(self):
@@ -28,6 +30,15 @@ class TestEssay(TestCase):
        #test essay with no pids
        e = models.Essay.objects.create(slug='test', author='Test Author', title='Test Title')
        self.assertEqual(e._get_related_works_query(), None)
+
+
+class TestDocument(TestCase):
+
+    def test_unique(self):
+        d = models.Document.objects.create(slug='1', consagra=True)
+        with self.assertRaises(IntegrityError):
+            models.Document.objects.create(slug='1', consagra=True)
+
 
 class TestBDRObject(SimpleTestCase):
 

@@ -657,13 +657,12 @@ def document_detail(request, document_slug):
         document = Document.objects.get(slug=document_slug)
     except ObjectDoesNotExist:
         return HttpResponseNotFound('Document %s Not Found' % document_slug)
-    context=std_context(request.path, style="rome/css/essays.css")
-    context['document_text'] = document.text
-    context['document_summary'] = document.summary
+    context = std_context(request.path, style="rome/css/essays.css")
     context['document'] = document
     context['people'] = document.people.all()
     context['breadcrumbs'][-1]['name'] = document.title
     return render(request, 'rome_templates/document_detail.html', context)
+
 
 def breadcrumb_detail(context, view="book", title_words=4):
     if(view == "book"):

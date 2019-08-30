@@ -58,17 +58,17 @@ class Biography(models.Model):
         if self.roles:
             self.roles = self.roles.replace(",",";");
         try:
-            super(Biography, self).save(*args, **kwargs)
+            super().save(*args, **kwargs)
         except IntegrityError as e:
             self.trp_id = self._get_trp_id()
             super(Biography, self).save(*args, **kwargs)
 
     def __str__(self):
-        return u'%s (%s)' % (self.name, self.trp_id)
+        return '%s (%s)' % (self.name, self.trp_id)
 
 
 class Document(models.Model):
-     slug = models.SlugField(max_length=191)
+     slug = models.SlugField(max_length=191, unique=True)
      title = models.CharField(max_length=254)
      summary = models.TextField()
      text = models.TextField()
@@ -79,6 +79,7 @@ class Document(models.Model):
 
      def __str__(self):
         return 'Document: {}'.format(self.title)
+
 
 class Essay(models.Model):
     slug = models.SlugField(max_length=191)
