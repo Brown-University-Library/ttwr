@@ -338,9 +338,6 @@ def print_list(request):
     print_list = Print.find_prints(collection)
     context['num_results'] = len(print_list)
 
-    # page = request.GET.get('page', 1)
-    # PAGIN=Paginator(book_list, BOOKS_PER_PAGE);
-
     print_list = sorted(print_list[1], key=itemgetter(sort_by,'authors','title','date'))
     for i, p in enumerate(print_list):
         p['number_in_list'] = i+1
