@@ -237,7 +237,7 @@
 
         <div id="essay">
 
-        <h2>{{shop.title}} &nbsp; &nbsp; &nbsp;  <span style="color:#805525;"><i>{{shop.start_date}}</i> — <i>{{shop.end_date}}</i></span></h2>
+        <h2>{{shop.title}} &nbsp; &nbsp; &nbsp;  {% if shop.start_date %}<span style="color:#805525;"><i>{{shop.start_date}}</i> — <i>{{shop.end_date}}</i></span>{% endif %}</h2>
         {% if people %}
 
 <h3>People</h3>
@@ -281,6 +281,7 @@
 {% endif %}
 
 <div id="headright" style="padding-top:.1px;">
+    {% if documents %}
 <h1>Documents</h1>
 <div id="relatedworks">
 {% for document in documents %}
@@ -292,6 +293,7 @@
 </div>
 </div>
 </div>
+{% endif %}
 
         {% endblock %}
 {% endblock %}
