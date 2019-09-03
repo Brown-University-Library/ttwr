@@ -343,9 +343,9 @@ def print_list(request):
         p['number_in_list'] = i+1
     context['print_list'] = print_list
 
-    prints_per_page=1
+    prints_per_page=20
     context['results_per_page'] = prints_per_page
-    PAGIN = Paginator(print_list,prints_per_page) #20 prints per page
+    PAGIN = Paginator(print_list, prints_per_page)
     context['num_pages'] = PAGIN.num_pages
     context['page_range'] = PAGIN.page_range
     context['PAGIN'] = PAGIN
