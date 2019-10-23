@@ -22,7 +22,8 @@
         border-style:solid;
         border-width:1px;
         border-color:#D64833;
-        max-width:850px;
+        max-width:800px;
+        padding-left:2em;
     }
 
     #essay ul {
@@ -44,8 +45,17 @@
         font-size:14px;
     }
 
+      #people a:hover{
+        text-decoration: underline;
+    }
+
+     #people {
+        margin-bottom:10px;
+        margin-top:5px;
+    }
+
     #essay h1 {
-        padding-left:10px;
+       
     }
 
     #relatedworks {
@@ -56,55 +66,49 @@
         border-color: #D38A09;
         padding:5px;
     }
-    
-    #people {
-        margin-bottom:10px;
-        margin-top:5px;
-    }
 
-    #people a:hover{
-        text-decoration: underline;
+    #relatedpeople {
+        display: inline-block;
+        max-width:50%;
+        background:#F2D69E;
+        border-style: solid;
+        border-width: 1px;
+        border-color: #D38A09;
+        padding:5px;
+        min-width:100px;
     }
 
     h3 {
         color:#D64833;
         font-weight:300;
-    }
-
-    #essay h3 {
-        margin-left:10px;
-    }
-
-    #essay p {
-        margin:10px;
+        margin-top:1em;
     }
 
     h2 {
         font-weight:300;
+        margin-left:0px;
     }
 
-    h1 {
-        font-size:18px;
-        margin-top:10px;
-    }
-
-    #headright {
-
+    .headright {
+        float:right;
         display:inline-block;
-        padding-left: 10px;
-
+        vertical-align: top;
+        margin:5px;
+        max-width:60%;
         
 
     }
 
     #headleft {
+        position:absolute;
+        top:0px;
+        left:0px;
         display:inline-block;
-     
+        vertical-align: top;
         float:left;
-        max-width:400px;
-     
+        max-width:50%;
+        margin:5px;
         min-height:100%;
-        margin-right:2em;
 
     }
 
@@ -116,27 +120,12 @@
     #relatedpeople li {
         list-style-type:none;
     }
-
-    .related {
-        width:90%;
-            margin-left: 3.7%;
-            margin-top:1.7%;
-    }
-
-   .thumb:hover{
-         background: rgba(0,0,0,.1);
-    }
   
-    .work:hover{
-        background: rgba(0,0,0,.1);
-
-    }
     .work {
         border:1px solid;
         border-color: #c2b99d;
         margin:3px;
         padding:5px;
-        max-width:400px;
     }
 
     .work li {
@@ -145,8 +134,17 @@
     }
 
 
+    div.pagination_rome {
+        overflow:hidden;
+        height:100%;
+        z-index:10;
+    
+    }
     #gradient{
-         overflow: hidden;
+        position:relative;
+        height:100%;
+        width:100%;
+        -webkit-mask-image: -webkit-gradient(linear, left 10%, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)));
     }
 
     button{
@@ -164,8 +162,8 @@
     }
 
     div.pagination_rome {
-      display: block;
-        overflow: auto;
+        overflow:hidden;
+        height:100%;
         z-index:10;
     }
 
@@ -194,12 +192,6 @@
         margin-left:10px;
     }
 
-   #page_body li span.field {
-        color:#D64833;
-        position:relative;
-        top:-2px;
-    }
-
     pre code {
   background-color: #eee;
   border: 1px solid #999;
@@ -218,82 +210,44 @@
 {% endblock %}
 
 
-
-
 {% block pagination %}
-
-<span id="trail"><a href="../">Back to print shops</a></span>
-
-
-
-
-
+<span id="trail"><a href="/shop_list/">Back to Shops</a></span>
 {% endblock %}
 
 {% block content %}
+  {% block essay %}
 
-        {% block shop_text %}
+    <div id="essay">
 
-
-        <div id="essay">
-
-        <h2>{{shop.title}} &nbsp; &nbsp; &nbsp;  {% if shop.start_date %}<span style="color:#805525;"><i>{{shop.start_date}}</i> — <i>{{shop.end_date}}</i></span>{% endif %}</h2>
-        {% if people %}
-
-<h3>People</h3>
-
-<div id="people">
-{% for person in people %}
-    <li>
-        <a href="{% url 'person_detail' person.trp_id%}">{{person}}</a>
-    </li>
-{% endfor %}
-</div>
-
-
-{% endif %}
-<h3>Summary</h3>
-        {{shop_text|markdown}}
+      <h2>{{document.title}}</h2>
+      {% if document.consagra %}
+        <i>This document belongs to the Consagra collection.</i>
+      {% endif %}
+      <h3>Summary</h3>
+      {{document.summary}}
+      {% if people %}
+        <h3>People</h3>
+        <div id="people">
+        {% for person in people %}
+          <li><a href="{% url 'person_detail' person.trp_id%}">{{person}}</a></li>
+        {% endfor %}
         </div>
+      {% endif %}
 
-<div class="related">
-{% if related_list %}
+      <h3>Text</h3>
+      {{document.text|markdown}}
 
-<div id="headleft">
-<h1>Books and Prints</h1>
-<div id="relatedworks">
-{% for work in related_list %}
-     <div class="work">
-    <li><span class="field">Title:</span> {% if work.ppid %}<a href="{% url 'thumbnail_viewer' work.ppid%}">{{work.title|truncatewords:12}}</a>{% else %}
-        {% if work.genre == books %}
-        <a href="{% url 'thumbnail_viewer' work.pid%}">{{work.title|truncatewords:12}}</a></li>
-        {% else %}
-          <a href="{% url 'specific_print' work.pid%}">{{work.title|truncatewords:12}}</a></li>
-          {% endif %}
-               {% endif %}
-        <li><span class="field">Author:</span> {{work.creator}}</li>
-        <li><span class="field">Genre:</span> {{work.genre}}</li>
-        <li>{{work.pid}}</li>
-            </div>
-{% endfor %}
-</div>
+      {% if document.document_file or document.document_link %}
+        <h3>Files</h3>
+      {% endif %}
+      {% if document.document_file %}
+        <a href="/media/{{document.document_file.url}}" target="_blank">PDF</a> <br>
+      {% endif %}
+      {% if document.document_link %}
+        <a href="{{document.document_link}}" target="_blank">External Document</a>
+      {% endif %}
+
     </div>
-{% endif %}
-
-<div id="headright" style="padding-top:.1px;">
-    {% if documents %}
-<h1>Documents</h1>
-<div id="relatedworks">
-{% for document in documents %}
-     <div class="work">
-    <li><span class="field">Title:</span> <a href="{% url 'specific_document' document.slug%}">{{document.title|truncatewords:12}}</a>
-        <li><span class="field"></span>{{document.summary|truncatewords:50}}</li>
-            </div>
-{% endfor %}
-</div>
-</div>
-</div>
-{% endif %}
-
-        {% endblock %}
+     
+  {% endblock %}
 {% endblock %}

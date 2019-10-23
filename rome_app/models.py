@@ -58,13 +58,27 @@ class Biography(models.Model):
         if self.roles:
             self.roles = self.roles.replace(",",";");
         try:
-            super(Biography, self).save(*args, **kwargs)
+            super().save(*args, **kwargs)
         except IntegrityError as e:
             self.trp_id = self._get_trp_id()
             super(Biography, self).save(*args, **kwargs)
 
     def __str__(self):
-        return u'%s (%s)' % (self.name, self.trp_id)
+        return '%s (%s)' % (self.name, self.trp_id)
+
+
+class Document(models.Model):
+     slug = models.SlugField(max_length=191, unique=True)
+     title = models.CharField(max_length=254)
+     summary = models.TextField()
+     text = models.TextField()
+     document_file = models.FileField(null=True, blank=True)
+     document_link = models.URLField(null=True, blank=True)
+     people = models.ManyToManyField(Biography, blank=True, help_text='List of people associated with this essay.')
+     consagra = models.BooleanField()
+
+     def __str__(self):
+        return 'Document: {}'.format(self.title)
 
 
 class Essay(models.Model):
@@ -74,6 +88,7 @@ class Essay(models.Model):
     text = models.TextField()
     pids = models.CharField(max_length=254, null=True, blank=True, help_text='Comma-separated list of pids for books or prints associated with this essay.')
     people = models.ManyToManyField(Biography, blank=True, help_text='List of people associated with this essay.')
+    shops = models.ManyToManyField('Shop', blank=True, help_text='List of shops associated with this essay.')
     is_note = models.BooleanField(default=False)
 
     def preview(self):
@@ -99,9 +114,11 @@ class Essay(models.Model):
             query = "ir_collection_id:621+AND+display:BDR_PUBLIC+AND+(%s)&fl=primary_title,rel_has_pagination_ssim,rel_is_part_of_ssim,creator,pid,genre" % "+OR+".join(pidlist)
             return query
 
+
 class Static(models.Model):
     title = models.CharField(max_length=254)
     text = models.TextField()
+
 
 class Shop(models.Model):
     slug = models.SlugField(max_length=191)
@@ -109,6 +126,13 @@ class Shop(models.Model):
     text = models.TextField()
     people = models.ManyToManyField(Biography, blank=True, help_text='List of people associated with this Shop.')
     pids = models.CharField(max_length=254, null=True, blank=True, help_text='Comma-separated list of pids for books or prints associated with this shop.')
+    family = models.CharField(max_length=254, null=True, blank=True, help_text='Enter Family associated with shop')
+    start_date = models.CharField(max_length=25, null=True, blank=True, help_text='Optional: enter birth date as yyyy-mm-dd (for sorting and filtering)')
+    end_date = models.CharField(max_length=25, null=True, blank=True, help_text='Optional: enter death date as yyyy-mm-dd')
+    documents = models.ManyToManyField(Document, blank=True, help_text='List of documents associated with this shop.')
+
+    def related_essays(self):
+        return self.essay_set.all()
 
     def related_works(self):
         num_prints_estimate = 6000
@@ -130,6 +154,7 @@ class Shop(models.Model):
             query = "ir_collection_id:621+AND+display:BDR_PUBLIC+AND+(%s)&fl=primary_title,rel_has_pagination_ssim,rel_is_part_of_ssim,creator,pid,genre" % "+OR+".join(pidlist)
             return query
 
+ 
 class Genre(models.Model):
     text = models.CharField(max_length=50, unique=True)
     external_id = models.CharField(max_length=50, blank=True)
@@ -329,8 +354,13 @@ class Print(Page):
         if r.ok:
             prints_json = json.loads(r.text)
             prints_list = []
-            for doc in prints_json['response']['docs']:
-                prints_list.append(Print.get_print_info_from_solr_doc(doc, collection))
+            pages = []
+            pages1 = []
+            for index, doc in enumerate(prints_json['response']['docs']):
+                pages.append(Print.get_print_info_from_solr_doc(doc, collection))
+                if index > 1:
+                    pages1.append(Print.get_print_info_from_solr_doc(doc, collection))
+            prints_list = [pages, pages1]
             return prints_list
         else:
             logger.error('error fetching prints: %s - %s' % (r.status_code, r.content))

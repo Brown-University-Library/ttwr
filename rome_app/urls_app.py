@@ -26,11 +26,14 @@ urlpatterns = [
     url(r'^prints/(?P<print_id>\d+)/annotations/new/$', views.new_print_annotation, name='new_print_annotation'),
     url(r'^prints/(?P<print_id>\d+)/annotations/(?P<anno_id>\d+)/edit/$', views.edit_print_annotation, name='edit_print_annotation'),
     url(r'^essays/$', views.essay_list, name='essays'),
-    url(r'^essays/(?P<essay_slug>\w+)/$', views.essay_detail, name='specific_essay'),
+    url(r'^essays/(?P<essay_slug>[\w-]+)/$', views.essay_detail, name='specific_essay'),
     url(r'^people/$', views.biography_list, name='people'),
     url(r'^people/(?P<trp_id>\d+)/$', views.biography_detail, name='person_detail'),
     url(r'^shop_list/$', views.shop_list, name='shop_list'),
-    url(r'^shop_list/(?P<shop_slug>\w+)/$', views.shop_detail, name='specific_shop'),
+    url(r'^shop_list/(?P<shop_slug>[\w-]+)/$', views.shop_detail, name='specific_shop'),
+    url(r'^documents/$', views.documents, name='documents'),
+    url(r'^documents/(?P<document_slug>[\w-]+)/$', views.document_detail, name='specific_document'),
+
 
     #create new records
     url(r'^genres/new/$', views.new_genre, name='new_genre'),
