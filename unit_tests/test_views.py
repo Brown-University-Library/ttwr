@@ -339,16 +339,19 @@ class TestShopsViews(TransactionTestCase):
     @responses.activate
     def test_shop(self):
         responses.add(responses.GET, 'https://localhost/api/search/',
-        body=json.dumps({'response': {'docs': [{'pid': 'testsuite:230605', 'primary_title': 'book'}]}}),
-        status=200,
-        content_type='application/json'
-        )
+                      body=json.dumps({'response': {'docs': [{'pid': 'testsuite:230605', 'primary_title': 'book'}]}}),
+                      status=200,
+                      content_type='application/json'
+            )
         models.Shop.objects.create(title=u'Store', slug=u'store', text='### Red Sox lineup[^n1]\n\n[^n1]: footnote text', pids="230605")
         response = self.client.get(reverse('specific_shop', kwargs={'shop_slug': 'store'}))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '<h3>Red Sox lineup') #make sure that basic markdown was rendered
         self.assertContains(response, '<p>footnote text') #make sure that footnote was rendered
         self.assertContains(response, '230605') #make sure that the related pid appeared in the menu
+
+    def test_shop_url(self):
+        url = reverse('specific_shop', kwargs={'shop_slug': 'abc-def'})
 
 
 class TestDocumentViews(TransactionTestCase):
