@@ -5,20 +5,21 @@
 #    pip-compile
 #
 bdrxml==1.0
-certifi==2019.3.9         # via requests
+certifi==2019.11.28       # via requests
 chardet==3.0.4            # via requests
-django-crispy-forms==1.7.2
+django-crispy-forms==1.8.1
 django-dotenv==1.4.2
 django-markdown-deux==1.0.5
-django-pagedown==0.1.3
-django==1.11.27
+django-pagedown==2.0.3
+django==2.2.10
 eulxml==1.1.3             # via bdrxml
 idna==2.8                 # via requests
-lxml==4.3.3               # via eulxml
+lxml==4.5.0               # via eulxml
 markdown2==2.3.8          # via django-markdown-deux
+file:///opt/local/django_projects/rome_project/ttwr/mysqlclient-1.4.4-cp36-cp36m-linux_x86_64.whl
 ply==3.8                  # via bdrxml, eulxml
-pymysql==0.9.3
-pytz==2019.1              # via django
+pytz==2019.3              # via django
 requests==2.22.0
-six==1.12.0               # via eulxml
-urllib3==1.25.3           # via requests
+six==1.14.0               # via eulxml
+sqlparse==0.3.0           # via django
+urllib3==1.25.8           # via requests
