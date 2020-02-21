@@ -1,5 +1,5 @@
 {% extends "rome_templates/base.html" %}
-{% load static from staticfiles %}
+{% load static %}
 
 {% block title %}The Theater that was Rome - Results{% endblock %}
 {% block page_title %}The Theater that was Rome - Results{% endblock %}
@@ -13,9 +13,9 @@
 {% endblock %}
 
 {% block css_stylesheets %}
-      <link rel="stylesheet" type="text/css" href="{%static 'rome/css/bootstrap.min.css'%}" />
-      <link rel="stylesheet" href="{%static common_style %}" type="text/css" media="screen" />
-      <link rel="stylesheet" href="{%static usr_style %}" type="text/css" media="screen" />
+      <link rel="stylesheet" type="text/css" href="{% static 'rome/css/bootstrap.min.css'%}" />
+      <link rel="stylesheet" href="{% static common_style %}" type="text/css" media="screen" />
+      <link rel="stylesheet" href="{% static usr_style %}" type="text/css" media="screen" />
 {% endblock css_stylesheets %}
 
 {% block javascript %}

@@ -1,0 +1,7 @@
+bdrxml
+django~=2.2.0
+django-crispy-forms
+django-dotenv
+django-markdown-deux
+django-pagedown
+requests

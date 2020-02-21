@@ -1,3 +1,0 @@
--r requirements.txt
-responses
-pip-tools==4.3.0

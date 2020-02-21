@@ -1,11 +1,11 @@
-{% load static from staticfiles %}
+{% load static %}
 <!doctype html>
 <html>
   <head>
     <title> {% block title %}{{title}}{% endblock title %}</title>
     {% block css_stylesheets %}
-      <link rel="stylesheet" href="{%static common_style %}" type="text/css" media="screen" />
-      <link rel="stylesheet" href="{%static usr_style %}" type="text/css" media="screen" />
+      <link rel="stylesheet" href="{% static common_style %}" type="text/css" media="screen" />
+      <link rel="stylesheet" href="{% static usr_style %}" type="text/css" media="screen" />
     {% endblock css_stylesheets %}
 
       <script src="{% static 'rome/js/jquery-1.11.1.min.js' %}" type="text/javascript"></script>
