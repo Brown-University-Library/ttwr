@@ -15,6 +15,7 @@ import xml.etree.ElementTree as ET
 import re
 import requests
 from .models import (
+        InvalidNameError,
         Biography,
         Document,
         Essay,
@@ -798,6 +799,10 @@ def edit_annotation_base(request, image_pid, anno_pid, redirect_url):
     else:
         try:
             context_data.update(get_bound_edit_forms(annotation, AnnotationForm, PersonFormSet, InscriptionFormSet))
+        except InvalidNameError as e:
+            mail_admins(subject='TTWR create/edit annotation error',
+                    message=f'exception: {e}', fail_silently=False)
+            return HttpResponse('Existing annotation is invalid. Email has been sent to bdr@brown.edu.')
         except Exception as e:
             logger.error('loading data to edit %s: %s' % (anno_pid, e))
             import traceback

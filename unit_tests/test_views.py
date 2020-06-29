@@ -1,5 +1,6 @@
 import json
 from django.contrib.auth.models import User
+from django.core import mail
 from django.urls import reverse
 from django.test import TestCase, TransactionTestCase, Client
 import responses
@@ -258,6 +259,20 @@ class TestPrintsViews(TestCase):
         response = auth_client.get(url)
         self.assertEqual(response.status_code, 200, f'{response.status_code} - {response.content.decode("utf8")}')
         self.assertContains(response, 'value="Submit Annotation"')
+
+    @responses.activate
+    def test_edit_print_annotation_get_error(self):
+        responses.add(responses.GET, 'https://localhost/storage/testsuite:2/MODS/',
+                      body=responses_data.INVALID_SAMPLE_ANNOTATION_XML,
+                      status=200,
+                      content_type='text/xml',
+                  )
+        auth_client = get_auth_client()
+        url = reverse('edit_print_annotation', kwargs={'print_id': '1', 'anno_id': '2'})
+        response = auth_client.get(url)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, '[Django] TTWR create/edit annotation error')
+        self.assertTrue('no person with trp_id' in mail.outbox[0].body)
 
 
 class TestEssaysViews(TestCase):

@@ -13,6 +13,10 @@ from django.db import IntegrityError
 from .app_settings import logger
 
 
+class InvalidNameError(RuntimeError):
+    pass
+
+
 # Database Models
 class Biography(models.Model):
 
@@ -581,19 +585,19 @@ class Annotation:
                 try:
                     person = Biography.objects.get(trp_id=trp_id)
                 except Biography.DoesNotExist:
-                    logger.error(f'annotation {self._pid}: no person with trp_id {trp_id}')
-                    person = None
+                    try:
+                        person = Biography.objects.get(name=name.name_parts[0])
+                    except Biography.DoesNotExist:
+                        msg = f'annotation {self._pid}: no person with trp_id "{trp_id}" or name "{name.name_parts[0]}"'
+                        raise InvalidNameError(msg)
                 role_text = name.roles[0].text
                 try:
                     role = Role.objects.get(text=role_text)
                 except Role.DoesNotExist:
-                    logger.error(f'annotation {self._pid}: no role with text %s' % role_text)
-                    role = None
-                #if we can't find the person or the role, don't add it to the form
-                if person and role:
-                    p['person'] = person
-                    p['role'] = role
-                    self._person_formset_data.append(p)
+                    raise InvalidNameError(f'annotation {self._pid}: no role with text %s' % role_text)
+                p['person'] = person
+                p['role'] = role
+                self._person_formset_data.append(p)
         return self._person_formset_data
 
     def get_inscription_formset_data(self):
