@@ -91,5 +91,11 @@ SAMPLE_ANNOTATION_XML = '''<mods:mods xmlns:mods="http://www.loc.gov/mods/v3" xm
       <mods:roleTerm>author</mods:roleTerm>
     </mods:role>
   </mods:name>
+  <mods:name xlink:href="">
+    <mods:namePart>Another name</mods:namePart>
+    <mods:role>
+      <mods:roleTerm>author</mods:roleTerm>
+    </mods:role>
+  </mods:name>
 </mods:mods>'''
 

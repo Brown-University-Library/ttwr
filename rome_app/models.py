@@ -10,6 +10,9 @@ from eulxml.xmlmap import load_xmlobject_from_string
 from bdrxml import mods
 from django.db import IntegrityError
 
+from .app_settings import logger
+
+
 # Database Models
 class Biography(models.Model):
 
@@ -520,6 +523,15 @@ class Annotation:
         mods_obj = load_xmlobject_from_string(r.content, mods.Mods)
         return cls(pid=pid, mods_obj=mods_obj)
 
+    @classmethod
+    def trp_id_from_name_node(cls, name_node):
+        try:
+            trp_id = name_node.get('{%s}href' % app_settings.XLINK_NAMESPACE)
+            trp_id = '%04d' % int(trp_id)
+        except Exception:
+            trp_id = ''
+        return trp_id
+
     def __init__(self, image_pid=None, annotator=None, pid=None, form_data=None, person_formset_data=[], inscription_formset_data=[], mods_obj=None):
         self._image_pid = image_pid #pid of the object that we're adding the annotation for
         self._annotator = annotator
@@ -565,20 +577,23 @@ class Annotation:
             self._person_formset_data = []
             for name in self._mods_obj.names:
                 p = {}
-                trp_id = name.node.get('{%s}href' % app_settings.XLINK_NAMESPACE)
-                trp_id = '%04d' % int(trp_id)
+                trp_id = Annotation.trp_id_from_name_node(name.node)
                 try:
                     person = Biography.objects.get(trp_id=trp_id)
                 except Biography.DoesNotExist:
-                    raise Exception('no person with trp_id %s' % trp_id)
-                p['person'] = person
+                    logger.error(f'annotation {self._pid}: no person with trp_id {trp_id}')
+                    person = None
                 role_text = name.roles[0].text
                 try:
                     role = Role.objects.get(text=role_text)
                 except Role.DoesNotExist:
-                    raise Exception('no role with text %s' % role_text)
-                p['role'] = role
-                self._person_formset_data.append(p)
+                    logger.error(f'annotation {self._pid}: no role with text %s' % role_text)
+                    role = None
+                #if we can't find the person or the role, don't add it to the form
+                if person and role:
+                    p['person'] = person
+                    p['role'] = role
+                    self._person_formset_data.append(p)
         return self._person_formset_data
 
     def get_inscription_formset_data(self):
