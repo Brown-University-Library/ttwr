@@ -647,6 +647,8 @@ class Annotation:
         #   if this is an update, either the new names will be put in, or they don't want any names.
         self._mods_obj.names = []
         for p in self._person_formset_data:
+            if not p['person'].trp_id:
+                raise Exception(f'error getting mods object - no trp_id: {p["person"]}')
             name = mods.Name()
             np = mods.NamePart(text=p['person'].name)
             name.name_parts.append(np)

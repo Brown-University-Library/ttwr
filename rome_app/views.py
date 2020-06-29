@@ -1,7 +1,7 @@
-
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError, HttpResponseRedirect
 from django.forms.formsets import formset_factory
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.mail import mail_admins
 from django.core.paginator import Paginator
 from django.urls import reverse, reverse_lazy
 from django.shortcuts import render
@@ -269,7 +269,11 @@ def get_annotation_detail(annotation):
 
     curr_annot['names'] = []
     for name in root.iter('{http://www.loc.gov/mods/v3}name'):
-        curr_annot['names'].append(_get_annotation_name_info(name))
+        name_info = _get_annotation_name_info(name)
+        if not name_info['trp_id']:
+            mail_admins(subject='TTWR annotation error',
+                    message=f'{annotation["pid"]} annotation missing trp_id: {name_info}')
+        curr_annot['names'].append(name_info)
     curr_annot['names'] = sorted(curr_annot['names'], key=itemgetter("role", "name"))
     for abstract in root.iter('{http://www.loc.gov/mods/v3}abstract'):
         curr_annot['abstract']=abstract.text
