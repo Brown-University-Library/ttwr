@@ -279,7 +279,13 @@ function add_low_toggle_handlers(){
                 {% endif %}
                 
                 {% for name in annotation.names %}
-                    <div class="annot_field"><b>{{ name.role }}:</b> <a href="{% url 'person_detail' name.trp_id %}">{{ name.name }}</a></div>
+                    <div class="annot_field"><b>{{ name.role }}:</b>
+                      {% if name.trp_id %}
+                        <a href="{% url 'person_detail' name.trp_id %}">{{ name.name }}</a>
+                      {% else %}
+                        {{ name.name }}
+                      {% endif %}
+                    </div>
                 {% endfor %}
                 
                 {% if annotation.has_elements.abstract %}

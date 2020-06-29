@@ -2,6 +2,10 @@ from .base import *
 
 DEBUG = True
 
+ADMINS = (
+    ('random', 'random@example.com'),
+)
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',

@@ -1,8 +1,7 @@
-import logging
-
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError, HttpResponseRedirect
 from django.forms.formsets import formset_factory
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.mail import mail_admins
 from django.core.paginator import Paginator
 from django.urls import reverse, reverse_lazy
 from django.shortcuts import render
@@ -16,6 +15,7 @@ import xml.etree.ElementTree as ET
 import re
 import requests
 from .models import (
+        InvalidNameError,
         Biography,
         Document,
         Essay,
@@ -30,9 +30,8 @@ from .models import (
         zoom_viewer_url,
         annotation_xml_url,
     )
-from .app_settings import BDR_SERVER, BOOKS_PER_PAGE, PID_PREFIX
+from .app_settings import BDR_SERVER, BOOKS_PER_PAGE, PID_PREFIX, logger
 
-logger = logging.getLogger('rome')
 
 def annotation_order(s): 
     retval = re.sub("[^0-9]", "", first_word(s['orig_title'] if 'orig_title' in s else s['title']))
@@ -244,6 +243,15 @@ def page_detail(request, page_id, book_id=None):
     return render(request, 'rome_templates/page_detail.html', context)
 
 
+def _get_annotation_name_info(mods_name):
+    trp_id = Annotation.trp_id_from_name_node(mods_name)
+    return {
+        'name': mods_name[0].text,
+        'role': mods_name[1][0].text.capitalize() if(mods_name[1][0].text) else "Contributor",
+        'trp_id': trp_id,
+    }
+
+
 def get_annotation_detail(annotation):
     curr_annot={}
     curr_annot['xml_uri'] = annotation['xml_uri']
@@ -260,14 +268,14 @@ def get_annotation_detail(annotation):
             curr_annot['orig_title'] = title[0].text if title[0].text else "[No Title]"
         curr_annot['has_elements']['title'] += 1
 
-    curr_annot['names']=[]
+    curr_annot['names'] = []
     for name in root.iter('{http://www.loc.gov/mods/v3}name'):
-        curr_annot['names'].append({
-            'name':name[0].text,
-            'role':name[1][0].text.capitalize() if(name[1][0].text) else "Contributor",
-            'trp_id': "%04d" % int(name.attrib['{http://www.w3.org/1999/xlink}href']),
-        })
-        curr_annot['names'] = sorted(curr_annot['names'], key=itemgetter("role", "name"))
+        name_info = _get_annotation_name_info(name)
+        if not name_info['trp_id']:
+            mail_admins(subject='TTWR annotation error',
+                    message=f'{annotation["pid"]} annotation missing trp_id: {name_info}')
+        curr_annot['names'].append(name_info)
+    curr_annot['names'] = sorted(curr_annot['names'], key=itemgetter("role", "name"))
     for abstract in root.iter('{http://www.loc.gov/mods/v3}abstract'):
         curr_annot['abstract']=abstract.text
         curr_annot['has_elements']['abstract']=1
@@ -791,8 +799,14 @@ def edit_annotation_base(request, image_pid, anno_pid, redirect_url):
     else:
         try:
             context_data.update(get_bound_edit_forms(annotation, AnnotationForm, PersonFormSet, InscriptionFormSet))
+        except InvalidNameError as e:
+            mail_admins(subject='TTWR create/edit annotation error',
+                    message=f'exception: {e}', fail_silently=False)
+            return HttpResponse('Existing annotation is invalid. Email has been sent to bdr@brown.edu.')
         except Exception as e:
-            logger.error(u'loading data to edit %s: %s' % (anno_pid, e))
+            logger.error('loading data to edit %s: %s' % (anno_pid, e))
+            import traceback
+            logger.error(traceback.format_exc())
             return HttpResponseServerError('Internal server error.')
 
     image_link = zoom_viewer_url(image_pid)

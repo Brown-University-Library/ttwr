@@ -93,3 +93,18 @@ SAMPLE_ANNOTATION_XML = '''<mods:mods xmlns:mods="http://www.loc.gov/mods/v3" xm
   </mods:name>
 </mods:mods>'''
 
+INVALID_SAMPLE_ANNOTATION_XML = '''<mods:mods xmlns:mods="http://www.loc.gov/mods/v3" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd">
+  <mods:titleInfo lang="la">
+    <mods:title>Roma vetus ac recens utriusque Ædificiis illustrata</mods:title>
+  </mods:titleInfo>
+  <mods:titleInfo lang="en">
+    <mods:title>Ancient and Modern Rome</mods:title>
+  </mods:titleInfo>
+  <mods:name xlink:href="">
+    <mods:namePart>Donati, Alessandro</mods:namePart>
+    <mods:role>
+      <mods:roleTerm>author</mods:roleTerm>
+    </mods:role>
+  </mods:name>
+</mods:mods>'''
+

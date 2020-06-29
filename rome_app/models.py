@@ -10,6 +10,13 @@ from eulxml.xmlmap import load_xmlobject_from_string
 from bdrxml import mods
 from django.db import IntegrityError
 
+from .app_settings import logger
+
+
+class InvalidNameError(RuntimeError):
+    pass
+
+
 # Database Models
 class Biography(models.Model):
 
@@ -520,6 +527,15 @@ class Annotation:
         mods_obj = load_xmlobject_from_string(r.content, mods.Mods)
         return cls(pid=pid, mods_obj=mods_obj)
 
+    @classmethod
+    def trp_id_from_name_node(cls, name_node):
+        try:
+            trp_id = name_node.get('{%s}href' % app_settings.XLINK_NAMESPACE)
+            trp_id = '%04d' % int(trp_id)
+        except Exception:
+            trp_id = ''
+        return trp_id
+
     def __init__(self, image_pid=None, annotator=None, pid=None, form_data=None, person_formset_data=[], inscription_formset_data=[], mods_obj=None):
         self._image_pid = image_pid #pid of the object that we're adding the annotation for
         self._annotator = annotator
@@ -565,18 +581,21 @@ class Annotation:
             self._person_formset_data = []
             for name in self._mods_obj.names:
                 p = {}
-                trp_id = name.node.get('{%s}href' % app_settings.XLINK_NAMESPACE)
-                trp_id = '%04d' % int(trp_id)
+                trp_id = Annotation.trp_id_from_name_node(name.node)
                 try:
                     person = Biography.objects.get(trp_id=trp_id)
                 except Biography.DoesNotExist:
-                    raise Exception('no person with trp_id %s' % trp_id)
-                p['person'] = person
+                    try:
+                        person = Biography.objects.get(name=name.name_parts[0])
+                    except Biography.DoesNotExist:
+                        msg = f'annotation {self._pid}: no person with trp_id "{trp_id}" or name "{name.name_parts[0]}"'
+                        raise InvalidNameError(msg)
                 role_text = name.roles[0].text
                 try:
                     role = Role.objects.get(text=role_text)
                 except Role.DoesNotExist:
-                    raise Exception('no role with text %s' % role_text)
+                    raise InvalidNameError(f'annotation {self._pid}: no role with text %s' % role_text)
+                p['person'] = person
                 p['role'] = role
                 self._person_formset_data.append(p)
         return self._person_formset_data
@@ -632,6 +651,8 @@ class Annotation:
         #   if this is an update, either the new names will be put in, or they don't want any names.
         self._mods_obj.names = []
         for p in self._person_formset_data:
+            if not p['person'].trp_id:
+                raise Exception(f'error getting mods object - no trp_id: {p["person"]}')
             name = mods.Name()
             np = mods.NamePart(text=p['person'].name)
             name.name_parts.append(np)
