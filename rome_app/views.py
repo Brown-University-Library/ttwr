@@ -346,7 +346,7 @@ def print_list(request):
     print_list = Print.find_prints(collection)
     context['num_results'] = len(print_list)
 
-    print_list = sorted(print_list[1], key=itemgetter(sort_by,'authors','title','date'))
+    print_list = sorted(print_list, key=itemgetter(sort_by,'authors','title','date'))
     for i, p in enumerate(print_list):
         p['number_in_list'] = i+1
     context['print_list'] = print_list

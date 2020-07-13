@@ -360,15 +360,10 @@ class Print(Page):
         r = requests.get(url)
         if r.ok:
             prints_json = json.loads(r.text)
-            prints_list = []
-            pages = []
-            pages1 = []
-            for index, doc in enumerate(prints_json['response']['docs']):
-                pages.append(Print.get_print_info_from_solr_doc(doc, collection))
-                if index > 1:
-                    pages1.append(Print.get_print_info_from_solr_doc(doc, collection))
-            prints_list = [pages, pages1]
-            return prints_list
+            prints = []
+            for doc in prints_json['response']['docs']:
+                prints.append(Print.get_print_info_from_solr_doc(doc, collection))
+            return prints
         else:
             logger.error('error fetching prints: %s - %s' % (r.status_code, r.content))
             return []
