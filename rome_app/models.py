@@ -361,7 +361,7 @@ class Print(Page):
         if r.ok:
             prints_json = json.loads(r.text)
             prints = []
-            for index, doc in enumerate(prints_json['response']['docs']):
+            for doc in prints_json['response']['docs']:
                 prints.append(Print.get_print_info_from_solr_doc(doc, collection))
             return prints
         else:
