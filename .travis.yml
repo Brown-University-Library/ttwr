@@ -6,7 +6,7 @@ python:
   - "3.7"
 
 install: 
- - pip install -r ./requirements/requirements_dev.txt
+ - pip install -r ./requirements/dev.txt
 
 script: python run_unit_tests.py
 
