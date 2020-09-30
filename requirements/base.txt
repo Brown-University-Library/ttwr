@@ -15,7 +15,7 @@ django==2.2.16            # via -r base.in, django-pagedown
 eulxml==1.1.3             # via bdrxml
 idna==2.8                 # via requests
 lxml==4.5.0               # via eulxml
-markdown2==2.3.8          # via django-markdown-deux
+markdown2==2.3.9          # via django-markdown-deux
 ply==3.8                  # via bdrxml, eulxml
 pytz==2019.3              # via django
 requests==2.22.0          # via -r base.in
