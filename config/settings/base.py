@@ -63,7 +63,7 @@ MARKDOWN_DEUX_STYLES = {
     },
 }
 
-LOG_DIR = os.path.normpath(os.path.join(BASE_DIR, 'logs'))
+LOG_DIR = get_env_setting('LOG_DIR')
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -85,22 +85,33 @@ LOGGING = {
         },
         'log_file':{
             'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
+            'class': 'logging.FileHandler',
             'filename': os.path.join(LOG_DIR, 'rome.log'),
-            'maxBytes': 16777216, # 16megabytes
             'formatter': 'verbose'
+        },
+        'null': {
+            'class': 'logging.NullHandler',
         },
     },
     'loggers': {
         'django.request': {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
-            'propagate': True,
+            'propagate': False,
+        },
+        'django.security': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.security.DisallowedHost': {
+            'handlers': ['null'], #do nothing for disallowed hosts errors
+            'propagate': False,
         },
         'rome': {
             'handlers': ['log_file'],
             'level': 'DEBUG',
-            'propagate': True,
+            'propagate': False,
         },
     }
 }
