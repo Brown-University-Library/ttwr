@@ -26,7 +26,7 @@ eulxml==1.1.3
     # via bdrxml
 idna==2.8
     # via requests
-lxml==4.5.0
+lxml==4.6.2
     # via eulxml
 markdown2==2.3.9
     # via django-markdown-deux
@@ -36,11 +36,11 @@ ply==3.8
     #   eulxml
 pytz==2019.3
     # via django
-requests==2.22.0
+requests==2.25.1
     # via -r base.in
 six==1.14.0
     # via eulxml
 sqlparse==0.3.0
     # via django
-urllib3==1.25.8
+urllib3==1.26.3
     # via requests
