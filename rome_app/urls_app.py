@@ -4,6 +4,9 @@ from django.contrib.auth.views import LoginView
 from rome_app import views
 
 
+BDR_ID_RE = '[a-z0-9]+'
+
+
 urlpatterns = [
     #admin/user
     url(r'^admin/', admin.site.urls),
@@ -17,14 +20,14 @@ urlpatterns = [
 
     #books, prints, essays, shops...
     url(r'^books/$', views.book_list, name='books'),
-    url(r'^books/(?P<book_id>\d+)/$', views.book_detail, name='thumbnail_viewer'),
-    url(r'^books/(?P<book_id>\d+)/(?P<page_id>\d+)/$', views.page_detail, name='book_page_viewer'),
-    url(r'^books/(?P<book_id>\d+)/(?P<page_id>\d+)/annotations/new/$', views.new_annotation, name='new_annotation'),
-    url(r'^books/(?P<book_id>\d+)/(?P<page_id>\d+)/annotations/(?P<anno_id>\d+)/edit/$', views.edit_annotation, name='edit_annotation'),
+    url(fr'^books/(?P<book_id>{BDR_ID_RE})/$', views.book_detail, name='thumbnail_viewer'),
+    url(fr'^books/(?P<book_id>{BDR_ID_RE})/(?P<page_id>{BDR_ID_RE})/$', views.page_detail, name='book_page_viewer'),
+    url(fr'^books/(?P<book_id>{BDR_ID_RE})/(?P<page_id>{BDR_ID_RE})/annotations/new/$', views.new_annotation, name='new_annotation'),
+    url(fr'^books/(?P<book_id>{BDR_ID_RE})/(?P<page_id>{BDR_ID_RE})/annotations/(?P<anno_id>{BDR_ID_RE})/edit/$', views.edit_annotation, name='edit_annotation'),
     url(r'^prints/$', views.print_list, name='prints'),
-    url(r'^prints/(?P<print_id>\d+)/$', views.print_detail, name='specific_print'),
-    url(r'^prints/(?P<print_id>\d+)/annotations/new/$', views.new_print_annotation, name='new_print_annotation'),
-    url(r'^prints/(?P<print_id>\d+)/annotations/(?P<anno_id>\d+)/edit/$', views.edit_print_annotation, name='edit_print_annotation'),
+    url(fr'^prints/(?P<print_id>{BDR_ID_RE})/$', views.print_detail, name='specific_print'),
+    url(fr'^prints/(?P<print_id>{BDR_ID_RE})/annotations/new/$', views.new_print_annotation, name='new_print_annotation'),
+    url(fr'^prints/(?P<print_id>{BDR_ID_RE})/annotations/(?P<anno_id>{BDR_ID_RE})/edit/$', views.edit_print_annotation, name='edit_print_annotation'),
     url(r'^essays/$', views.essay_list, name='essays'),
     url(r'^essays/(?P<essay_slug>[\w-]+)/$', views.essay_detail, name='specific_essay'),
     url(r'^people/$', views.biography_list, name='people'),
