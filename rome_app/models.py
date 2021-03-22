@@ -16,6 +16,9 @@ from .app_settings import logger
 class InvalidNameError(RuntimeError):
     pass
 
+class BdrApiError(RuntimeError):
+    pass
+
 
 # Database Models
 class Biography(models.Model):
@@ -201,7 +204,7 @@ class BDRObject:
         if name in self.data:
             return self.data.get(name)
         else:
-            raise AttributeError
+            raise AttributeError(f'no {name} field in data')
 
     def __eq__(self, other):
         sid = self.data.get("pid", "").split(":")[-1]
@@ -214,8 +217,12 @@ class BDRObject:
     OBJECT_TYPE = "*"
     @classmethod
     def search(cls, query="*", rows=6000):
-        url1 = 'https://%s/api/collections/621/?q=%s&fq=object_type:%s&fl=*&fq=discover:BDR_PUBLIC&rows=%s' % (app_settings.BDR_SERVER, query, cls.OBJECT_TYPE, rows)
-        objects_json = json.loads(requests.get(url1).text)
+        query = f'?q={query}&fq=object_type:{cls.OBJECT_TYPE}&fl=*&fq=discover:BDR_PUBLIC&rows={rows}'
+        url = f'https://{app_settings.BDR_SERVER}/api/collections/621/{query}'
+        r = requests.get(url)
+        if not r.ok:
+            raise BdrApiError(f'error from BDR Apis: {r.status_code} {r.text}')
+        objects_json = json.loads(r.text)
         num_objects = objects_json['items']['numFound']
         if num_objects>rows: #only reload if we need to find more bdr_objects
             return cls.search(query, num_objects)

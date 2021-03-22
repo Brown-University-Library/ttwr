@@ -93,7 +93,11 @@ def book_list(request):
         buonanno = "+AND+(note:buonanno)"
     elif(collection == 'library'):
         buonanno = "+NOT+(note:buonanno)"
-    book_list=Book.search(query="genre_aat:book*"+buonanno)
+    try:
+        book_list = Book.search(query="genre_aat:book*"+buonanno)
+    except Exception as e:
+        logger.error(f'book_list view error getting book_list data: {e}')
+        return HttpResponse('error loading list of books', status=500)
     sort_by = Book.SORT_OPTIONS.get(sort_by, 'title_sort')
     book_list=sorted(book_list,key=methodcaller('sort_key', sort_by))
 
@@ -197,14 +201,14 @@ def page_detail(request, page_id, book_id=None):
             else:
                 authors += author_list[i]+"; "
         context['authors'] = authors
-    except:
+    except Exception:
         context['authors'] = "contributor(s) not available"
     try:
         context['date'] = book_json['dateIssued'][0:4]
-    except:
+    except Exception:
         try:
             context['date'] = book_json['dateCreated'][0:4]
-        except:
+        except Exception:
             context['date'] = "n.d."
     context['note'] = "no note"
     try:
@@ -287,22 +291,20 @@ def get_annotation_detail(annotation):
             for impression in origin.getiterator("{http://www.loc.gov/mods/v3}dateOther"):
                 try:
                     curr_annot['impression']=impression.text
-                    if(impression.text != None):
+                    if impression.text != None:
                         curr_annot['has_elements']['impression']=1
-                except:
+                except Exception:
                     pass
-
             curr_annot['origin']=origin[0].date
             curr_annot['has_elements']['origin']=1
-
-        except:
+        except Exception:
             pass
     for impression in root.iter('{http://www.loc.gov/mods/v3}dateOther'):
         try:
             if impression.attrib['type'] == "impression":
                 curr_annot['impression']=impression[0].text
                 curr_annot['has_elements']['impression']=1
-        except:
+        except Exception:
             pass
     curr_annot['inscriptions'] = []
     curr_annot['annotations'] = []
@@ -404,14 +406,14 @@ def print_detail(request, print_id):
             else:
                 authors+=author_list[i]+"; "
         context['authors']=authors
-    except:
+    except Exception:
         context['authors']="contributor(s) not available"
     try:
-        context['date']=print_json['dateIssued'][0:4]
-    except:
+        context['date'] = print_json['dateIssued'][0:4]
+    except Exception:
         try:
             context['date']=print_json['dateCreated'][0:4]
-        except:
+        except Exception:
             context['date']="n.d."
 
     # annotations/metadata
@@ -750,7 +752,7 @@ def new_print_annotation(request, print_id):
                 logger.info('%s added annotation %s for %s' % (request.user.username, response['pid'], print_id))
                 return HttpResponseRedirect(reverse('specific_print', kwargs={'print_id': print_id}))
             except Exception as e:
-                logger.error('%s' % e)
+                logger.error(str(e))
                 return HttpResponseServerError('Internal server error. Check log.')
     else:
         inscription_formset = InscriptionFormSet(prefix='inscriptions')
@@ -792,7 +794,7 @@ def edit_annotation_base(request, image_pid, anno_pid, redirect_url):
                 logger.info('%s edited annotation %s' % (request.user.username, anno_pid))
                 return HttpResponseRedirect(redirect_url)
             except Exception as e:
-                logger.error('%s' % e)
+                logger.error(str(e))
                 return HttpResponseServerError('Internal server error. Check log.')
         else:
             context_data.update({'form': form, 'person_formset': person_formset, 'inscription_formset': inscription_formset})

@@ -79,6 +79,27 @@ class TestStaticViews(TestCase):
 class TestBooksViews(TestCase):
 
     @responses.activate
+    def test_book_list_api_error(self):
+        responses.add(responses.GET, 'https://localhost/api/collections/621/', status=500)
+        url = reverse('books')
+        response = self.client.get(url)
+        self.assertContains(response, 'error loading list of books', status_code=500)
+
+    @responses.activate
+    def test_book_list(self):
+        data = {
+                'items': {
+                    'numFound': 1,
+                    'docs': [{'pid': 'testsuite:1234abcd', 'primary_title': 'Title', 'uri': 'http://localhost/studio/testsuite:1234abcd/'}]},
+            }
+        responses.add(responses.GET, 'https://localhost/api/collections/621/', body=json.dumps(data),
+                status=200, content_type='application/json')
+        url = reverse('books')
+        response = self.client.get(url)
+        self.assertContains(response, 'Full Title:')
+        self.assertContains(response, 'ID: 1234abcd')
+
+    @responses.activate
     def test_book_not_found(self):
         responses.add(responses.GET, 'https://localhost/api/items/testsuite:123/',
                       body='',
@@ -320,6 +341,7 @@ class TestEssaysViews(TestCase):
         self.assertContains(response, '<p>footnote text') #make sure that footnote was rendered
         self.assertContains(response, '230605') #make sure that the related pid appeared in the menu
 
+
 class TestPeopleViews(TransactionTestCase):
 
     def test_people(self):
@@ -363,6 +385,7 @@ class TestPeopleViews(TransactionTestCase):
         response = self.client.get(reverse('person_detail', kwargs={'trp_id': '0001'}))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, u'Frëd')
+
 
 class TestShopsViews(TransactionTestCase):
 
