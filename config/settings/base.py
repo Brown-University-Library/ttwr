@@ -27,6 +27,7 @@ TEMPLATES = [
             'context_processors': [
                 'django.contrib.messages.context_processors.messages',
                 'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.request',
             ]
         },
     },
@@ -46,6 +47,8 @@ INSTALLED_APPS = (
 )
 
 ROOT_URLCONF = 'config.urls'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 STATIC_ROOT = os.path.normpath(os.path.join(BASE_DIR, 'assets'))
 
