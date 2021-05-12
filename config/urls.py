@@ -1,8 +1,8 @@
-from django.conf.urls import include, url
+from django.urls import include, re_path
 from django.contrib import admin
 
 admin.autodiscover()
 
 urlpatterns = [
-  url( r'^',  include('rome_app.urls_app') ),
+  re_path( r'^',  include('rome_app.urls_app') ),
 ]

@@ -4,32 +4,36 @@
 #
 #    pip-compile base.in
 #
-bdrxml==1.0
+asgiref==3.3.4
+    # via django
+bdrxml==1.2
     # via -r base.in
-certifi==2019.11.28
+certifi==2020.12.5
     # via requests
-chardet==3.0.4
+chardet==4.0.0
     # via requests
-django-crispy-forms==1.8.1
+django-crispy-forms==1.11.2
     # via -r base.in
 django-dotenv==1.4.2
     # via -r base.in
 django-markdown-deux==1.0.5
     # via -r base.in
-django-pagedown==2.0.3
+django-pagedown==2.2.0
     # via -r base.in
-django==2.2.20
+django==3.2.2
     # via
     #   -r base.in
     #   django-pagedown
 eulxml==1.1.3
     # via bdrxml
-idna==2.8
+idna==2.10
     # via requests
 lxml==4.6.3
     # via eulxml
-markdown2==2.3.9
+markdown2==2.4.0
     # via django-markdown-deux
+pillow==8.2.0
+    # via django-pagedown
 ply==3.8
     # via
     #   bdrxml
@@ -38,9 +42,9 @@ pytz==2021.1
     # via django
 requests==2.25.1
     # via -r base.in
-six==1.14.0
+six==1.16.0
     # via eulxml
-sqlparse==0.3.0
+sqlparse==0.4.1
     # via django
 urllib3==1.26.4
     # via requests

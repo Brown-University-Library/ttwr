@@ -288,7 +288,7 @@ def get_annotation_detail(annotation):
         curr_annot['has_elements']['genre']=1
     for origin in root.iter('{http://www.loc.gov/mods/v3}originInfo'):
         try:
-            for impression in origin.getiterator("{http://www.loc.gov/mods/v3}dateOther"):
+            for impression in origin.iter('{http://www.loc.gov/mods/v3}dateOther'):
                 try:
                     curr_annot['impression']=impression.text
                     if impression.text != None:

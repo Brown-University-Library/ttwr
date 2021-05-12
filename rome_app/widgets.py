@@ -3,7 +3,7 @@ from django import forms
 from django.templatetags.static import static
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 
 class AddAnotherWidgetWrapper(forms.Widget):
