@@ -20,7 +20,7 @@ django-markdown-deux==1.0.5
     # via -r base.in
 django-pagedown==2.2.0
     # via -r base.in
-django==3.2.2
+django==3.2.4
     # via
     #   -r base.in
     #   django-pagedown
