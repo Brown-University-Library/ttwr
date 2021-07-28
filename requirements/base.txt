@@ -10,7 +10,7 @@ bdrxml==1.2
     # via -r base.in
 certifi==2020.12.5
     # via requests
-chardet==4.0.0
+charset-normalizer==2.0.3
     # via requests
 django-crispy-forms==1.11.2
     # via -r base.in
@@ -20,7 +20,7 @@ django-markdown-deux==1.0.5
     # via -r base.in
 django-pagedown==2.2.0
     # via -r base.in
-django==3.2.4
+django==3.2.5
     # via
     #   -r base.in
     #   django-pagedown
@@ -40,7 +40,7 @@ ply==3.8
     #   eulxml
 pytz==2021.1
     # via django
-requests==2.25.1
+requests==2.26.0
     # via -r base.in
 six==1.16.0
     # via eulxml
