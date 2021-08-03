@@ -630,6 +630,11 @@ class Annotation:
             english_title.title = self._form_data['english_title']
             english_title.node.set('lang', 'en')
             self._mods_obj.title_info_list.append(english_title)
+        #make sure there's a resource type
+        #   it's not in the form data - we just use a default
+        #   but don't overwrite an existing resource type
+        if not self._mods_obj.resource_types:
+            self._mods_obj.resource_types.append(mods.ResourceType(authority='primo', text='text_resources'))
         if self._form_data['genre']:
             self._mods_obj.genres = [] #clear out any old genres
             genre = mods.Genre(text=self._form_data['genre'].text)
@@ -680,16 +685,16 @@ class Annotation:
 
     def _get_params(self):
         params = {'identity': app_settings.BDR_IDENTITY, 'authorization_code': app_settings.BDR_AUTH_CODE}
-        params['mods'] = json.dumps({u'xml_data': self.to_mods_xml()})
+        params['mods'] = json.dumps({'xml_data': self.to_mods_xml()})
         params['ir'] = json.dumps({'parameters': {'ir_collection_id': 621}})
-        params['rels'] = json.dumps({u'isAnnotationOf': self._image_pid})
+        params['rels'] = json.dumps({'isAnnotationOf': self._image_pid})
         params['rights'] = json.dumps({'parameters': {'owner_id': app_settings.BDR_IDENTITY, 'additional_rights': 'BDR_PUBLIC#display'}})
         params['content_model'] = 'Annotation'
         return params
 
     def _get_update_params(self):
         params = {'identity': app_settings.BDR_IDENTITY, 'authorization_code': app_settings.BDR_AUTH_CODE}
-        params['mods'] = json.dumps({u'xml_data': self.to_mods_xml(update=True)})
+        params['mods'] = json.dumps({'xml_data': self.to_mods_xml(update=True)})
         if self._pid:
             params['pid'] = self._pid
         else:
@@ -723,4 +728,3 @@ def get_full_title_static(data):
             return '%s %s' % (data['nonsort'], data['primary_title'])
     else:
         return '%s' % data['primary_title']
-
