@@ -20,7 +20,7 @@ django-markdown-deux==1.0.5
     # via -r base.in
 django-pagedown==2.2.0
     # via -r base.in
-django==3.2.6
+django==3.2.7
     # via
     #   -r base.in
     #   django-pagedown
@@ -34,7 +34,7 @@ lxml==4.6.3
     # via eulxml
 markdown2==2.4.0
     # via django-markdown-deux
-pillow==8.2.0
+pillow==8.3.2
     # via django-pagedown
 ply==3.8
     # via
@@ -50,7 +50,7 @@ requests==2.26.0
     # via -r base.in
 six==1.16.0
     # via eulxml
-sqlparse==0.4.1
+sqlparse==0.4.2
     # via django
 urllib3==1.26.6
     # via requests
