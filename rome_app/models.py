@@ -1,16 +1,17 @@
-import re
 from collections import OrderedDict
-from django.http import Http404
-from django.db import models
-from django.urls import reverse
-from . import app_settings
-import requests
 import json
+import re
+from django.conf import settings
+from django.http import Http404
+from django.db import models, IntegrityError
+from django.urls import reverse
+import requests
 from eulxml.xmlmap import load_xmlobject_from_string
 from bdrxml import mods
-from django.db import IntegrityError
+from . import app_settings
 
-from .app_settings import logger
+
+logger = app_settings.logger
 
 
 class InvalidNameError(RuntimeError):
@@ -109,20 +110,18 @@ class Essay(models.Model):
         if not self.pids:
             return {}
         else:
-            query = self._get_related_works_query()
+            query = get_related_works_query(self.pids)
             query_uri = 'https://%s/api/search/?q=%s' % (app_settings.BDR_SERVER, query)
             r = requests.get(query_uri)
             response_data = r.json() #automatically parses the content into json
             annotations = response_data['response']['docs']
             return annotations
 
-    def _get_related_works_query(self):
-        if self.pids is None:
-            return None
-        else:
-            pidlist = ["pid:\"%s:%s\"" % (app_settings.PID_PREFIX, p) for p in self.pids.split(",")]
-            query = "ir_collection_id:621+AND+display:BDR_PUBLIC+AND+(%s)&fl=primary_title,rel_has_pagination_ssim,rel_is_part_of_ssim,creator,pid,genre" % "+OR+".join(pidlist)
-            return query
+def get_related_works_query(pids):
+    if pids is not None:
+        pidlist = ["pid:\"%s:%s\"" % (app_settings.PID_PREFIX, p) for p in pids.split(",")]
+        query = 'rel_is_member_of_collection_ssim:"%s"+AND+display:BDR_PUBLIC+AND+(%s)&fl=primary_title,rel_has_pagination_ssim,rel_is_part_of_ssim,creator,pid,genre' % (settings.TTWR_COLLECTION_PID, '+OR+'.join(pidlist))
+        return query
 
 
 class Static(models.Model):
@@ -149,20 +148,12 @@ class Shop(models.Model):
         if not self.pids:
             return {}
         else:
-            query = self._get_related_works_query()
+            query = get_related_works_query(self.pids)
             query_uri = 'https://%s/api/search/?q=%s' % (app_settings.BDR_SERVER, query)
             r = requests.get(query_uri)
             response_data = r.json() #automatically parses the content into json
             annotations = response_data['response']['docs']
             return annotations
-
-    def _get_related_works_query(self):
-        if self.pids is None:
-            return None
-        else:
-            pidlist = ["pid:\"%s:%s\"" % (app_settings.PID_PREFIX, p) for p in self.pids.split(",")]
-            query = "ir_collection_id:621+AND+display:BDR_PUBLIC+AND+(%s)&fl=primary_title,rel_has_pagination_ssim,rel_is_part_of_ssim,creator,pid,genre" % "+OR+".join(pidlist)
-            return query
 
  
 class Genre(models.Model):
@@ -218,7 +209,7 @@ class BDRObject:
     @classmethod
     def search(cls, query="*", rows=6000):
         query = f'?q={query}&fq=object_type:{cls.OBJECT_TYPE}&fl=*&fq=discover:BDR_PUBLIC&rows={rows}'
-        url = f'https://{app_settings.BDR_SERVER}/api/collections/621/{query}'
+        url = f'https://{app_settings.BDR_SERVER}/api/collections/{settings.TTWR_COLLECTION_PID}/{query}'
         r = requests.get(url)
         if not r.ok:
             raise BdrApiError(f'error from BDR Apis: {r.status_code} {r.text}')
@@ -362,7 +353,7 @@ class Print(Page):
             collection_query = '+NOT+primary_title:"Chinea"+NOT+subtitle:"Chinea"'
 
         num_prints_estimate = 1000
-        query = 'ir_collection_id:621+AND+(genre_aat:"etchings (prints)"+OR+genre_aat:"engravings (prints)")%s' % collection_query
+        query = 'rel_is_member_of_collection_ssim:"%s"+AND+(genre_aat:"etchings (prints)"+OR+genre_aat:"engravings (prints)")%s' % (settings.TTWR_COLLECTION_PID, collection_query)
         url = 'https://%s/api/search/?q=%s&rows=%s' % (app_settings.BDR_SERVER, query, num_prints_estimate)
         r = requests.get(url)
         if r.ok:
@@ -434,7 +425,7 @@ class Print(Page):
 def _get_annotations_for_person(bio_name):
     #Look up every annotation for a person
     num_prints_estimate = 6000
-    query_uri = 'https://%s/api/search/?q=ir_collection_id:621+AND+object_type:"annotation"+AND+contributor:"%s"+AND+display:BDR_PUBLIC&rows=%s&fl=rel_is_annotation_of_ssim,primary_title,pid,nonsort' % (app_settings.BDR_SERVER, bio_name, num_prints_estimate)
+    query_uri = 'https://%s/api/search/?q=rel_is_member_of_collection_ssim:"%s"+AND+object_type:"annotation"+AND+contributor:"%s"+AND+display:BDR_PUBLIC&rows=%s&fl=rel_is_annotation_of_ssim,primary_title,pid,nonsort' % (app_settings.BDR_SERVER, settings.TTWR_COLLECTION_PID, bio_name, num_prints_estimate)
     annotations = json.loads(requests.get(query_uri).text)['response']['docs']
     return annotations
 
