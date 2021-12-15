@@ -118,3 +118,5 @@ LOGGING = {
         },
     }
 }
+
+TTWR_COLLECTION_PID = 'bdr:240509' #ID: 621

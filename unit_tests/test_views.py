@@ -1,4 +1,5 @@
 import json
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core import mail
 from django.urls import reverse
@@ -80,7 +81,7 @@ class TestBooksViews(TestCase):
 
     @responses.activate
     def test_book_list_api_error(self):
-        responses.add(responses.GET, 'https://localhost/api/collections/621/', status=500)
+        responses.add(responses.GET, f'https://localhost/api/collections/{settings.TTWR_COLLECTION_PID}/', status=500)
         url = reverse('books')
         response = self.client.get(url)
         self.assertContains(response, 'error loading list of books', status_code=500)
@@ -92,7 +93,7 @@ class TestBooksViews(TestCase):
                     'numFound': 1,
                     'docs': [{'pid': 'testsuite:1234abcd', 'primary_title': 'Title', 'uri': 'http://localhost/studio/testsuite:1234abcd/'}]},
             }
-        responses.add(responses.GET, 'https://localhost/api/collections/621/', body=json.dumps(data),
+        responses.add(responses.GET, f'https://localhost/api/collections/{settings.TTWR_COLLECTION_PID}/', body=json.dumps(data),
                 status=200, content_type='application/json')
         url = reverse('books')
         response = self.client.get(url)
@@ -219,7 +220,7 @@ class TestPrintsViews(TestCase):
 
     @responses.activate
     def test_print_list(self):
-        prints_search_url = 'https://localhost/api/search/?q=ir_collection_id:621+AND+(genre_aat:%22etchings%20(prints)%22+OR+genre_aat:%22engravings%20(prints)%22)&rows=1000'
+        prints_search_url = f'https://localhost/api/search/?q=rel_is_member_of_collection_ssim:"{settings.TTWR_COLLECTION_PID}"+AND+(genre_aat:%22etchings%20(prints)%22+OR+genre_aat:%22engravings%20(prints)%22)&rows=1000'
         responses.add(responses.GET, prints_search_url,
                       body=responses_data.PRINTS,
                       status=200,
@@ -237,7 +238,7 @@ class TestPrintsViews(TestCase):
 
     @responses.activate
     def test_print_list_sort_by(self):
-        prints_search_url = 'https://localhost/api/search/?q=ir_collection_id:621+AND+(genre_aat:%22etchings%20(prints)%22+OR+genre_aat:%22engravings%20(prints)%22)&rows=1000'
+        prints_search_url = f'https://localhost/api/search/?q=rel_is_member_of_collection_ssim:"{settings.TTWR_COLLECTION_PID}"+AND+(genre_aat:%22etchings%20(prints)%22+OR+genre_aat:%22engravings%20(prints)%22)&rows=1000'
         responses.add(responses.GET, prints_search_url,
                       body=responses_data.PRINTS,
                       status=200,
@@ -352,7 +353,7 @@ class TestPeopleViews(TransactionTestCase):
 
     @responses.activate
     def test_person(self):
-        base_url = 'https://localhost/api/collections/621/'
+        base_url = f'https://localhost/api/collections/{settings.TTWR_COLLECTION_PID}/'
         params = 'q=genre_aat:books+AND+name:%22Fr%C3%ABd%22&fq=object_type:implicit-set&fl=*&fq=discover:BDR_PUBLIC&rows=6000'
         responses.add(responses.GET, '%s?%s' % (base_url, params),
                       body=responses_data.BIO_BOOKS,
@@ -367,7 +368,7 @@ class TestPeopleViews(TransactionTestCase):
                       content_type='application/json',
                       match_querystring=True,
                   )
-        anno_search_url = 'https://localhost/api/search/?q=ir_collection_id:621+AND+object_type:%22annotation%22+AND+contributor:%22Fr%C3%ABd%22+AND+display:BDR_PUBLIC&rows=6000&fl=rel_is_annotation_of_ssim,primary_title,pid,nonsort'
+        anno_search_url = f'https://localhost/api/search/?q=rel_is_member_of_collection_ssim:"{settings.TTWR_COLLECTION_PID}"+AND+object_type:%22annotation%22+AND+contributor:%22Fr%C3%ABd%22+AND+display:BDR_PUBLIC&rows=6000&fl=rel_is_annotation_of_ssim,primary_title,pid,nonsort'
         responses.add(responses.GET, anno_search_url,
                       body=responses_data.ANNOTATIONS,
                       status=200,
@@ -381,10 +382,10 @@ class TestPeopleViews(TransactionTestCase):
                       content_type='application/json',
                       match_querystring=True,
                   )
-        models.Biography.objects.create(name=u'Frëd', trp_id='0001')
+        models.Biography.objects.create(name='Frëd', trp_id='0001')
         response = self.client.get(reverse('person_detail', kwargs={'trp_id': '0001'}))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, u'Frëd')
+        self.assertContains(response, 'Frëd')
 
 
 class TestShopsViews(TransactionTestCase):

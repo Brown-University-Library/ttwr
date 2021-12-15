@@ -11,3 +11,4 @@ DATABASES = {
 
 SECRET_KEY = '1234567890'
 STATIC_URL = '/static/'
+TTWR_COLLECTION_PID = 'test:5m6nkymr'

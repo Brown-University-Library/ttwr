@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError, HttpResponseRedirect
 from django.forms.formsets import formset_factory
 from django.core.exceptions import ObjectDoesNotExist
@@ -687,7 +688,7 @@ def breadcrumb_detail(context, view="book", title_words=4):
 
 def search_page(request):
     context = std_context(request.path, style= "rome/css/links.css")
-    searchquery = "https://%s/api/search/?q=ir_collection_id:621+object_type:annotation+display:BDR_PUBLIC" % (BDR_SERVER)
+    searchquery = 'https://%s/api/search/?q=rel_is_member_of_collection_ssim:"%s"+object_type:annotation+display:BDR_PUBLIC' % (BDR_SERVER, settings.TTWR_COLLECTION_PID)
     thumbnailquery = "https://%s/viewers/image/thumbnail/" % (BDR_SERVER)
     pagequery = "https://%s/api/items/" % (BDR_SERVER)
     context["searchquery"] = searchquery
