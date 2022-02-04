@@ -5,3 +5,5 @@ django-dotenv
 django-markdown-deux
 django-pagedown
 requests
+
+pillow>=9.0.0  # older version auto-installed by django-pagedown contains vulnerability
