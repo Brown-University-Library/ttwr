@@ -85,6 +85,7 @@ def about(request):
 
 
 def book_list(request):
+    logger.debug( '\n\nstarting book_list()' )
     context = std_context(request.path, )
     collection = request.GET.get('filter', 'both')
     sort_by = request.GET.get('sort_by', 'title')
@@ -127,6 +128,7 @@ def book_list(request):
 
 
 def book_detail(request, book_id):
+    logger.debug( '\n\nstarting book_detail()' )
     book_list_page = request.GET.get('book_list_page', 1)
     book_list_sort_by = request.GET.get('book_list_sort_by', 'title')
     context = std_context(request.path)
@@ -156,6 +158,7 @@ def _fetch_url_content(url):
 
 
 def page_detail(request, page_id, book_id=None):
+    logger.debug( '\n\nstarting page_detail()' )
     page_pid = '%s:%s' % (PID_PREFIX, page_id)
     this_page = Page.get_or_404(page_pid)
     context = std_context(request.path, )
@@ -258,6 +261,7 @@ def _get_annotation_name_info(mods_name):
 
 
 def get_annotation_detail(annotation):
+    logger.debug( '\n\nstarting get_annotation_detail()' )
     curr_annot={}
     curr_annot['xml_uri'] = annotation['xml_uri']
     if 'edit_link' in annotation:
