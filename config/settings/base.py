@@ -46,6 +46,10 @@ INSTALLED_APPS = (
     'rome_app',
 )
 
+TIME_ZONE = 'America/New_York'
+
+USE_TZ = True
+
 ROOT_URLCONF = 'config.urls'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
