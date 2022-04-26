@@ -20,7 +20,7 @@ django-markdown-deux==1.0.5
     # via -r ./requirements/base.in
 django-pagedown==2.2.0
     # via -r ./requirements/base.in
-django==3.2.10
+django==3.2.13
     # via
     #   -r ./requirements/base.in
     #   django-pagedown
