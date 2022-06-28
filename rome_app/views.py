@@ -69,6 +69,7 @@ def std_context(path, style="rome/css/content.css",title="The Theater that was R
 
 
 def index(request):
+    logger.debug( '\n\nstarting index()' )
     context=std_context(request.path, style="rome/css/home.css")
     return render(request, 'rome_templates/index.html', context)
 

@@ -1,4 +1,4 @@
-import json
+import json, logging
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core import mail
@@ -8,6 +8,8 @@ import responses
 from rome_app import views
 from rome_app import models
 from . import responses_data
+
+from .app_settings import logger
 
 
 def get_auth_client(superuser=False):
@@ -267,6 +269,7 @@ class TestPrintsViews(TestCase):
                       content_type='text/xml',
                   )
         url = reverse('specific_print', kwargs={'print_id': '123456'})
+        logger.debug( f'url, ``{url}``' )
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
