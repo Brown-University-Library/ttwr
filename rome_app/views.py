@@ -1,3 +1,5 @@
+import pprint
+
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError, HttpResponseRedirect
 from django.forms.formsets import formset_factory
@@ -72,6 +74,7 @@ def index(request):
     logger.debug( '\n\nstarting index()' )
     context=std_context(request.path, style="rome/css/home.css")
     return render(request, 'rome_templates/index.html', context)
+
 
 def about(request):
     context = std_context(request.path, style="rome/css/links.css")
@@ -263,6 +266,7 @@ def _get_annotation_name_info(mods_name):
 
 def get_annotation_detail(annotation):
     logger.debug( '\n\nstarting get_annotation_detail()' )
+    logger.debug( f'annotation, ``{annotation}``' )
     curr_annot={}
     curr_annot['xml_uri'] = annotation['xml_uri']
     if 'edit_link' in annotation:
@@ -375,6 +379,8 @@ def print_list(request):
 
 
 def print_detail(request, print_id):
+    logger.debug( f'\n\nstarting print_detail() with print_id, ``{print_id}``' )
+
     print_pid = '%s:%s' % (PID_PREFIX, print_id)
     context = std_context(request.path, )
 
@@ -396,6 +402,7 @@ def print_detail(request, print_id):
     context['studio_url'] = 'https://%s/studio/item/%s/' % (BDR_SERVER, print_pid)
 
     json_uri = 'https://%s/api/items/%s/' % (BDR_SERVER, print_pid)
+    logger.debug( f'json_uri, ``{json_uri}``')
     try:
         r = _fetch_url_content(json_uri)
     except Exception:
@@ -439,6 +446,7 @@ def print_detail(request, print_id):
         context['annotations'].append(curr_annot)
 
     context['breadcrumbs'][-1]['name'] = breadcrumb_detail(context, view="print")
+    logger.debug( f'context, ``{pprint.pformat(context)}``')
     return render(request, 'rome_templates/page_detail.html', context)
 
 
