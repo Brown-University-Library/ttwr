@@ -1,9 +1,10 @@
 .DS_Store
+.env
 .hg
-*.pyc
 .svn
 *.log*
+*.pyc
 *.sqlite3
 assets
+media
 rome_app/.idea
-.env
