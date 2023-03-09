@@ -210,6 +210,7 @@ class BDRObject:
     def search(cls, query="*", rows=6000):
         query = f'?q={query}&fq=object_type:{cls.OBJECT_TYPE}&fl=*&fq=discover:BDR_PUBLIC&rows={rows}'
         url = f'https://{app_settings.BDR_SERVER}/api/collections/{settings.TTWR_COLLECTION_PID}/{query}'
+        logger.debug( f'url, ``{url}``' )
         r = requests.get(url)
         if not r.ok:
             raise BdrApiError(f'error from BDR Apis: {r.status_code} {r.text}')
