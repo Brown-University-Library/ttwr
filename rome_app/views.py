@@ -492,12 +492,15 @@ def biography_list(request):
     fq = request.GET.get('filter', 'all')
 
     bio_list = Biography.objects.all()
+    logger.debug( f'bio_list, ``{pprint.pformat(bio_list)}``' )
+
     role_set = set()
 
     for bio in bio_list:
         if bio.roles:
             bio.roles = [role.strip(" ") for role in bio.roles.split(';') if role.strip(" ") != '']
             role_set |= set(bio.roles)
+    logger.debug( f'role_set, ``{pprint.pformat(role_set)}``' )
 
     if fq != 'all':
         bio_list = filter_bios(fq, bio_list)
