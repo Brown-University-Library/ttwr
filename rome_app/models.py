@@ -1,14 +1,16 @@
-from collections import OrderedDict
 import json
 import re
-from django.conf import settings
-from django.http import Http404
-from django.db import models, IntegrityError
-from django.urls import reverse
-import requests
-from eulxml.xmlmap import load_xmlobject_from_string
-from bdrxml import mods
+
 from . import app_settings
+from bdrxml import mods
+from collections import OrderedDict
+from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.db import models, IntegrityError
+from django.http import Http404
+from django.urls import reverse
+from eulxml.xmlmap import load_xmlobject_from_string
+import requests
 
 
 logger = app_settings.logger
@@ -24,11 +26,24 @@ class BdrApiError(RuntimeError):
 # Database Models
 
 
-# validate alternate names
-from django.core.exceptions import ValidationError
-def validate_alternate_names_field(value):
-    if "bjd" in value:
-        raise ValidationError("Cannot abide the `bjd` name!")
+# validate biography roles against Roles db table
+def validate_roles(value):
+    ## check for commas ---------------------------------------------
+    if "," in value:
+        raise ValidationError( "Please use semi-colons, not commas, to separate roles." )
+    ## validate actual role-entries ---------------------------------
+    entered_roles = value.split(";")
+    entered_roles = [role.strip() for role in entered_roles]
+    problem_roles = []
+    roles_objs = Role.objects.all()
+    roles_db_elements = [role_obj.text for role_obj in roles_objs]
+    for entered_role in entered_roles:
+        if entered_role not in roles_db_elements:
+            problem_roles.append(f'`{entered_role}`') 
+    if len(problem_roles) == 1:
+        raise ValidationError( f"The following role is not in the `Roles` database-table: {problem_roles[0]}" )
+    elif len(problem_roles) > 1:
+        raise ValidationError( "The following roles are not in the `Roles` database-table: %s" % "; ".join(problem_roles) )
     else:
         return value
 
@@ -41,12 +56,17 @@ class Biography(models.Model):
         null=True, 
         blank=True, 
         help_text='Optional: enter alternate names separated by a semi-colon',
-        validators =[validate_alternate_names_field]
         )
     external_id = models.CharField(max_length=254, null=True, blank=True, help_text='Optional: enter Ulan id in the form of a URL; if there is no Ulan id, enter LCCN in the form of a URL')
     birth_date = models.CharField(max_length=25, null=True, blank=True, help_text='Optional: enter birth date as yyyy-mm-dd (for sorting and filtering)')
     death_date = models.CharField(max_length=25, null=True, blank=True, help_text='Optional: enter death date as yyyy-mm-dd')
-    roles = models.CharField(max_length=254, null=True, blank=True, help_text='Optional: enter roles, separated by a semi-colon')
+    roles = models.CharField(
+        max_length=254, 
+        null=True, 
+        blank=True, 
+        help_text='Optional: enter roles, separated by a --> semi-colon <--',
+        validators =[validate_roles]
+        )
     bio = models.TextField()
 
     class Meta:
