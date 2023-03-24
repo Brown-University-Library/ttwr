@@ -64,7 +64,7 @@ class Biography(models.Model):
         max_length=254, 
         null=True, 
         blank=True, 
-        help_text='Optional: enter roles, separated by a --> semi-colon <--',
+        help_text='Optional: enter roles, separated by a semi-colon',
         validators =[validate_roles]
         )
     bio = models.TextField()
