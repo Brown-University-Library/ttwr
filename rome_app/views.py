@@ -1,3 +1,5 @@
+import pprint
+
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError, HttpResponseRedirect
 from django.forms.formsets import formset_factory
@@ -98,7 +100,8 @@ def book_list(request):
     try:
         book_list = Book.search(query="genre_aat:book*"+buonanno)
     except Exception as e:
-        logger.error(f'book_list view error getting book_list data: {e}')
+        # logger.error(f'book_list view error getting book_list data: {e}')
+        logger.exception(f'book_list view error getting book_list data: {e}')
         return HttpResponse('error loading list of books', status=500)
     sort_by = Book.SORT_OPTIONS.get(sort_by, 'title_sort')
     book_list=sorted(book_list,key=methodcaller('sort_key', sort_by))
@@ -124,6 +127,7 @@ def book_list(request):
 
     context['filter_options'] = [("Buonanno", "buonanno"), ("All", "both"), ("Library", "library")]
     context['filter']=collection
+    # logger.debug( f'context, ``{pprint.pformat(context)}``' )
     return render(request, 'rome_templates/book_list.html', context)
 
 
@@ -484,15 +488,19 @@ def filter_bios(fq, bio_list):
 
 
 def biography_list(request):
+    logger.debug( '\n\nstarting biography_list()' )
     fq = request.GET.get('filter', 'all')
 
     bio_list = Biography.objects.all()
+    logger.debug( f'bio_list, ``{pprint.pformat(bio_list)}``' )
+
     role_set = set()
 
     for bio in bio_list:
         if bio.roles:
             bio.roles = [role.strip(" ") for role in bio.roles.split(';') if role.strip(" ") != '']
             role_set |= set(bio.roles)
+    logger.debug( f'role_set, ``{pprint.pformat(role_set)}``' )
 
     if fq != 'all':
         bio_list = filter_bios(fq, bio_list)
@@ -518,6 +526,7 @@ def biography_list(request):
     context['filter_options'].extend([(x, x) for x in sorted(role_set)])
     context['filter'] = fq
 
+    logger.debug( f'context, ``{pprint.pformat(context)}``' )
     return render(request, 'rome_templates/biography_list.html', context)
 
 
