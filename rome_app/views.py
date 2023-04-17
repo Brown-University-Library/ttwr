@@ -1,4 +1,12 @@
+import datetime
+import json
 import pprint
+import re
+import requests
+import xml.etree.ElementTree as ET
+from operator import itemgetter, methodcaller
+
+import trio
 
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError, HttpResponseRedirect
@@ -12,11 +20,6 @@ from django.template.response import SimpleTemplateResponse
 from django.utils.html import escape, escapejs
 from django.contrib.auth.decorators import login_required
 
-import json
-from operator import itemgetter, methodcaller
-import xml.etree.ElementTree as ET
-import re
-import requests
 from .models import (
         InvalidNameError,
         Biography,
@@ -34,6 +37,10 @@ from .models import (
         annotation_xml_url,
     )
 from .app_settings import BDR_SERVER, BOOKS_PER_PAGE, PID_PREFIX, logger
+
+from rome_app.lib import version_helper
+from rome_app.lib.version_helper import GatherCommitAndBranchData
+
 
 
 def annotation_order(s): 
@@ -916,3 +923,17 @@ def _get_prev_next_ids(book_json, page_pid):
             except (KeyError, IndexError):
                 pass
     return (prev_id, next_id)
+
+
+def version( request ):
+    """ Returns basic branch and commit data. """
+    rq_now = datetime.datetime.now()
+    gatherer = GatherCommitAndBranchData()
+    trio.run( gatherer.manage_git_calls )
+    commit = gatherer.commit
+    branch = gatherer.branch
+    info_txt = commit.replace( 'commit', branch )
+    context = version_helper.make_context( request, rq_now, info_txt )
+    output = json.dumps( context, sort_keys=True, indent=2 )
+    logger.debug( f'output, ``{output}``' )
+    return HttpResponse( output, content_type='application/json; charset=utf-8' )
