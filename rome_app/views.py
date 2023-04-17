@@ -161,19 +161,23 @@ def _fetch_url_content(url):
         raise Exception(f'{r.status_code}')
 
 
-def page_detail(request, page_id, book_id=None):
+def page_detail(request, page_id: str, book_id=None):  # book_id will be type str or None
     logger.debug( '\n\nstarting page_detail()' )
+    # logger.debug( f'type(page_id), ``{type(page_id)}``; page_id, ``{page_id}``' )
+    # logger.debug( f'type(book_id), ``{type(book_id)}``; book_id, ``{book_id}``' )
+    assert type( page_id ) == str
+    assert type( book_id ) in [ str, type(None )]
     page_pid = '%s:%s' % (PID_PREFIX, page_id)
     this_page = Page.get_or_404(page_pid)
     context = std_context(request.path, )
     if book_id:
         book_pid = '%s:%s' % (PID_PREFIX, book_id)
     else:
-        book_pid = _get_book_pid_from_page_pid(u'%s' % page_pid)
+        book_pid: str = _get_book_pid_from_page_pid(u'%s' % page_pid)
         book_id = book_pid.split(':')[-1]
     if not book_id:
         return HttpResponseNotFound('Book for this page not found.')
-
+    
     context['user'] = request.user
     if request.user.is_authenticated:
         context['create_annotation_link'] = reverse('new_annotation', kwargs={'book_id':book_id, 'page_id':page_id})
@@ -471,7 +475,7 @@ def biography_detail(request, trp_id):
     return render(request, 'rome_templates/biography_detail.html', context)
 
 
-def _get_book_pid_from_page_pid(page_pid):
+def _get_book_pid_from_page_pid( page_pid: str ) -> str:
     query = u'https://%s/api/items/%s/' % (BDR_SERVER, page_pid)
     r = _fetch_url_content(query)
     data = json.loads(r.text)
@@ -480,7 +484,8 @@ def _get_book_pid_from_page_pid(page_pid):
     elif data['relations']['isMemberOf']:
         return data['relations']['isMemberOf'][0]['pid']
     else:
-        return None
+        # return None
+        return ''
 
 
 def filter_bios(fq, bio_list):
