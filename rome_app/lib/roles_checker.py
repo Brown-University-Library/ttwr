@@ -28,6 +28,7 @@ def run_code():
     bios = Biography.objects.all()
     problems = []
     for (i, bio) in enumerate( bios ):
+        log.info( f'checking bio.name, ``{bio.name}``' )
         roles = bio.roles
         log.info( f'roles, ``{roles}``' )
         split_roles = []
@@ -37,8 +38,8 @@ def run_code():
         validity = 'init'
         for role in split_roles:
             validity = check_role( role )
-            log.debug( f'validity, ``{validity}``' )
-        if i > 3:
+            # log.debug( f'validity, ``{validity}``' )
+        if i > 10:
             break
     log.info( 'end of run_code()' )
     return
@@ -48,15 +49,17 @@ def check_role( role_to_check: str ):
     """ Checks biography-role against Roles table.
         Called by `run_code()`. """
     from rome_app.models import Role
-    log.info( f'role_to_check, ``{role_to_check}``' )
+    log.info( f'role_to_check initially, ``{role_to_check}``' )
+    role_to_check = role_to_check.strip()
+    log.info( f'role_to_check stripped, ``{role_to_check}``' )
     try:
         role_lookup = Role.objects.get( text=role_to_check )
+        log.info( f'type(role_lookup), ``{type(role_lookup)}``' )
         validity_check = 'valid'
     except Exception as e:
-        log.debug( f'exception, ``{e}``')
-        log.exception( f'problem looking up role, ``' )
+        log.info( f'exception, ``{e}``')
+        log.info( f'role, ``{role_to_check}`` not found' )
         validity_check = 'invalid'
-    log.info( f'type(role_lookup), ``{type(role_lookup)}``' )    
     log.info( f'validity_check, ``{validity_check}``' )
     return validity_check
 
