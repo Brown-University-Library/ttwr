@@ -46,5 +46,8 @@ urlpatterns = [
 
     ## helper view
     re_path( r'^version/$', views.version, name='version_url' ),
+
+    ## temp data-correction
+    re_path( r'^temp_roles_checker/$', views.temp_roles_checker, name='temp_roles_checker_url' ),
 ]
 

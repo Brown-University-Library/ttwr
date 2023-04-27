@@ -19,16 +19,20 @@ etc...
 import json, logging, os, pathlib, pprint, sys
 import django, dotenv
 
-level_dict = { 'DEBUG': logging.DEBUG, 'INFO': logging.INFO }
-ENVAR_LOG_LEVEL = os.environ['ROME__LOG_LEVEL']
-print( f'ENVAR_LOG_LEVEL, ``{ENVAR_LOG_LEVEL}``' )
-LEVEL_OBJECT = level_dict[ ENVAR_LOG_LEVEL ]
-logging.basicConfig(
-    level=LEVEL_OBJECT,
-    format='[%(asctime)s] %(levelname)s [%(module)s-%(funcName)s()::%(lineno)d] %(message)s', 
-    datefmt='%d/%b/%Y %H:%M:%S' )
-log = logging.getLogger( 'example_script' )
-log.debug( 'starting log' )
+""" Allows script to be run from command-line or as import. """
+try:
+    level_dict = { 'DEBUG': logging.DEBUG, 'INFO': logging.INFO }
+    ENVAR_LOG_LEVEL = os.environ['ROME__LOG_LEVEL']
+    print( f'ENVAR_LOG_LEVEL, ``{ENVAR_LOG_LEVEL}``' )
+    LEVEL_OBJECT = level_dict[ ENVAR_LOG_LEVEL ]
+    logging.basicConfig(
+        level=LEVEL_OBJECT,
+        format='[%(asctime)s] %(levelname)s [%(module)s-%(funcName)s()::%(lineno)d] %(message)s', 
+        datefmt='%d/%b/%Y %H:%M:%S' )
+    log = logging.getLogger( 'example_script' )
+    log.debug( 'starting log' )
+except Exception as e:
+    log = logging.getLogger(__name__)
 
 
 ## run code ---------------------------------------------------------
@@ -59,11 +63,14 @@ def run_code():
         # if i > 10:
         #     break
     log.info( f'problems, ``{pprint.pformat(problems, sort_dicts=False)}``' )
-    jsn = json.dumps( problems, sort_keys=False, indent=2 )
-    log.info( f'jsn, ``{jsn}``')
+    # jsn = json.dumps( problems, sort_keys=False, indent=2 )
+    # log.info( f'jsn, ``{jsn}``')
+    # log.info( f'number of problem-entries, ``{len(problems)}``' )
+    # log.debug( 'end of run_code()' )
+    # return jsn
     log.info( f'number of problem-entries, ``{len(problems)}``' )
     log.debug( 'end of run_code()' )
-    return
+    return problems
 
 
 def check_role( role_to_check: str ):

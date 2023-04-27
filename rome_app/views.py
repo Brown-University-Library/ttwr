@@ -42,6 +42,18 @@ from rome_app.lib import version_helper
 from rome_app.lib.version_helper import GatherCommitAndBranchData
 
 
+def temp_roles_checker(request):
+    """ Checks biography-roles against Roles table.
+        Called by `__main__`. """
+    from rome_app.lib import roles_checker
+    problems = roles_checker.run_code()
+    data = {
+        '__meta__': { 'bios_with_issues_count': len(problems), 'timestamp': str(datetime.datetime.now()) }, 
+        'data': problems
+        }
+    jsn = json.dumps( data, sort_keys=False, indent=2 )
+    return HttpResponse( jsn, content_type='application/json; charset=utf-8' )
+
 
 def annotation_order(s): 
     retval = re.sub("[^0-9]", "", first_word(s['orig_title'] if 'orig_title' in s else s['title']))
