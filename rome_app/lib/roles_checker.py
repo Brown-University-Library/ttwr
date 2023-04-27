@@ -75,12 +75,15 @@ def run_code():
 
 def check_role( role_to_check: str ):
     """ Checks biography-role against Roles table.
+        Note: the additional assert is because the django docs say:
+        "... In MySQL, a database table’s “collation” setting determines whether exact comparisons are case-sensitive. This is a database setting, not a Django setting. ...
         Called by `run_code()`. """
     from rome_app.models import Role
     log.debug( f'role_to_check (stripped), ``{role_to_check}``' )
     try:
         role_lookup = Role.objects.get( text__exact=role_to_check )
         log.debug( f'type(role_lookup), ``{type(role_lookup)}``' )
+        assert role_to_check == role_lookup.text  # because the "__exact" may not be good enough if the mysql-collation is case-insensitive.
         validity_check = 'valid'
     except Exception as e:
         log.debug( f'exception, ``{e}``')
@@ -88,8 +91,6 @@ def check_role( role_to_check: str ):
         validity_check = 'invalid'
     log.debug( f'validity_check, ``{validity_check}``' )
     return validity_check
-
-
 
 
 ## helper -- setup environment --------------------------------------
