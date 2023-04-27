@@ -79,7 +79,7 @@ def check_role( role_to_check: str ):
     from rome_app.models import Role
     log.debug( f'role_to_check (stripped), ``{role_to_check}``' )
     try:
-        role_lookup = Role.objects.get( text=role_to_check )
+        role_lookup = Role.objects.get( text__exact=role_to_check )
         log.debug( f'type(role_lookup), ``{type(role_lookup)}``' )
         validity_check = 'valid'
     except Exception as e:
