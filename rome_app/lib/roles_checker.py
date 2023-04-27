@@ -16,7 +16,7 @@ Roles in Biography/Roles that are not in the Roles table:
 etc...
 """
 
-import logging, os, pathlib, pprint, sys
+import json, logging, os, pathlib, pprint, sys
 import django, dotenv
 
 level_dict = { 'DEBUG': logging.DEBUG, 'INFO': logging.INFO }
@@ -37,7 +37,7 @@ def run_code():
         Called by `__main__`. """
     from rome_app.models import Biography, Role
     log.debug( 'starting run_code()' )
-    bios = Biography.objects.all()
+    bios = Biography.objects.all().order_by( 'name' )
     problems = []
     for (i, bio) in enumerate( bios ):
         error_entry = { 'name': bio.name, 'id': bio.id, 'invalid_roles': [] }
@@ -50,14 +50,18 @@ def run_code():
         log.debug( f'split_roles, ``{split_roles}``' )
         validity = 'init'
         for role in split_roles:
+            role = role.strip()
             validity = check_role( role )
             if validity == 'invalid':
                 error_entry['invalid_roles'].append( role )
         if error_entry['invalid_roles']:
             problems.append( error_entry )
-        if i > 10:
-            break
+        # if i > 10:
+        #     break
     log.info( f'problems, ``{pprint.pformat(problems, sort_dicts=False)}``' )
+    jsn = json.dumps( problems, sort_keys=False, indent=2 )
+    log.info( f'jsn, ``{jsn}``')
+    log.info( f'number of problem-entries, ``{len(problems)}``' )
     log.debug( 'end of run_code()' )
     return
 
@@ -66,9 +70,7 @@ def check_role( role_to_check: str ):
     """ Checks biography-role against Roles table.
         Called by `run_code()`. """
     from rome_app.models import Role
-    log.debug( f'role_to_check initially, ``{role_to_check}``' )
-    role_to_check = role_to_check.strip()
-    log.debug( f'role_to_check stripped, ``{role_to_check}``' )
+    log.debug( f'role_to_check (stripped), ``{role_to_check}``' )
     try:
         role_lookup = Role.objects.get( text=role_to_check )
         log.debug( f'type(role_lookup), ``{type(role_lookup)}``' )
