@@ -40,7 +40,7 @@ def run_code():
     bios = Biography.objects.all().order_by( 'name' )
     problems = []
     for (i, bio) in enumerate( bios ):
-        error_entry = { 'name': bio.name, 'id': bio.id, 'invalid_roles': [] }
+        error_entry = { 'name': bio.name, 'id': bio.id, 'invalid_roles': [] }  # type: ignore -- `id` is valid.
         log.debug( f'checking bio.name, ``{bio.name}``' )
         roles = bio.roles
         log.debug( f'roles, ``{roles}``' )
