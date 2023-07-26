@@ -1,4 +1,12 @@
+import datetime
+import json
 import pprint
+import re
+import requests
+import xml.etree.ElementTree as ET
+from operator import itemgetter, methodcaller
+
+import trio
 
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError, HttpResponseRedirect
@@ -12,11 +20,6 @@ from django.template.response import SimpleTemplateResponse
 from django.utils.html import escape, escapejs
 from django.contrib.auth.decorators import login_required
 
-import json
-from operator import itemgetter, methodcaller
-import xml.etree.ElementTree as ET
-import re
-import requests
 from .models import (
         InvalidNameError,
         Biography,
@@ -34,6 +37,22 @@ from .models import (
         annotation_xml_url,
     )
 from .app_settings import BDR_SERVER, BOOKS_PER_PAGE, PID_PREFIX, logger
+
+from rome_app.lib import version_helper
+from rome_app.lib.version_helper import GatherCommitAndBranchData
+
+
+def temp_roles_checker(request):
+    """ Checks biography-roles against Roles table.
+        Called by `__main__`. """
+    from rome_app.lib import roles_checker
+    problems = roles_checker.run_code()
+    data = {
+        '__meta__': { 'bios_with_issues_count': len(problems), 'timestamp': str(datetime.datetime.now()) }, 
+        'data': problems
+        }
+    jsn = json.dumps( data, sort_keys=False, indent=2 )
+    return HttpResponse( jsn, content_type='application/json; charset=utf-8' )
 
 
 def annotation_order(s): 
@@ -161,19 +180,23 @@ def _fetch_url_content(url):
         raise Exception(f'{r.status_code}')
 
 
-def page_detail(request, page_id, book_id=None):
+def page_detail(request, page_id: str, book_id=None):  # book_id will be type str or None
     logger.debug( '\n\nstarting page_detail()' )
+    # logger.debug( f'type(page_id), ``{type(page_id)}``; page_id, ``{page_id}``' )
+    # logger.debug( f'type(book_id), ``{type(book_id)}``; book_id, ``{book_id}``' )
+    assert type( page_id ) == str
+    assert type( book_id ) in [ str, type(None )]
     page_pid = '%s:%s' % (PID_PREFIX, page_id)
     this_page = Page.get_or_404(page_pid)
     context = std_context(request.path, )
     if book_id:
         book_pid = '%s:%s' % (PID_PREFIX, book_id)
     else:
-        book_pid = _get_book_pid_from_page_pid(u'%s' % page_pid)
+        book_pid: str = _get_book_pid_from_page_pid(u'%s' % page_pid)
         book_id = book_pid.split(':')[-1]
     if not book_id:
         return HttpResponseNotFound('Book for this page not found.')
-
+    
     context['user'] = request.user
     if request.user.is_authenticated:
         context['create_annotation_link'] = reverse('new_annotation', kwargs={'book_id':book_id, 'page_id':page_id})
@@ -471,7 +494,7 @@ def biography_detail(request, trp_id):
     return render(request, 'rome_templates/biography_detail.html', context)
 
 
-def _get_book_pid_from_page_pid(page_pid):
+def _get_book_pid_from_page_pid( page_pid: str ) -> str:
     query = u'https://%s/api/items/%s/' % (BDR_SERVER, page_pid)
     r = _fetch_url_content(query)
     data = json.loads(r.text)
@@ -480,7 +503,8 @@ def _get_book_pid_from_page_pid(page_pid):
     elif data['relations']['isMemberOf']:
         return data['relations']['isMemberOf'][0]['pid']
     else:
-        return None
+        # return None
+        return ''
 
 
 def filter_bios(fq, bio_list):
@@ -911,3 +935,17 @@ def _get_prev_next_ids(book_json, page_pid):
             except (KeyError, IndexError):
                 pass
     return (prev_id, next_id)
+
+
+def version( request ):
+    """ Returns basic branch and commit data. """
+    rq_now = datetime.datetime.now()
+    gatherer = GatherCommitAndBranchData()
+    trio.run( gatherer.manage_git_calls )
+    commit = gatherer.commit
+    branch = gatherer.branch
+    info_txt = commit.replace( 'commit', branch )
+    context = version_helper.make_context( request, rq_now, info_txt )
+    output = json.dumps( context, sort_keys=True, indent=2 )
+    logger.debug( f'output, ``{output}``' )
+    return HttpResponse( output, content_type='application/json; charset=utf-8' )

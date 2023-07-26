@@ -43,5 +43,11 @@ urlpatterns = [
     re_path(r'^biographies/new/$', views.new_biography, name='new_biography'),
 
     re_path(r'^search/$', views.search_page, name= 'search_page'),
+
+    ## helper view
+    re_path( r'^version/$', views.version, name='version_url' ),
+
+    ## temp data-correction
+    re_path( r'^temp_roles_checker/$', views.temp_roles_checker, name='temp_roles_checker_url' ),
 ]
 
