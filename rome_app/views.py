@@ -1,5 +1,6 @@
 import datetime
 import json
+import logging
 import pprint
 import re
 import requests
@@ -469,6 +470,7 @@ def print_detail(request, print_id):
 
 
 def biography_detail(request, trp_id):
+    logger.debug( '\n\nstarting biography_detail()' )
     #view that pull bio information from the db, instead of the BDR
     trp_id = "%04d" % int(trp_id)
     try:
@@ -491,6 +493,7 @@ def biography_detail(request, trp_id):
 
     context['prints'] = prints_merged
     context['breadcrumbs'][-1]['name'] = breadcrumb_detail(context, view="bio")
+    logger.debug( f'context, ``{pprint.pformat(context)}``' )
     return render(request, 'rome_templates/biography_detail.html', context)
 
 
