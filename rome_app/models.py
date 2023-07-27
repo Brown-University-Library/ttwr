@@ -1,4 +1,5 @@
 import json
+import pprint
 import re
 
 from . import app_settings
@@ -491,9 +492,17 @@ def _sort_book_pages(books):
 def annotations_by_books_and_prints(bio_name, group_amount=50):
     # Might need some cleaning up later, see if we can use objects here
 
+    logger.debug( f'bio_name, ``{bio_name}``; type, ``{type(bio_name)}``' )
+    logger.debug( f'group_amount, ``{group_amount}``; type, ``{type(group_amount)}``' )
+
     annotations = _get_annotations_for_person(bio_name)
+    logger.debug( f'annotations ( from  _get_annotations_for_person() ), ``{annotations}``' )
+
     pages = _get_pages_from_annotations(annotations)
+    logger.debug( f'pages ( from  _get_pages_from_annotations() ), ``{pages}``' )
+
     pids_of_pages_to_look_up = [a['rel_is_annotation_of_ssim'][0].replace(':', '\:') for a in annotations]
+    logger.debug( f'pids_of_pages_to_look_up, ``{pids_of_pages_to_look_up}``' )
 
     prints = []
     books = {}
@@ -505,7 +514,9 @@ def annotations_by_books_and_prints(bio_name, group_amount=50):
         group_of_pids = pids_of_pages_to_look_up[i : i+group_amount]
         pids_query = "(pid:" + ("+OR+pid:".join(group_of_pids)) + ")"
         book_query = u"https://%s/api/search/?q=%s+AND+display:BDR_PUBLIC&fl=pid,primary_title,nonsort,object_type,rel_is_part_of_ssim,rel_has_pagination_ssim&rows=%s" % (app_settings.BDR_SERVER, pids_query, group_amount)
+        logger.debug( f'book_query url, ``{book_query}``' )
         data = json.loads(requests.get(book_query).text)
+        logger.debug( f'data, ``{pprint.pformat(data)}``' )
         looked_up_pages = data['response']['docs']
 
         # Create a dict that maps book pids to a list of pages for that book
