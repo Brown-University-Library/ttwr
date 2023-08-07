@@ -405,8 +405,8 @@ def print_list(request):
 
     return render(request, 'rome_templates/print_list.html', context)
 
-from django.views.decorators.clickjacking import xframe_options_exempt
-@xframe_options_exempt
+# from django.views.decorators.clickjacking import xframe_options_exempt
+# @xframe_options_exempt
 def print_detail(request, print_id):
     logger.debug( '\n\nstarting print_detail()' )
     print_pid = '%s:%s' % (PID_PREFIX, print_id)
