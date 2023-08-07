@@ -473,19 +473,36 @@ def biography_detail(request, trp_id):
     logger.debug( '\n\nstarting biography_detail()' )
     #view that pull bio information from the db, instead of the BDR
     trp_id = "%04d" % int(trp_id)
+    logger.debug( f'trp_id, ``{trp_id}``' )
     try:
         bio = Biography.objects.get(trp_id=trp_id)
+        logger.debug( f'bio found in db lookup, ``{bio}``' )
     except ObjectDoesNotExist:
+        logger.debug( f'bio not found' )
         return HttpResponseNotFound('Person %s Not Found' % trp_id)
     context = std_context(request.path, title="The Theater that was Rome - Biography")
+    logger.debug( f'initial context, ``{pprint.pformat(context)}``' )
     context['bio'] = bio
+    logger.debug( 'added bio to context' )
     context['trp_id'] = trp_id
-    context['books'] = bio.books()
+    logger.debug( 'added trp_id to context' )
+    # try:
+    #     logger.debug( 'about to try bio.books() call' )
+    #     context['books'] = bio.books()
+    # except Exception as e:
+    #     logger.exception( f'exception getting bio.books(), ``{e}``' )
+    logger.debug( 'about to try bio.books() call' )
+    context['books'] = bio.books()  # weird: raises error on bdr-api lookup 404
+    logger.debug( f'context after bio.books() lookup, ``{pprint.pformat(context)}``' )
     context['essays'] = bio.related_essays()
+    logger.debug( f'context so far, ``{pprint.pformat(context)}``' )
     prints_search = bio.prints()
+    logger.debug( f'prints_search, ``{prints_search}``' )
 
     # Pages related to the person by annotation
+    logger.debug( 'about to call annotations_by_books_and_prints()' )
     (pages_books, prints_mentioned) = annotations_by_books_and_prints(bio.name)
+    logger.debug( f'pages_books, ``{pages_books}``; prints_mentioned, ``{prints_mentioned}``' )
     context['pages_books'] = pages_books
     # merge the two lists of prints
     prints_merged = [x for x in prints_mentioned if x not in prints_search]
