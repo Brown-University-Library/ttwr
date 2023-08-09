@@ -758,7 +758,11 @@ class Annotation:
         if r.ok:
             return {'pid': json.loads(r.text)['pid']}
         else:
-            raise Exception('error posting new annotation for %s: %s - %s' % (self._image_pid, r.status_code, r.content))
+            # raise Exception('error posting new annotation for %s: %s - %s' % (self._image_pid, r.status_code, r.content))
+            raise Exception(
+                'error posting new annotation for pid, ``%s``: status_code, ``%s`` - content, ``%s`` -- for url, ``%s``' % ( 
+                self._image_pid, r.status_code, r.content, r.url )
+                )
 
     def update_in_bdr(self):
         params = self._get_update_params()
