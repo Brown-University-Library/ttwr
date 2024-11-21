@@ -1,5 +1,6 @@
 import datetime
 import json
+import logging
 import pprint
 import re
 import requests
@@ -45,6 +46,7 @@ from rome_app.lib.version_helper import GatherCommitAndBranchData
 def temp_roles_checker(request):
     """ Checks biography-roles against Roles table.
         Called by `__main__`. """
+    log.debug( '\n\nstarting temp_roles_checker()' )
     from rome_app.lib import roles_checker
     problems = roles_checker.run_code()
     data = {
@@ -90,10 +92,12 @@ def std_context(path, style="rome/css/content.css",title="The Theater that was R
 
 
 def index(request):
+    logger.debug( '\n\nstarting index()' )
     context=std_context(request.path, style="rome/css/home.css")
     return render(request, 'rome_templates/index.html', context)
 
 def about(request):
+    logger.debug( '\n\nstarting about()' )
     context = std_context(request.path, style="rome/css/links.css")
     try:
         about = Static.objects.get(title="About")
@@ -172,6 +176,7 @@ def book_detail(request, book_id):
 
 
 def _fetch_url_content(url):
+    logger.debug( f'starting non-top-level-view _fetch_url_content with url, ``{url}``' )
     r = requests.get(url, timeout=60)
     if r.ok:
         return r
@@ -279,6 +284,7 @@ def page_detail(request, page_id: str, book_id=None):  # book_id will be type st
 
 
 def _get_annotation_name_info(mods_name):
+    logger.debug( f'starting non-top-level-view _get_annotation_name_info() for mods_name, ``{mods_name}``' )
     trp_id = Annotation.trp_id_from_name_node(mods_name)
     return {
         'name': mods_name[0].text,
@@ -286,9 +292,8 @@ def _get_annotation_name_info(mods_name):
         'trp_id': trp_id,
     }
 
-
 def get_annotation_detail(annotation):
-    logger.debug( '\n\nstarting get_annotation_detail()' )
+    logger.debug( 'starting non-top-level-view get_annotation_detail() for annotation, ``{annotation}``' )
     curr_annot={}
     curr_annot['xml_uri'] = annotation['xml_uri']
     if 'edit_link' in annotation:
@@ -362,6 +367,7 @@ def get_annotation_detail(annotation):
 
 
 def print_list(request):
+    logger.debug( '\n\nstarting print_list()' )
     page = request.GET.get('page', 1)
     sort_by = request.GET.get('sort_by', 'title')
     if sort_by not in ['title', 'authors', 'date']:
@@ -399,8 +405,10 @@ def print_list(request):
 
     return render(request, 'rome_templates/print_list.html', context)
 
-
+# from django.views.decorators.clickjacking import xframe_options_exempt
+# @xframe_options_exempt
 def print_detail(request, print_id):
+    logger.debug( '\n\nstarting print_detail()' )
     print_pid = '%s:%s' % (PID_PREFIX, print_id)
     context = std_context(request.path, )
 
@@ -465,25 +473,44 @@ def print_detail(request, print_id):
         context['annotations'].append(curr_annot)
 
     context['breadcrumbs'][-1]['name'] = breadcrumb_detail(context, view="print")
+    logger.debug( f'context, ``{pprint.pformat(context)}``' )
     return render(request, 'rome_templates/page_detail.html', context)
 
 
 def biography_detail(request, trp_id):
+    logger.debug( '\n\nstarting biography_detail()' )
     #view that pull bio information from the db, instead of the BDR
     trp_id = "%04d" % int(trp_id)
+    logger.debug( f'trp_id, ``{trp_id}``' )
     try:
         bio = Biography.objects.get(trp_id=trp_id)
+        logger.debug( f'bio found in db lookup, ``{bio}``' )
     except ObjectDoesNotExist:
+        logger.debug( f'bio not found' )
         return HttpResponseNotFound('Person %s Not Found' % trp_id)
     context = std_context(request.path, title="The Theater that was Rome - Biography")
+    logger.debug( f'initial context, ``{pprint.pformat(context)}``' )
     context['bio'] = bio
+    logger.debug( 'added bio to context' )
     context['trp_id'] = trp_id
-    context['books'] = bio.books()
+    logger.debug( 'added trp_id to context' )
+    # try:
+    #     logger.debug( 'about to try bio.books() call' )
+    #     context['books'] = bio.books()
+    # except Exception as e:
+    #     logger.exception( f'exception getting bio.books(), ``{e}``' )
+    logger.debug( 'about to try bio.books() call' )
+    context['books'] = bio.books()  # weird: raises error on bdr-api lookup 404
+    logger.debug( f'context after bio.books() lookup, ``{pprint.pformat(context)}``' )
     context['essays'] = bio.related_essays()
+    logger.debug( f'context so far, ``{pprint.pformat(context)}``' )
     prints_search = bio.prints()
+    logger.debug( f'prints_search, ``{prints_search}``' )
 
     # Pages related to the person by annotation
+    logger.debug( 'about to call annotations_by_books_and_prints()' )
     (pages_books, prints_mentioned) = annotations_by_books_and_prints(bio.name)
+    logger.debug( f'pages_books, ``{pages_books}``; prints_mentioned, ``{prints_mentioned}``' )
     context['pages_books'] = pages_books
     # merge the two lists of prints
     prints_merged = [x for x in prints_mentioned if x not in prints_search]
@@ -491,10 +518,12 @@ def biography_detail(request, trp_id):
 
     context['prints'] = prints_merged
     context['breadcrumbs'][-1]['name'] = breadcrumb_detail(context, view="bio")
+    logger.debug( f'context, ``{pprint.pformat(context)}``' )
     return render(request, 'rome_templates/biography_detail.html', context)
 
 
 def _get_book_pid_from_page_pid( page_pid: str ) -> str:
+    logger.debug( f'starting _get_book_pid_from_page_pid() for page_pid, ``{page_pid}``' )
     query = u'https://%s/api/items/%s/' % (BDR_SERVER, page_pid)
     r = _fetch_url_content(query)
     data = json.loads(r.text)
@@ -508,6 +537,7 @@ def _get_book_pid_from_page_pid( page_pid: str ) -> str:
 
 
 def filter_bios(fq, bio_list):
+    logger.debug( f'starting filter_bios()' )
     return [b for b in bio_list if (b.roles and fq in b.roles)]
 
 
@@ -555,6 +585,7 @@ def biography_list(request):
 
 
 def links(request):
+    logger.debug( '\n\nstarting links()' )
     context = std_context(request.path, style="rome/css/links.css")
     try:
         links = Static.objects.get(title="Links")
@@ -565,6 +596,7 @@ def links(request):
     return render(request, 'rome_templates/links.html', context)
 
 def shops(request):
+    logger.debug( '\n\nstarting shops()' )
     context = std_context(request.path, style="rome/css/links.css")
     try:
         shops = Static.objects.get(title="Shops")
@@ -575,6 +607,7 @@ def shops(request):
     return render(request, 'rome_templates/shops.html', context)
 
 def shop_list(request):
+    logger.debug( '\n\nstarting shop_list()' )
     context=std_context(request.path, style="rome/css/links.css")
     shop_objs = Shop.objects.order_by('family')
     family_set = set()
@@ -592,6 +625,7 @@ def shop_list(request):
     return render(request, 'rome_templates/shop_list.html', context)
 
 def shop_detail(request, shop_slug):
+    logger.debug( '\n\nstarting shop_detail()' )
     try:
         shop = Shop.objects.get(slug=shop_slug)
     except ObjectDoesNotExist:
@@ -629,6 +663,7 @@ def shop_detail(request, shop_slug):
     return render(request, 'rome_templates/shop_detail.html', context)
 
 def essay_list(request):
+    logger.debug( '\n\nstarting essay_list()' )
     context=std_context(request.path, style="rome/css/links.css")
     context['page_documentation']='Listed below are essays on topics that relate to the Theater that was Rome collection of books and engravings. The majority of the essays were written by students in Brown University classes that used this material, and edited by Prof. Evelyn Lincoln.'
     essay_objs = Essay.objects.all()
@@ -661,6 +696,7 @@ def essay_list(request):
 
 
 def essay_detail(request, essay_slug):
+    logger.debug( '\n\nstarting essay_detail()' )
     try:
         essay = Essay.objects.get(slug=essay_slug)
     except ObjectDoesNotExist:
@@ -697,10 +733,12 @@ def essay_detail(request, essay_slug):
     return render(request, 'rome_templates/essay_detail.html', context)
 
 def documents(request):
+    logger.debug( '\n\nstarting documents()' )
     return render(request, 'rome_templates/documents.html')
 
 
 def document_detail(request, document_slug):
+    logger.debug( '\n\nstarting document_detail()' )
     try:
         document = Document.objects.get(slug=document_slug)
     except ObjectDoesNotExist:
@@ -713,6 +751,7 @@ def document_detail(request, document_slug):
 
 
 def breadcrumb_detail(context, view="book", title_words=4):
+    logger.debug( f'starting non-top-level-view breadcrumb_detail()' )
     if(view == "book"):
         return " ".join(context['book'].title().split(" ")[0:title_words]) + " . . ."
 
@@ -724,6 +763,7 @@ def breadcrumb_detail(context, view="book", title_words=4):
 
 
 def search_page(request):
+    logger.debug( '\n\nstarting search_page()' )
     context = std_context(request.path, style= "rome/css/links.css")
     searchquery = 'https://%s/api/search/?q=rel_is_member_of_collection_ssim:"%s"+object_type:annotation+display:BDR_PUBLIC' % (BDR_SERVER, settings.TTWR_COLLECTION_PID)
     thumbnailquery = "https://%s/viewers/image/thumbnail/" % (BDR_SERVER)
@@ -736,6 +776,7 @@ def search_page(request):
 
 @login_required(login_url=reverse_lazy('rome_login'))
 def new_annotation(request, book_id, page_id):
+    logger
     page_pid = '%s:%s' % (PID_PREFIX, page_id)
     from .forms import AnnotationForm, PersonForm, InscriptionForm
     PersonFormSet = formset_factory(PersonForm)
@@ -771,6 +812,7 @@ def new_annotation(request, book_id, page_id):
 
 @login_required(login_url=reverse_lazy('rome_login'))
 def new_print_annotation(request, print_id):
+    logger.debug( '\n\nstarting new_print_annotation()' )
     print_pid = '%s:%s' % (PID_PREFIX, print_id)
     from .forms import AnnotationForm, PersonForm, InscriptionForm
     PersonFormSet = formset_factory(PersonForm)
@@ -803,6 +845,7 @@ def new_print_annotation(request, print_id):
 
 
 def get_bound_edit_forms(annotation, AnnotationForm, PersonFormSet, InscriptionFormSet):
+    logger.debug( 'starting non-top-level-view get_bound_edit_forms()' )
     person_formset = PersonFormSet(initial=annotation.get_person_formset_data(), prefix='people')
     inscription_formset = InscriptionFormSet(initial=annotation.get_inscription_formset_data(), prefix='inscriptions')
     form = AnnotationForm(annotation.get_form_data())
@@ -810,6 +853,7 @@ def get_bound_edit_forms(annotation, AnnotationForm, PersonFormSet, InscriptionF
 
 
 def edit_annotation_base(request, image_pid, anno_pid, redirect_url):
+    logger.debug( '\n\nstarting edit_annotation_base()' )
     from .forms import AnnotationForm, PersonForm, InscriptionForm
     PersonFormSet = formset_factory(PersonForm)
     InscriptionFormSet = formset_factory(InscriptionForm)
@@ -856,6 +900,7 @@ def edit_annotation_base(request, image_pid, anno_pid, redirect_url):
 
 @login_required(login_url=reverse_lazy('rome_login'))
 def edit_annotation(request, book_id, page_id, anno_id):
+    logger.debug( '\n\nstarting edit_annotation()' )
     anno_pid = '%s:%s' % (PID_PREFIX, anno_id)
     page_pid = '%s:%s' % (PID_PREFIX, page_id)
     return edit_annotation_base(request, page_pid, anno_pid, reverse('book_page_viewer', kwargs={'book_id': book_id, 'page_id': page_id}))
@@ -863,6 +908,7 @@ def edit_annotation(request, book_id, page_id, anno_id):
 
 @login_required(login_url=reverse_lazy('rome_login'))
 def edit_print_annotation(request, print_id, anno_id):
+    logger.debug( '\n\nstarting edit_print_annotation()' )
     anno_pid = '%s:%s' % (PID_PREFIX, anno_id)
     print_pid = '%s:%s' % (PID_PREFIX, print_id)
     return edit_annotation_base(request, print_pid, anno_pid, reverse('specific_print', kwargs={'print_id': print_id}))
@@ -870,6 +916,7 @@ def edit_print_annotation(request, print_id, anno_id):
 
 @login_required(login_url=reverse_lazy('rome_login'))
 def new_genre(request):
+    logger.debug( '\n\nstarting new_genre()' )
     from .forms import NewGenreForm
     if request.method == 'POST':
         form = NewGenreForm(request.POST)
@@ -887,6 +934,7 @@ def new_genre(request):
 
 @login_required(login_url=reverse_lazy('rome_login'))
 def new_role(request):
+    logger.debug( '\n\nstarting new_role()' )
     from .forms import NewRoleForm
     if request.method == 'POST':
         form = NewRoleForm(request.POST)
@@ -905,6 +953,7 @@ def new_role(request):
 
 @login_required(login_url=reverse_lazy('rome_login'))
 def new_biography(request):
+    logger.debug( '\n\nstarting new_biography()' )
     from .forms import NewBiographyForm
     if request.method == 'POST':
         form = NewBiographyForm(request.POST)
@@ -922,6 +971,7 @@ def new_biography(request):
 
 
 def _get_prev_next_ids(book_json, page_pid):
+    logger.debug( f'starting non-top-level-view _get_prev_next_ids()' )
     prev_id = "none"
     next_id = "none"
     for index, page in enumerate(book_json['relations']['hasPart']):
@@ -939,6 +989,7 @@ def _get_prev_next_ids(book_json, page_pid):
 
 def version( request ):
     """ Returns basic branch and commit data. """
+    logger.debug( '\n\nstarting version()' )
     rq_now = datetime.datetime.now()
     gatherer = GatherCommitAndBranchData()
     trio.run( gatherer.manage_git_calls )

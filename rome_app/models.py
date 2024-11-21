@@ -1,4 +1,5 @@
 import json
+import pprint
 import re
 
 from . import app_settings
@@ -74,7 +75,10 @@ class Biography(models.Model):
         ordering = ['name']
 
     def books(self):
-        return Book.search(query='genre_aat:books+AND+name:"%s"' % self.name )
+        query_string = f'genre_aat:books+AND+name:"{self.name}"'
+        logger.debug( f'query_string, ``{query_string}``' )
+        # return Book.search(query='genre_aat:books+AND+name:"%s"' % self.name )
+        return Book.search(query=query_string )
 
     def prints(self):
         return Book.search(query='(genre_aat:"etchings (prints)"+OR+genre_aat:"engravings (prints)")+AND+name:"%s"' % self.name )
@@ -251,7 +255,9 @@ class BDRObject:
         url = f'https://{app_settings.BDR_SERVER}/api/collections/{settings.TTWR_COLLECTION_PID}/{query}'
         logger.debug( f'url, ``{url}``' )
         r = requests.get(url)
+        logger.debug( f'status-code, ``{r.status_code}``')
         if not r.ok:
+            logger.debug( 'bdr-api not a 200, so raising error. Hmmm, feels like this should be handled better.')
             raise BdrApiError(f'error from BDR Apis: {r.status_code} {r.text}')
         objects_json = json.loads(r.text)
         num_objects = objects_json['items']['numFound']
@@ -464,21 +470,27 @@ class Print(Page):
 
 def _get_annotations_for_person(bio_name):
     #Look up every annotation for a person
+    logger.debug( f'bio_name, ``{bio_name}``' )
     num_prints_estimate = 6000
     query_uri = 'https://%s/api/search/?q=rel_is_member_of_collection_ssim:"%s"+AND+object_type:"annotation"+AND+contributor:"%s"+AND+display:BDR_PUBLIC&rows=%s&fl=rel_is_annotation_of_ssim,primary_title,pid,nonsort' % (app_settings.BDR_SERVER, settings.TTWR_COLLECTION_PID, bio_name, num_prints_estimate)
+    logger.debug( f'query_uri to get annotations-for-person, ``{query_uri}``' )
     annotations = json.loads(requests.get(query_uri).text)['response']['docs']
+    logger.debug( f'annotations, ``{annotations}``' )
     return annotations
 
 
 def _get_pages_from_annotations(annotations):
     # create a list of pages (or prints) the annotations are attached to
+    logger.debug( 'about to build pages from annotations' )
     pages = dict([(page['rel_is_annotation_of_ssim'][0].split(u':')[-1], page) for page in annotations])
+    logger.debug( f'pages initially, ``{pages}``' )
     for page_id in pages:
         page = pages[page_id]
         page['title'] = get_full_title_static(page)
         page['page_id'] = page_id
         page['id'] = page_id.split(u':')[-1]
         page['thumb'] = u"https://%s/viewers/image/thumbnail/%s/"  % (app_settings.BDR_SERVER, page['rel_is_annotation_of_ssim'][0])
+    logger.debug( f'pages, ``{pages}``')
     return pages
 
 
@@ -491,9 +503,16 @@ def _sort_book_pages(books):
 def annotations_by_books_and_prints(bio_name, group_amount=50):
     # Might need some cleaning up later, see if we can use objects here
 
+    logger.debug( f'bio_name, ``{bio_name}``; type, ``{type(bio_name)}``' )
+    logger.debug( f'group_amount, ``{group_amount}``; type, ``{type(group_amount)}``' )
+
     annotations = _get_annotations_for_person(bio_name)
+
     pages = _get_pages_from_annotations(annotations)
+    logger.debug( f'pages ( from  _get_pages_from_annotations() ), ``{pages}``' )
+
     pids_of_pages_to_look_up = [a['rel_is_annotation_of_ssim'][0].replace(':', '\:') for a in annotations]
+    logger.debug( f'pids_of_pages_to_look_up, ``{pids_of_pages_to_look_up}``' )
 
     prints = []
     books = {}
@@ -505,7 +524,9 @@ def annotations_by_books_and_prints(bio_name, group_amount=50):
         group_of_pids = pids_of_pages_to_look_up[i : i+group_amount]
         pids_query = "(pid:" + ("+OR+pid:".join(group_of_pids)) + ")"
         book_query = u"https://%s/api/search/?q=%s+AND+display:BDR_PUBLIC&fl=pid,primary_title,nonsort,object_type,rel_is_part_of_ssim,rel_has_pagination_ssim&rows=%s" % (app_settings.BDR_SERVER, pids_query, group_amount)
+        logger.debug( f'book_query url, ``{book_query}``' )
         data = json.loads(requests.get(book_query).text)
+        logger.debug( f'data, ``{pprint.pformat(data)}``' )
         looked_up_pages = data['response']['docs']
 
         # Create a dict that maps book pids to a list of pages for that book
@@ -737,7 +758,11 @@ class Annotation:
         if r.ok:
             return {'pid': json.loads(r.text)['pid']}
         else:
-            raise Exception('error posting new annotation for %s: %s - %s' % (self._image_pid, r.status_code, r.content))
+            # raise Exception('error posting new annotation for %s: %s - %s' % (self._image_pid, r.status_code, r.content))
+            raise Exception(
+                'error posting new annotation for pid, ``%s``: status_code, ``%s`` - content, ``%s`` -- for url, ``%s``' % ( 
+                self._image_pid, r.status_code, r.content, r.url )
+                )
 
     def update_in_bdr(self):
         params = self._get_update_params()

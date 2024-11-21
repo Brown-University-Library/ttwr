@@ -21,3 +21,4 @@ STATIC_URL = '/projects/rome/static/'
 EMAIL_HOST = get_env_setting('EMAIL_HOST')
 ALLOWED_HOSTS = [get_env_setting('ALLOWED_HOST')]
 TTWR_COLLECTION_PID = 'test:5m6nkymr'
+SERVER_EMAIL = get_env_setting('SERVER_EMAIL')
