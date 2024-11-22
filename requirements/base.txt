@@ -46,6 +46,8 @@ pillow==10.4.0
     # via
     #   -r ./requirements/base.in
     #   django-pagedown
+pip==24.3.1
+    # via -r ./requirements/base.in
 ply==3.8
     # via
     #   bdrxml
@@ -59,6 +61,8 @@ pytz==2024.2
 rdflib==7.1.1
     # via bdrxml
 requests==2.26.0
+    # via -r ./requirements/base.in
+setuptools==75.3.0
     # via -r ./requirements/base.in
 six==1.16.0
     # via eulxml
@@ -74,3 +78,5 @@ typing-extensions==4.12.2 ; python_full_version < '3.11'
     # via asgiref
 urllib3==1.26.20
     # via requests
+uv==0.5.4
+    # via -r ./requirements/base.in

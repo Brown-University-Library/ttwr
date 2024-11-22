@@ -68,6 +68,8 @@ pillow==10.4.0
     # via
     #   -r ./requirements/base.txt
     #   django-pagedown
+pip==24.3.1
+    # via -r ./requirements/base.txt
 ply==3.8
     # via
     #   -r ./requirements/base.txt
@@ -95,6 +97,8 @@ requests==2.26.0
     #   responses
 responses==0.10.16
     # via -r ./requirements/local.in
+setuptools==75.3.0
+    # via -r ./requirements/base.txt
 six==1.16.0
     # via
     #   -r ./requirements/base.txt
@@ -123,3 +127,5 @@ urllib3==1.26.20
     #   -r ./requirements/base.txt
     #   requests
     #   responses
+uv==0.5.4
+    # via -r ./requirements/base.txt
