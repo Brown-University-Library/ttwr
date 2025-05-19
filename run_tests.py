@@ -21,11 +21,17 @@ if __name__ == '__main__':
         django.setup()
 
         print(
-            f'ACTUAL DATABASE ENGINE IN USE: ``{connection.vendor}``, settings.ENGINE={connection.settings_dict["ENGINE"]}'
+            f'pre-TestRunner ACTUAL DATABASE ENGINE IN USE: ``{connection.vendor}``, settings.ENGINE={connection.settings_dict["ENGINE"]}'
         )
-        print('TEST DB NAME:', connection.settings_dict['NAME'])
+        print('pre-TestRunner TEST DB NAME:', connection.settings_dict['NAME'])
 
         TestRunner = get_runner(settings)
         test_runner = TestRunner()
         failures = test_runner.run_tests(['unit_tests'])
+
+        print(
+            f'post-TestRunner ACTUAL DATABASE ENGINE IN USE: ``{connection.vendor}``, settings.ENGINE={connection.settings_dict["ENGINE"]}'
+        )
+        print('post-TestRunner TEST DB NAME:', connection.settings_dict['NAME'])
+
     sys.exit(bool(failures))
