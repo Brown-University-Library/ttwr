@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-from os.path import dirname, abspath, join
-import sys 
-import dotenv
+import sys
+from os.path import abspath, dirname, join
+
 import django
+import dotenv
 from django.conf import settings
 from django.test.utils import get_runner
-
 
 if __name__ == '__main__':
     SITE_ROOT = dirname(abspath(__file__))
@@ -15,4 +15,6 @@ if __name__ == '__main__':
     TestRunner = get_runner(settings)
     test_runner = TestRunner()
     failures = test_runner.run_tests(['integration_tests'])
+    ## to just run one test:
+    # failures = test_runner.run_tests(['integration_tests.tests.TestPrintsViews.test_specific_print'])
     sys.exit(bool(failures))
