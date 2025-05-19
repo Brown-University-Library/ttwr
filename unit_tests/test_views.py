@@ -1,4 +1,5 @@
 import json
+import logging
 
 import responses
 from django.conf import settings
@@ -9,6 +10,8 @@ from django.urls import reverse
 from rome_app import models, views
 
 from . import responses_data
+
+log = logging.getLogger(__name__)
 
 
 def get_auth_client(superuser=False):
@@ -524,6 +527,9 @@ class TestRecordCreatorViews(TestCase):
         auth_client = get_auth_client()
         self.assertEqual(len(models.Role.objects.all()), 0)
         response = auth_client.post(reverse('new_role'), {'text': 'Auth©r'})
+        log.debug(f'response: {response}')
+        print(f'response: {response}')
+        print(f'response.content: {response.content}')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'opener.dismissAddAnotherPopup(window, "1", "Auth©r");')
         self.assertEqual(len(models.Role.objects.all()), 1)
