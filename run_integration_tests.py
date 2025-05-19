@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-from os.path import dirname, abspath, join
-import sys 
-import dotenv
+import sys
+from os.path import abspath, dirname, join
+
 import django
+import dotenv
 from django.conf import settings
 from django.test.utils import get_runner
-
 
 if __name__ == '__main__':
     SITE_ROOT = dirname(abspath(__file__))
