@@ -5,7 +5,6 @@ import responses
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core import mail
-from django.core.management import call_command
 from django.test import Client, TestCase, TransactionTestCase
 from django.urls import reverse
 from rome_app import models, views
@@ -494,13 +493,12 @@ class TestDocumentViews(TransactionTestCase):
 
 class TestRecordCreatorViews(TestCase):
     def setUp(self):
-        call_command('flush', verbosity=0, interactive=False)
-
-    # def setUp(self):
-    #     ## drop tables for this test-class
-    #     models.Genre.objects.all().delete()
-    #     models.Role.objects.all().delete()
-    #     models.Biography.objects.all().delete()
+        """
+        Note: clears data, but does not reset sequences, so don't rely on primary-key values.
+        """
+        models.Genre.objects.all().delete()
+        models.Role.objects.all().delete()
+        models.Biography.objects.all().delete()
 
     def test_new_genre_auth(self):
         url = reverse('new_genre')
@@ -541,14 +539,14 @@ class TestRecordCreatorViews(TestCase):
         print(f'response: {response}')
         print(f'response.content: {response.content}')
 
-        # new_role = models.Role.objects.get(text='Auth©r')
-        # expected_js = f'opener.dismissAddAnotherPopup(window, "{new_role.pk}", "Auth©r");'
-
         self.assertEqual(response.status_code, 200)
 
-        self.assertContains(response, 'opener.dismissAddAnotherPopup(window, "1", "Auth©r");')
+        new_role = models.Role.objects.get(text='Auth©r')
+        expected_js = f'opener.dismissAddAnotherPopup(window, "{new_role.pk}", "Auth©r");'
+        self.assertContains(response, expected_js)
 
-        # self.assertContains(response, expected_js)
+        # self.assertContains(response, 'opener.dismissAddAnotherPopup(window, "1", "Auth©r");')
+
         self.assertEqual(len(models.Role.objects.all()), 1)
         self.assertEqual(models.Role.objects.all()[0].text, 'Auth©r')
 
