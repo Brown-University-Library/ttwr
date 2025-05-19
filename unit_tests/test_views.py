@@ -492,6 +492,12 @@ class TestDocumentViews(TransactionTestCase):
 
 
 class TestRecordCreatorViews(TestCase):
+    def setUp(self):
+        ## drop tables for this test-class
+        models.Genre.objects.all().delete()
+        models.Role.objects.all().delete()
+        models.Biography.objects.all().delete()
+
     def test_new_genre_auth(self):
         url = reverse('new_genre')
         response = self.client.get(url)
@@ -530,8 +536,15 @@ class TestRecordCreatorViews(TestCase):
         log.debug(f'response: {response}')
         print(f'response: {response}')
         print(f'response.content: {response.content}')
+
+        # new_role = models.Role.objects.get(text='Auth©r')
+        # expected_js = f'opener.dismissAddAnotherPopup(window, "{new_role.pk}", "Auth©r");'
+
         self.assertEqual(response.status_code, 200)
+
         self.assertContains(response, 'opener.dismissAddAnotherPopup(window, "1", "Auth©r");')
+
+        # self.assertContains(response, expected_js)
         self.assertEqual(len(models.Role.objects.all()), 1)
         self.assertEqual(models.Role.objects.all()[0].text, 'Auth©r')
 
