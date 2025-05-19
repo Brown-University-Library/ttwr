@@ -516,7 +516,9 @@ class TestRecordCreatorViews(TestCase):
         self.assertEqual(len(models.Genre.objects.all()), 0)
         response = auth_client.post(reverse('new_genre'), {'text': 'Book'})
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'opener.dismissAddAnotherPopup(window, "1", "Book");')
+        new_genre = models.Genre.objects.get(text='Book')
+        expected_js = f'opener.dismissAddAnotherPopup(window, "{new_genre.pk}", "Book");'
+        self.assertContains(response, expected_js)
         self.assertEqual(len(models.Genre.objects.all()), 1)
         self.assertEqual(models.Genre.objects.all()[0].text, 'Book')
 
@@ -536,17 +538,12 @@ class TestRecordCreatorViews(TestCase):
         self.assertEqual(len(models.Role.objects.all()), 0)
         response = auth_client.post(reverse('new_role'), {'text': 'Auth©r'})
         log.debug(f'response: {response}')
-        print(f'response: {response}')
-        print(f'response.content: {response.content}')
-
+        # print(f'response: {response}')
+        # print(f'response.content: {response.content}')
         self.assertEqual(response.status_code, 200)
-
         new_role = models.Role.objects.get(text='Auth©r')
         expected_js = f'opener.dismissAddAnotherPopup(window, "{new_role.pk}", "Auth©r");'
         self.assertContains(response, expected_js)
-
-        # self.assertContains(response, 'opener.dismissAddAnotherPopup(window, "1", "Auth©r");')
-
         self.assertEqual(len(models.Role.objects.all()), 1)
         self.assertEqual(models.Role.objects.all()[0].text, 'Auth©r')
 
@@ -567,7 +564,9 @@ class TestRecordCreatorViews(TestCase):
         self.assertEqual(len(models.Biography.objects.all()), 1)
         response = auth_client.post(reverse('new_biography'), {'name': 'Säm', 'trp_id': '1'})
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'opener.dismissAddAnotherPopup(window, "2", "Säm (0002)");')
+        new_biography = models.Biography.objects.get(name='Säm')
+        expected_js = f'opener.dismissAddAnotherPopup(window, "{new_biography.pk}", "Säm (0002)");'
+        self.assertContains(response, expected_js)
         self.assertEqual(len(models.Biography.objects.all()), 2)
         self.assertEqual(models.Biography.objects.all()[0].name, 'Säm')
 
