@@ -23,6 +23,7 @@ if __name__ == '__main__':
         print(
             f'ACTUAL DATABASE ENGINE IN USE: ``{connection.vendor}``, settings.ENGINE={connection.settings_dict["ENGINE"]}'
         )
+        print('TEST DB NAME:', connection.settings_dict['NAME'])
 
         TestRunner = get_runner(settings)
         test_runner = TestRunner()
