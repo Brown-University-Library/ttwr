@@ -1,7 +1,17 @@
 import os
+import pathlib
 import pprint
 
+import dotenv
+
 from .base import *  # noqa: F403 -- imports settings necessary for run_tests.py
+
+## Load environment variables from .env file
+dotenv_path = pathlib.Path(__file__).parent.parent.parent / '../.env_unit_tests'
+# if not dotenv_path.exists():
+#     raise ImproperlyConfigured(f'dotenv file not found at {dotenv_path}')  # commented out so github-ci doesn't fail
+dotenv.read_dotenv(dotenv_path, override=True)
+
 
 DEBUG = True
 
