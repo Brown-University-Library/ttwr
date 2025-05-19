@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth.models import User
+from django.test import Client, TestCase, TransactionTestCase
 from django.urls import reverse
-from django.test import TestCase, TransactionTestCase, Client
-from rome_app import views
 from rome_app import models
 
 
@@ -13,12 +12,11 @@ def get_auth_client():
     auth_client = Client()
     logged_in = auth_client.login(username=username, password=password)
     if not logged_in:
-        raise Exception('couldn\'t log in user')
+        raise Exception("couldn't log in user")
     return auth_client
 
 
 class TestBooksViews(TestCase):
-
     def test_books(self):
         response = self.client.get(reverse('books'))
         self.assertEqual(response.status_code, 200)
@@ -44,7 +42,6 @@ class TestBooksViews(TestCase):
 
 
 class TestPrintsViews(TestCase):
-
     def test_prints(self):
         response = self.client.get(reverse('prints'))
         self.assertEqual(response.status_code, 200)
@@ -56,9 +53,8 @@ class TestPrintsViews(TestCase):
 
 
 class TestPeopleViews(TransactionTestCase):
-
     def test_person_detail(self):
-        models.Biography.objects.create(name=u'Frëd', trp_id='0001', bio=u'### Frëd')
+        models.Biography.objects.create(name='Frëd', trp_id='0001', bio='### Frëd')
         response = self.client.get(reverse('person_detail', kwargs={'trp_id': '0001'}))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, u'<h3>Frëd</h3>')
+        self.assertContains(response, '<h3>Frëd</h3>')
