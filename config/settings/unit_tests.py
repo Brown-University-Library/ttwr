@@ -19,13 +19,23 @@ ADMINS = (('random', 'random@example.com'),)
 
 # DATABASES = {
 #     'default': {
-#         'ENGINE': os.getenv('TEST_DB_ENGINE', 'django.db.backends.sqlite3'),
-#         'NAME': os.getenv('TEST_DB_NAME', 'unit_tests.sqlite3'),
-#         'USER': os.getenv('TEST_DB_USER'),
-#         'PASSWORD': os.getenv('TEST_DB_PASSWORD'),
-#         'HOST': os.getenv('TEST_DB_HOST'),
+#         'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.sqlite3'),
+#         'NAME': os.getenv('DB_NAME', 'unit_tests.sqlite3'),
+#         'USER': os.getenv('DB_USER', ''),
+#         'PASSWORD': os.getenv('DB_PASSWORD', ''),
+#         'HOST': os.getenv('DB_HOST', '127.0.0.1'),
+#         'PORT': os.getenv('DB_PORT', ''),
+#         'TEST': {
+#             'ENGINE': os.getenv('TEST_DB_ENGINE', 'django.db.backends.sqlite3'),
+#             'NAME': os.getenv('TEST_DB_NAME', 'unit_tests.sqlite3'),
+#             'USER': os.getenv('TEST_DB_USER'),
+#             'PASSWORD': os.getenv('TEST_DB_PASSWORD'),
+#             'HOST': os.getenv('TEST_DB_HOST'),
+#             'PORT': int(os.getenv('TEST_DB_PORT', 3306)),
+#         },
 #     }
 # }
+# pprint.pprint(DATABASES)
 
 DATABASES = {
     'default': {
@@ -35,14 +45,6 @@ DATABASES = {
         'PASSWORD': os.getenv('DB_PASSWORD', ''),
         'HOST': os.getenv('DB_HOST', '127.0.0.1'),
         'PORT': os.getenv('DB_PORT', ''),
-        'TEST': {
-            'ENGINE': os.getenv('TEST_DB_ENGINE', 'django.db.backends.sqlite3'),
-            'NAME': os.getenv('TEST_DB_NAME', 'unit_tests.sqlite3'),
-            'USER': os.getenv('TEST_DB_USER'),
-            'PASSWORD': os.getenv('TEST_DB_PASSWORD'),
-            'HOST': os.getenv('TEST_DB_HOST'),
-            'PORT': int(os.getenv('TEST_DB_PORT', 3306)),
-        },
     }
 }
 pprint.pprint(DATABASES)
