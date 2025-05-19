@@ -5,6 +5,7 @@ import responses
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core import mail
+from django.core.management import call_command
 from django.test import Client, TestCase, TransactionTestCase
 from django.urls import reverse
 from rome_app import models, views
@@ -493,15 +494,13 @@ class TestDocumentViews(TransactionTestCase):
 
 class TestRecordCreatorViews(TestCase):
     def setUp(self):
-        ## drop tables for this test-class
-        models.Genre.objects.all().delete()
-        models.Role.objects.all().delete()
-        models.Biography.objects.all().delete()
+        call_command('flush', verbosity=0, interactive=False)
 
-    def tearDown(self):
-        models.Genre.objects.all().delete()
-        models.Role.objects.all().delete()
-        models.Biography.objects.all().delete()
+    # def setUp(self):
+    #     ## drop tables for this test-class
+    #     models.Genre.objects.all().delete()
+    #     models.Role.objects.all().delete()
+    #     models.Biography.objects.all().delete()
 
     def test_new_genre_auth(self):
         url = reverse('new_genre')
