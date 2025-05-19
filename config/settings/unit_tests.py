@@ -1,6 +1,6 @@
 import os
 
-from .base import *  # noqa: F403
+from .base import *  # noqa: F403 -- imports settings necessary for run_tests.py
 
 DEBUG = True
 
