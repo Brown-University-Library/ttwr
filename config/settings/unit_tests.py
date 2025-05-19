@@ -1,15 +1,15 @@
-from .base import *
+import os
+
+from .base import *  # noqa: F403
 
 DEBUG = True
 
-ADMINS = (
-    ('random', 'random@example.com'),
-)
+ADMINS = (('random', 'random@example.com'),)
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'unit_tests.sqlite3',
+        'ENGINE': os.getenv('TEST_DB_ENGINE', 'django.db.backends.sqlite3'),
+        'NAME': os.getenv('TEST_DB_NAME', 'unit_tests.sqlite3'),
     }
 }
 
