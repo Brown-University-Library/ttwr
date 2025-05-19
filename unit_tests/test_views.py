@@ -498,6 +498,11 @@ class TestRecordCreatorViews(TestCase):
         models.Role.objects.all().delete()
         models.Biography.objects.all().delete()
 
+    def tearDown(self):
+        models.Genre.objects.all().delete()
+        models.Role.objects.all().delete()
+        models.Biography.objects.all().delete()
+
     def test_new_genre_auth(self):
         url = reverse('new_genre')
         response = self.client.get(url)
