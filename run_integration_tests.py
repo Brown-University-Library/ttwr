@@ -15,4 +15,6 @@ if __name__ == '__main__':
     TestRunner = get_runner(settings)
     test_runner = TestRunner()
     failures = test_runner.run_tests(['integration_tests'])
+    ## to just run one test:
+    # failures = test_runner.run_tests(['integration_tests.tests.TestPrintsViews.test_specific_print'])
     sys.exit(bool(failures))
