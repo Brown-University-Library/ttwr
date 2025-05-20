@@ -54,6 +54,8 @@ def turnstile_verify(request: HttpRequest) -> HttpResponse:
     ## handle result ------------------------------------------------
     if result.get('success'):
         request.session['turnstile_verified'] = True
+        # Set session to expire after 30 minutes (1800 seconds)
+        request.session.set_expiry(1800)
         log.debug('turnstile verification successful')
         return JsonResponse({'ok': True})
     else:
