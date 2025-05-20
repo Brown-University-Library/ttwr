@@ -1,5 +1,6 @@
-from .base import *
 import json
+
+from .base import *
 
 DEBUG = False
 
@@ -10,7 +11,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'OPTIONS': {
             'charset': 'utf8mb4',
-            },
+        },
         'NAME': get_env_setting('DB_NAME'),
         'USER': get_env_setting('DB_USER'),
         'PASSWORD': get_env_setting('DB_PASSWORD'),
