@@ -42,22 +42,22 @@ class TurnstileMiddleware:
         log.debug('turnstile_middleware: starting __call__()')
         log.debug(f'turnstile_middleware: request path, {request.path}')
 
-        # — Already passed verification
+        ## session-check -------------------------------------------
         if request.session.get('turnstile_verified'):
             log.debug('turnstile_middleware: already verified via session')
             return self.get_response(request)
 
-        # — We must exempt turnstile verify in order for people to get to the challenge page at all
+        ## verify-url-check ------------------------------------------
         if 'turnstile-verify' in request.path:
             log.debug('turnstile_middleware: exempt path, turnstile-verify')
             return self.get_response(request)
 
-        # — Any other exempt paths from settings
+        ## exempt-path-check -----------------------------------------
         if any(pattern.match(request.path) for pattern in settings.TURNSTILE_EXEMPT_PATHS):
             log.debug('turnstile_middleware: exempt path from settings')
             return self.get_response(request)
 
-        # — All other requests must complete the challenge
+        ## show-challenge ------------------------------------------
         log.debug('turnstile_middleware: rendering challenge')
         verify_url = request.build_absolute_uri(reverse('turnstile-verify'))
         log.debug(f'turnstile_middleware: verify_url, {verify_url}')
