@@ -1,5 +1,5 @@
-from .base import *  # noqa: F403
-from .base import get_env_setting
+from config.settings.base import *  # noqa: F403
+from config.settings.base import MIDDLEWARE, get_env_setting
 
 DEBUG = True
 
@@ -16,6 +16,9 @@ DATABASES = {
         'PORT': get_env_setting('DB_PORT'),
     }
 }
+
+## add an entry to MIDDLEWARE
+MIDDLEWARE = MIDDLEWARE + ['config.middleware.turnstile_middleware.TurnstileMiddleware']
 
 SECRET_KEY = get_env_setting('SECRET_KEY')
 STATIC_URL = '/projects/rome/static/'
