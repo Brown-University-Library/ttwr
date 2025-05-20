@@ -14,6 +14,8 @@ from django.conf import settings
 from django.http import HttpRequest, HttpResponse, HttpResponseForbidden, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from django.utils import timezone
+from datetime import timedelta
 
 log = logging.getLogger('rome')
 
@@ -56,7 +58,8 @@ def turnstile_verify(request: HttpRequest) -> HttpResponse:
         request.session['turnstile_verified'] = True
         ## set session expiry ---------------------------------------
         request.session.set_expiry(settings.TURNSTILE_SESSION_EXPIRY_MINUTES * 60)
-        log.debug('turnstile verification successful')
+        expiry_time = timezone.now() + timedelta(minutes=settings.TURNSTILE_SESSION_EXPIRY_MINUTES)
+        log.debug(f'turnstile verification successful. Session expires in {settings.TURNSTILE_SESSION_EXPIRY_MINUTES} minutes ({expiry_time:%Y-%m-%d %H:%M:%S})')
         return JsonResponse({'ok': True})
     else:
         error_codes = result.get('error-codes')
