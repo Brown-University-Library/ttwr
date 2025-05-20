@@ -36,7 +36,7 @@ def turnstile_verify(request: HttpRequest) -> HttpResponse:
         'response': token,
         'remoteip': request.META.get('REMOTE_ADDR'),
     }
-    log.debug(f'turnstile verification data, ``{pprint.pformat(data)}``')
+    log.debug(f'data for turnstile verification, ``{pprint.pformat(data)}``')
     resp: requests.Response = requests.post(
         settings.TURNSTILE_API_URL,
         data=data,
