@@ -1,0 +1,50 @@
+{% load static %}
+
+{% block turnstile %}
+<head>
+    <meta charset="utf-8">
+    <title>Verification required</title>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+</head>
+
+<body>
+
+    <h2>Verifying you’re human…</h2>
+
+    <div class="cf-turnstile" data-sitekey="{{ site_key }}" data-callback="onSuccess"></div>
+
+    <div id="result" style="margin-top: 20px; font-size: 1.2em;"></div>
+
+
+    <p>We strive to make our content freely available. 
+        If this check is preventing you from making use of our resources, make sure you have cookies enabled. 
+        If you still have trouble, please email us at <a href="mailto:{{ turnstile_email }}">{{ turnstile_email }}</a>.
+    </p>
+
+    <script>
+    function onSuccess(token) {
+        const next = window.location.pathname + window.location.search;
+        fetch('{{ verify_url }}?next=' + encodeURIComponent(next), {
+            method: 'POST',
+            credentials: 'same-origin', // ensure cookies are sent
+            body: new URLSearchParams({ token })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.ok) {
+                window.location = next;  // go back to where we started
+            } else {
+                alert('Verification failed, please try again.');
+            }
+        })
+        .catch(err => {
+            console.error('Turnstile verify error:', err);
+            document.getElementById('result').textContent =
+                'Verification failed – please reload and try again.';
+        });
+    }
+    </script>
+
+</body>  
+
+{% endblock %}

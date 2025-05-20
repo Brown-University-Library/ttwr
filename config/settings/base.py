@@ -1,22 +1,25 @@
 import os
+
 from django.core.exceptions import ImproperlyConfigured
 
+
 def get_env_setting(setting):
-    """ Get the environment setting or return exception """
+    """Get the environment setting or return exception"""
     try:
         return os.environ[setting]
     except KeyError:
-        error_msg = u'Set the %s env variable' % setting
+        error_msg = 'Set the %s env variable' % setting
         raise ImproperlyConfigured(error_msg.encode('utf8'))
+
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 MIDDLEWARE = [
-  'django.contrib.sessions.middleware.SessionMiddleware',
-  'django.middleware.common.CommonMiddleware',
-  'django.middleware.csrf.CsrfViewMiddleware',
-  'django.contrib.auth.middleware.AuthenticationMiddleware',
-  'django.contrib.messages.middleware.MessageMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
 ]
 
 TEMPLATES = [
@@ -46,6 +49,9 @@ INSTALLED_APPS = (
     'rome_app',
 )
 
+## maximum session age: 1 day
+SESSION_COOKIE_AGE = 86400
+
 TIME_ZONE = 'America/New_York'
 
 USE_TZ = True
@@ -61,12 +67,12 @@ MEDIA_ROOT = os.path.normpath(os.path.join(BASE_DIR, 'media'))
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 MARKDOWN_DEUX_STYLES = {
-    "default": {
-        "extras": {
-            "code-friendly": None,
-            "footnotes": None,
+    'default': {
+        'extras': {
+            'code-friendly': None,
+            'footnotes': None,
         },
-        "safe_mode": "escape",
+        'safe_mode': 'escape',
     },
 }
 
@@ -78,25 +84,18 @@ LOGGING = {
         'verbose': {
             # 'format': '%(asctime)s %(levelname)s %(message)s'
             'format': '[%(asctime)s] %(levelname)s [%(module)s-%(funcName)s()::%(lineno)d] %(message)s',
-            'datefmt': '%d/%b/%Y %H:%M:%S'
+            'datefmt': '%d/%b/%Y %H:%M:%S',
         },
     },
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
-        }
-    },
+    'filters': {'require_debug_false': {'()': 'django.utils.log.RequireDebugFalse'}},
     'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
-        },
-        'log_file':{
-            'level': 'DEBUG',
+        'mail_admins': {'level': 'ERROR', 'filters': ['require_debug_false'], 'class': 'django.utils.log.AdminEmailHandler'},
+        'log_file': {
+            # 'level': 'DEBUG',
+            'level': os.environ.get('LOG_LEVEL', 'INFO'),  # add LOG_LEVEL='DEBUG' to the .env file to see debug messages
             'class': 'logging.FileHandler',
             'filename': os.path.join(LOG_DIR, 'rome.log'),
-            'formatter': 'verbose'
+            'formatter': 'verbose',
         },
         'null': {
             'class': 'logging.NullHandler',
@@ -114,15 +113,15 @@ LOGGING = {
             'propagate': False,
         },
         'django.security.DisallowedHost': {
-            'handlers': ['null'], #do nothing for disallowed hosts errors
+            'handlers': ['null'],  # do nothing for disallowed hosts errors
             'propagate': False,
         },
         'rome': {
             'handlers': ['log_file'],
-            'level': 'DEBUG',
+            'level': 'DEBUG',  # messages above this will get sent to the `log_file` handler
             'propagate': False,
         },
-    }
+    },
 }
 
-TTWR_COLLECTION_PID = 'bdr:240509' #ID: 621
+TTWR_COLLECTION_PID = 'bdr:240509'  # ID: 621
