@@ -37,13 +37,19 @@ def turnstile_verify(request: HttpRequest) -> HttpResponse:
         'remoteip': request.META.get('REMOTE_ADDR'),
     }
     log.debug(f'data for turnstile verification, ``{pprint.pformat(data)}``')
-    resp: requests.Response = requests.post(
-        settings.TURNSTILE_API_URL,
-        data=data,
-        timeout=settings.TURNSTILE_API_TIMEOUT,
-    )
-    result: dict[str, Any] = resp.json()
-    log.debug(f'turnstile verification result, ``{pprint.pformat(result)}``')
+    try:
+        resp: requests.Response = requests.post(
+            settings.TURNSTILE_API_URL,
+            data=data,
+            timeout=settings.TURNSTILE_API_TIMEOUT,
+        )
+        result: dict[str, Any] = resp.json()
+        log.debug(f'turnstile verification result, ``{pprint.pformat(result)}``')
+    except Exception:
+        log.exception('turnstile verification failed')
+        log.debug(f'turnstile-api-url, ``{settings.TURNSTILE_API_URL}``')
+        log.debug(f'turnstile-timeout, ``{settings.TURNSTILE_API_TIMEOUT}``')
+        return JsonResponse({'ok': False, 'reason': 'timeout'}, status=403)
 
     ## handle result ------------------------------------------------
     if result.get('success'):
