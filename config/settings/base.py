@@ -49,6 +49,9 @@ INSTALLED_APPS = (
     'rome_app',
 )
 
+## maximum session age: 1 day
+SESSION_COOKIE_AGE = 86400
+
 TIME_ZONE = 'America/New_York'
 
 USE_TZ = True
