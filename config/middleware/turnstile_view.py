@@ -17,6 +17,9 @@ from django.views.decorators.http import require_POST
 
 log = logging.getLogger('rome')
 
+# Get the session expiry time in seconds (minutes * 60)
+SESSION_EXPIRY_SECONDS = settings.TURNSTILE_SESSION_EXPIRY_MINUTES * 60
+
 
 @csrf_exempt
 @require_POST
@@ -54,8 +57,8 @@ def turnstile_verify(request: HttpRequest) -> HttpResponse:
     ## handle result ------------------------------------------------
     if result.get('success'):
         request.session['turnstile_verified'] = True
-        # Set session to expire after 30 minutes (1800 seconds)
-        request.session.set_expiry(1800)
+        # Set session to expire after specified minutes
+        request.session.set_expiry(SESSION_EXPIRY_SECONDS)
         log.debug('turnstile verification successful')
         return JsonResponse({'ok': True})
     else:
