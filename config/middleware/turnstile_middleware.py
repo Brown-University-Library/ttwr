@@ -16,7 +16,7 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
 
-log = logging.getLogger(__name__)
+log = logging.getLogger('rome')
 
 log.debug('turnstile_middleware: loaded')
 log.debug(f'turnstile_middleware: turnstile-verify url, `{reverse("turnstile-verify")}`')
