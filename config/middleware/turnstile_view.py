@@ -15,7 +15,7 @@ from django.http import HttpRequest, HttpResponse, HttpResponseForbidden, JsonRe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-log = logging.getLogger(__name__)
+log = logging.getLogger('rome')
 
 
 @csrf_exempt
