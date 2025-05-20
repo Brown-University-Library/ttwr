@@ -53,9 +53,9 @@ class TurnstileMiddleware:
             return self.get_response(request)
 
         ## exempt-path-check -----------------------------------------
-        if any(pattern.match(request.path) for pattern in settings.TURNSTILE_EXEMPT_PATHS):
-            log.debug('turnstile_middleware: exempt path from settings')
-            return self.get_response(request)
+        # if any(pattern.match(request.path) for pattern in settings.TURNSTILE_EXEMPT_PATHS):
+        #     log.debug('turnstile_middleware: exempt path from settings')
+        #     return self.get_response(request)
 
         ## show-challenge ------------------------------------------
         log.debug('turnstile_middleware: rendering challenge')
