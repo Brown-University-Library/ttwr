@@ -91,7 +91,8 @@ LOGGING = {
     'handlers': {
         'mail_admins': {'level': 'ERROR', 'filters': ['require_debug_false'], 'class': 'django.utils.log.AdminEmailHandler'},
         'log_file': {
-            'level': 'DEBUG',
+            # 'level': 'DEBUG',
+            'level': os.environ.get('LOG_LEVEL', 'INFO'),  # add LOG_LEVEL='DEBUG' to the .env file to see debug messages
             'class': 'logging.FileHandler',
             'filename': os.path.join(LOG_DIR, 'rome.log'),
             'formatter': 'verbose',
@@ -117,7 +118,7 @@ LOGGING = {
         },
         'rome': {
             'handlers': ['log_file'],
-            'level': 'DEBUG',
+            'level': 'DEBUG',  # messages above this will get sent to the `log_file` handler
             'propagate': False,
         },
     },
