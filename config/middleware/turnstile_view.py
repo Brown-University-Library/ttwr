@@ -1,11 +1,12 @@
 """
-Turnstile verification view. 
+Turnstile verification view.
 Learn more about Turnstile at: https://developers.cloudflare.com/turnstile/
 
 View called from ttwr/config/urls.py
 """
 
 import logging
+import pprint
 from typing import Any, Optional
 
 import requests
@@ -22,24 +23,29 @@ log = logging.getLogger(__name__)
 def turnstile_verify(request: HttpRequest) -> HttpResponse:
     log.info('starting turnstile_verify()')
 
+    ## get-token ----------------------------------------------------
     token: Optional[str] = request.POST.get('token')
     if not token:
         log.error('missing token in request, unable to verify')
         return HttpResponseForbidden('missing turnstile token')
 
-    # — verify with Cloudflare
+    ## verify against Cloudflare ------------------------------------
     log.debug('verifying token with Cloudflare')
+    data = {
+        'secret': settings.TURNSTILE_SECRET_KEY,
+        'response': token,
+        'remoteip': request.META.get('REMOTE_ADDR'),
+    }
+    log.debug(f'turnstile verification data, ``{pprint.pformat(data)}``')
     resp: requests.Response = requests.post(
-        'https://challenges.cloudflare.com/turnstile/v0/siteverify',
-        data={
-            'secret': settings.TURNSTILE_SECRET_KEY,
-            'response': token,
-            'remoteip': request.META.get('REMOTE_ADDR'),
-        },
-        timeout=5,
+        settings.TURNSTILE_API_URL,
+        data=data,
+        timeout=settings.TURNSTILE_API_TIMEOUT,
     )
     result: dict[str, Any] = resp.json()
+    log.debug(f'turnstile verification result, ``{pprint.pformat(result)}``')
 
+    ## handle result ------------------------------------------------
     if result.get('success'):
         request.session['turnstile_verified'] = True
         log.debug('turnstile verification successful')

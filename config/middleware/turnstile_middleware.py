@@ -64,6 +64,7 @@ class TurnstileMiddleware:
         context = {
             'site_key': settings.TURNSTILE_SITE_KEY,
             'verify_url': verify_url,
+            'turnstile_email': settings.TURNSTILE_EMAIL,
         }
         return render(
             request,
