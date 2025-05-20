@@ -59,7 +59,7 @@ def turnstile_verify(request: HttpRequest) -> HttpResponse:
         ## set session expiry ---------------------------------------
         request.session.set_expiry(settings.TURNSTILE_SESSION_EXPIRY_MINUTES * 60)
         expiry_time = timezone.now() + timedelta(minutes=settings.TURNSTILE_SESSION_EXPIRY_MINUTES)
-        log.debug(f'turnstile verification successful. Session expires in {settings.TURNSTILE_SESSION_EXPIRY_MINUTES} minutes ({expiry_time:%Y-%m-%d %H:%M:%S})')
+        log.debug(f'turnstile verification successful. Session expires in {settings.TURNSTILE_SESSION_EXPIRY_MINUTES} minutes ({expiry_time.astimezone():%Y-%m-%d %H:%M:%S})')
         return JsonResponse({'ok': True})
     else:
         error_codes = result.get('error-codes')
