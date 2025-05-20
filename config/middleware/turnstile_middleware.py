@@ -68,6 +68,6 @@ class TurnstileMiddleware:
         }
         return render(
             request,
-            'turnstile_challenge.html',
+            'rome_templates/turnstile_challenge.html',
             context=context,
         )
