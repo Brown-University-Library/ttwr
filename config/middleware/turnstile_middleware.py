@@ -52,23 +52,26 @@ class TurnstileMiddleware:
             log.debug('turnstile_middleware: exempt path, turnstile-verify')
             return self.get_response(request)
 
-        ## ip-check --------------------------------------------------
+        ## allowed-ip-check -----------------------------------------
         ip: str = request.META.get('REMOTE_ADDR')
-        log.debug(f'turnstile_middleware: ip, {ip}')
+        log.debug(f'turnstile_middleware: ip, ``{ip}``')
         if TurnstileMiddlewareHelper.ip_is_valid(ip, settings.TURNSTILE_ALLOWED_IPS):
             log.debug('turnstile_middleware: ip is ok')
             return self.get_response(request)
 
-        ## user-agent check ------------------------------------------
-        user_agent: str = request.META.get('HTTP_USER_AGENT')
-        log.debug(f'turnstile_middleware: user_agent, {user_agent}')
-        if TurnstileMiddlewareHelper.user_agent_is_valid(user_agent, settings.TURNSTILE_ALLOWED_USER_AGENTS):
-            log.debug('turnstile_middleware: user_agent is ok')
-            return self.get_response(request)
+        ## allowed-user-agent-check ---------------------------------
+        # """ helper function isn't really needed, but facilitates tests """
+        # user_agent: str = request.META.get('HTTP_USER_AGENT')
+        # log.debug(f'turnstile_middleware: user_agent, ``{user_agent}``')
+        # if TurnstileMiddlewareHelper.user_agent_is_valid(user_agent, settings.TURNSTILE_ALLOWED_USER_AGENTS):
+        #     log.debug('turnstile_middleware: user_agent is ok')
+        #     return self.get_response(request)
 
-        ## exempt-path-check -----------------------------------------
-        # if any(pattern.match(request.path) for pattern in settings.TURNSTILE_EXEMPT_PATHS):
-        #     log.debug('turnstile_middleware: exempt path from settings')
+        ## allowed-path-check ---------------------------------------
+        # url_path: str = request.path
+        # log.debug(f'turnstile_middleware: url_path, {url_path}')
+        # if url_path in settings.TURNSTILE_ALLOWED_PATHS:
+        #     log.debug('turnstile_middleware: url_path is ok')
         #     return self.get_response(request)
 
         ## show-challenge ------------------------------------------
@@ -103,7 +106,6 @@ class TurnstileMiddlewareHelper:
         """
         ip_obj: ipaddress.IPv4Address = ipaddress.IPv4Address(ip_str)  # in case we need to do CIDR math
         for allowed_ip in allowed_ips:
-            assert isinstance(allowed_ip, str)
             if '/' in allowed_ip:  # eg CIDR notation, like '192.168.1.0/24'
                 network: ipaddress.IPv4Network = ipaddress.IPv4Network(allowed_ip)
                 if ip_obj in network:
@@ -122,7 +124,8 @@ class TurnstileMiddlewareHelper:
             allowed_user_agents: List of allowed user agents.
         """
         for allowed_user_agent in allowed_user_agents:
-            assert isinstance(allowed_user_agent, str)
+            allowed_user_agent = allowed_user_agent.strip()
+            user_agent_str = user_agent_str.strip()
             if user_agent_str == allowed_user_agent:
                 return True
         return False
