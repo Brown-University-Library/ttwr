@@ -1,3 +1,5 @@
+import json
+
 from config.settings.base import *  # noqa: F403
 from config.settings.base import MIDDLEWARE, get_env_setting
 
@@ -34,3 +36,4 @@ TURNSTILE_API_URL = get_env_setting('TURNSTILE_API_URL')
 TURNSTILE_API_TIMEOUT = int(get_env_setting('TURNSTILE_API_TIMEOUT'))
 TURNSTILE_EMAIL = get_env_setting('TURNSTILE_EMAIL')
 TURNSTILE_SESSION_EXPIRY_MINUTES = int(get_env_setting('TURNSTILE_SESSION_EXPIRY_MINUTES'))
+TURNSTILE_ALLOWED_IPS = json.loads(get_env_setting('TURNSTILE_ALLOWED_IPS_JSON'))
