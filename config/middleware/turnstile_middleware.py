@@ -2,12 +2,12 @@
 Middleware to enforce Cloudflare Turnstile verification via user session across the entire Django site.
 
 This module defines a TurnstileMiddleware class that intercepts incoming HTTP requests and ensures users
-have successfully completed the Turnstile challenge before accessing any protected pages. It checks for a
-session flag named "turnstile_verified" (set upon successful verification) or allows requests to certain
-exempt paths (e.g., the turnstile-verify endpoint and static assets). All other requests render a lightweight
-challenge page that, upon success, should set the session flag in the view.
+have successfully completed the Turnstile challenge before accessing any protected pages.
+
+It offers a few exemptions.
 """
 
+import ipaddress
 import logging
 from typing import Callable
 
@@ -52,6 +52,13 @@ class TurnstileMiddleware:
             log.debug('turnstile_middleware: exempt path, turnstile-verify')
             return self.get_response(request)
 
+        ## ip-check --------------------------------------------------
+        ip: str = request.META.get('REMOTE_ADDR')
+        log.debug(f'turnstile_middleware: ip, {ip}')
+        if self.ip_is_valid(ip, settings.TURNSTILE_ALLOWED_IPS):
+            log.debug('turnstile_middleware: ip is ok')
+            return self.get_response(request)
+
         ## exempt-path-check -----------------------------------------
         # if any(pattern.match(request.path) for pattern in settings.TURNSTILE_EXEMPT_PATHS):
         #     log.debug('turnstile_middleware: exempt path from settings')
@@ -71,3 +78,24 @@ class TurnstileMiddleware:
             'rome_templates/turnstile_challenge.html',
             context=context,
         )
+
+    def ip_is_valid(self, ip_str: str, allowed_ips: list[str]) -> bool:
+        """
+        Checks if the IP address is in the list of allowed IPs.
+
+        Args:
+            ip_str: The IP address to check.
+            allowed_ips: List of allowed IPs.
+        """
+        ip_obj: ipaddress.IPv4Address = ipaddress.IPv4Address(ip_str)
+        for allowed_ip in allowed_ips:
+            assert isinstance(allowed_ip, str)
+            if '/' in allowed_ip:  # eg CIDR notation, like '192.168.1.0/24'
+                network: ipaddress.IPv4Address = ipaddress.IPv4Address(allowed_ip, strict=False)
+                if ip_obj in network:
+                    return_val = True
+            else:
+                if ip_str == allowed_ip:
+                    return_val = True
+        log.debug(f'turnstile_middleware: return_val, ``{return_val}``')
+        return return_val
