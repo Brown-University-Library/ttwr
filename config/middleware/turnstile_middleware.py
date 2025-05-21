@@ -55,8 +55,15 @@ class TurnstileMiddleware:
         ## ip-check --------------------------------------------------
         ip: str = request.META.get('REMOTE_ADDR')
         log.debug(f'turnstile_middleware: ip, {ip}')
-        if TurnstileMiddlewareHelper().ip_is_valid(ip, settings.TURNSTILE_ALLOWED_IPS):
+        if TurnstileMiddlewareHelper.ip_is_valid(ip, settings.TURNSTILE_ALLOWED_IPS):
             log.debug('turnstile_middleware: ip is ok')
+            return self.get_response(request)
+
+        ## user-agent check ------------------------------------------
+        user_agent: str = request.META.get('HTTP_USER_AGENT')
+        log.debug(f'turnstile_middleware: user_agent, {user_agent}')
+        if TurnstileMiddlewareHelper.user_agent_is_valid(user_agent, settings.TURNSTILE_ALLOWED_USER_AGENTS):
+            log.debug('turnstile_middleware: user_agent is ok')
             return self.get_response(request)
 
         ## exempt-path-check -----------------------------------------
@@ -102,5 +109,20 @@ class TurnstileMiddlewareHelper:
                 if ip_obj in network:
                     return True
             elif ip_str == allowed_ip:
+                return True
+        return False
+
+    @staticmethod
+    def user_agent_is_valid(user_agent_str: str, allowed_user_agents: list[str]) -> bool:
+        """
+        Checks if the user agent is in the list of allowed user agents.
+
+        Args:
+            user_agent_str: The user agent to check.
+            allowed_user_agents: List of allowed user agents.
+        """
+        for allowed_user_agent in allowed_user_agents:
+            assert isinstance(allowed_user_agent, str)
+            if user_agent_str == allowed_user_agent:
                 return True
         return False
