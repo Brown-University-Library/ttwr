@@ -55,7 +55,7 @@ class TurnstileMiddleware:
         ## ip-check --------------------------------------------------
         ip: str = request.META.get('REMOTE_ADDR')
         log.debug(f'turnstile_middleware: ip, {ip}')
-        if self.ip_is_valid(ip, settings.TURNSTILE_ALLOWED_IPS):
+        if TurnstileMiddlewareHelper().ip_is_valid(ip, settings.TURNSTILE_ALLOWED_IPS):
             log.debug('turnstile_middleware: ip is ok')
             return self.get_response(request)
 
@@ -79,7 +79,14 @@ class TurnstileMiddleware:
             context=context,
         )
 
-    def ip_is_valid(self, ip_str: str, allowed_ips: list[str]) -> bool:
+
+class TurnstileMiddlewareHelper:
+    """
+    Helper class for Turnstile middleware.
+    """
+
+    @staticmethod
+    def ip_is_valid(ip_str: str, allowed_ips: list[str]) -> bool:
         """
         Checks if the IP address is in the list of allowed IPs.
 
@@ -87,15 +94,13 @@ class TurnstileMiddleware:
             ip_str: The IP address to check.
             allowed_ips: List of allowed IPs.
         """
-        ip_obj: ipaddress.IPv4Address = ipaddress.IPv4Address(ip_str)
+        ip_obj: ipaddress.IPv4Address = ipaddress.IPv4Address(ip_str)  # in case we need to do CIDR math
         for allowed_ip in allowed_ips:
             assert isinstance(allowed_ip, str)
             if '/' in allowed_ip:  # eg CIDR notation, like '192.168.1.0/24'
-                network: ipaddress.IPv4Address = ipaddress.IPv4Address(allowed_ip, strict=False)
+                network: ipaddress.IPv4Network = ipaddress.IPv4Network(allowed_ip)
                 if ip_obj in network:
-                    return_val = True
-            else:
-                if ip_str == allowed_ip:
-                    return_val = True
-        log.debug(f'turnstile_middleware: return_val, ``{return_val}``')
-        return return_val
+                    return True
+            elif ip_str == allowed_ip:
+                return True
+        return False
