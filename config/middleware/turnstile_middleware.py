@@ -56,7 +56,7 @@ class TurnstileMiddleware:
         ip: str = request.META.get('REMOTE_ADDR')
         log.debug(f'turnstile_middleware: ip, ``{ip}``')
         if TurnstileMiddlewareHelper.ip_is_valid(ip, settings.TURNSTILE_ALLOWED_IPS):
-            log.debug('turnstile_middleware: ip is ok')
+            log.debug('turnstile_middleware: ip is allowed')
             return self.get_response(request)
 
         ## allowed-user-agent-check ---------------------------------
@@ -77,7 +77,7 @@ class TurnstileMiddleware:
         ## show-challenge ------------------------------------------
         log.debug('turnstile_middleware: rendering challenge')
         verify_url = request.build_absolute_uri(reverse('turnstile-verify'))
-        log.debug(f'turnstile_middleware: verify_url, {verify_url}')
+        # log.debug(f'turnstile_middleware: verify_url, {verify_url}')
         context = {
             'site_key': settings.TURNSTILE_SITE_KEY,
             'verify_url': verify_url,
