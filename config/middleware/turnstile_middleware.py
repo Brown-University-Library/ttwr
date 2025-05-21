@@ -34,10 +34,10 @@ class TurnstileMiddleware:
 
     def __call__(self, request: HttpRequest) -> HttpResponse:
         """
-        Process each incoming request:
-        1. If 'turnstile_verified' is in the session, the user has passed the challenge.
-        2. If the request path matches any exempt pattern, allow it.
-        3. Otherwise, render the Turnstile challenge template.
+        Processes each incoming request:
+        - If 'turnstile_verified' is in the session, the user has passed the challenge.
+        - If the request path matches any exempt pattern, allow it.
+        - Otherwise, render the Turnstile challenge template.
         """
         log.debug('turnstile_middleware: starting __call__()')
         log.debug(f'turnstile_middleware: request path, {request.path}')
@@ -99,10 +99,11 @@ class TurnstileMiddlewareHelper:
     def ip_is_valid(ip_str: str, allowed_ips: list[str]) -> bool:
         """
         Checks if the IP address is in the list of allowed IPs.
+        Supports specific IP addresses, and CIDR notation, like '192.168.1.0/24'.
 
         Args:
             ip_str: The IP address to check.
-            allowed_ips: List of allowed IPs.
+            allowed_ips: List of allowed IPs. This'll be from settings, but passing in both facilitates testing.
         """
         ip_obj: ipaddress.IPv4Address = ipaddress.IPv4Address(ip_str)  # in case we need to do CIDR math
         for allowed_ip in allowed_ips:
@@ -118,6 +119,7 @@ class TurnstileMiddlewareHelper:
     def user_agent_is_valid(user_agent_str: str, allowed_user_agents: list[str]) -> bool:
         """
         Checks if the user agent is in the list of allowed user agents.
+        Not currently called, but ready to go if needed.
 
         Args:
             user_agent_str: The user agent to check.
