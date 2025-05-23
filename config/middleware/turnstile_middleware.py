@@ -8,6 +8,7 @@ It offers a few exemptions.
 """
 
 import ipaddress
+from typing import List
 import logging
 from typing import Callable
 
@@ -96,7 +97,7 @@ class TurnstileMiddlewareHelper:
     """
 
     @staticmethod
-    def ip_is_valid(ip_str: str, allowed_ips: list[str]) -> bool:
+    def ip_is_valid(ip_str: str, allowed_ips: List[str]) -> bool:
         """
         Checks if the IP address is in the list of allowed IPs.
         Supports specific IP addresses, and CIDR notation, like '192.168.1.0/24'.
@@ -116,7 +117,7 @@ class TurnstileMiddlewareHelper:
         return False
 
     @staticmethod
-    def user_agent_is_valid(user_agent_str: str, allowed_user_agents: list[str]) -> bool:
+    def user_agent_is_valid(user_agent_str: str, allowed_user_agents: List[str]) -> bool:
         """
         Checks if the user agent is in the list of allowed user agents.
         Not currently called, but ready to go if needed.
