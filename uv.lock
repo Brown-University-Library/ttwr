@@ -52,6 +52,12 @@ wheels = [
 ]
 
 [[package]]
+name = "biscuits"
+version = "0.3.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/73/f5/894078ebebfea9b022bdfa0f0079cc570b5731ff42931ddaf57216d5ac54/biscuits-0.3.2.tar.gz", hash = "sha256:041ee6da5af6b0f1eb327a8b5d73930eddc5d9d8b3daf7fbe00301564abd9510", size = 92804, upload-time = "2024-02-21T10:20:27.389Z" }
+
+[[package]]
 name = "certifi"
 version = "2025.11.12"
 source = { registry = "https://pypi.org/simple" }
@@ -228,6 +234,15 @@ wheels = [
 ]
 
 [[package]]
+name = "mock"
+version = "5.2.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/07/8c/14c2ae915e5f9dca5a22edd68b35be94400719ccfa068a03e0fb63d0f6f6/mock-5.2.0.tar.gz", hash = "sha256:4e460e818629b4b173f32d08bf30d3af8123afbb8e04bb5707a1fd4799e503f0", size = 92796, upload-time = "2025-03-03T12:31:42.911Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/bd/d9/617e6af809bf3a1d468e0d58c3997b1dc219a9a9202e650d30c2fc85d481/mock-5.2.0-py3-none-any.whl", hash = "sha256:7ba87f72ca0e915175596069dbbcc7c75af7b5e9b9bc107ad6349ede0819982f", size = 31617, upload-time = "2025-03-03T12:31:41.518Z" },
+]
+
+[[package]]
 name = "mysqlclient"
 version = "2.1.1"
 source = { registry = "https://pypi.org/simple" }
@@ -348,6 +363,21 @@ wheels = [
 ]
 
 [[package]]
+name = "responses"
+version = "0.10.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "biscuits" },
+    { name = "mock" },
+    { name = "requests" },
+    { name = "six" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d1/e0/efa44203ac74739d4e9f383a9c560882e038853ba43a81eed6e00735f9ab/responses-0.10.1.tar.gz", hash = "sha256:9a165718944c0ac3215e2507f4d63b5a6a44da883df8949a7ae659516f4ef883", size = 20777, upload-time = "2018-10-18T17:55:17.329Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1b/d4/aaf1ce65e817f889fc44f7cc3213045f7fa885e386103d278a66d063f0a3/responses-0.10.1-py2.py3-none-any.whl", hash = "sha256:f171f3cc74a6550b68c600c89f913e59337360ac7c1e563cee44a980833a0354", size = 17148, upload-time = "2018-10-18T17:55:15.962Z" },
+]
+
+[[package]]
 name = "setuptools"
 version = "75.3.0"
 source = { registry = "https://pypi.org/simple" }
@@ -411,6 +441,9 @@ dependencies = [
 ]
 
 [package.dev-dependencies]
+local = [
+    { name = "responses" },
+]
 prod = [
     { name = "mysqlclient" },
 ]
@@ -434,7 +467,7 @@ requires-dist = [
 ]
 
 [package.metadata.requires-dev]
-local = []
+local = [{ name = "responses", specifier = "==0.10.1" }]
 prod = [{ name = "mysqlclient", specifier = "==2.1.1" }]
 staging = [{ name = "mysqlclient", specifier = "==2.1.1" }]
 

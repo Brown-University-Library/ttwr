@@ -21,7 +21,9 @@ dependencies = [
 ]
 
 [dependency-groups]
-local = []
+local = [
+    "responses==0.10.1",
+    ]
 staging = [ 
     "mysqlclient==2.1.1",  
     ]
