@@ -1,0 +1,33 @@
+[project]
+name = "Theater-That-Was-Rome-project"
+version = "0.0.0"
+description = "Presents early roman texts and images for scholarly study."
+readme = "https://github.com/Brown-University-Library/ttwr/blob/main/README.md"
+requires-python = ">=3.12,<3.13"
+
+## will temporarily pin to specific versions during transition to pyproject.toml
+dependencies = [
+    "bdrxml~=1.4",
+    "django-crispy-forms~=1.11.2",
+    "django-dotenv~=1.4.0",
+    "django-markdown-deux~=1.0.0",
+    "django-pagedown~=2.2.0",
+    "django~=3.2.0",
+    "pillow~=10.4.0",
+    "requests~=2.26.0",
+    "setuptools~=75.3.0",  # required for eulxml, which is used by bdrxml
+    "trio~=0.22.0",
+]
+
+[dependency-groups]
+local = []
+staging = [ 
+    "mysqlclient~=2.2.0",  # not yet used on dev, but useful to confirm installation
+    ]
+prod = [ 
+    "mysqlclient~=2.2.0", 
+    ]
+
+
+
+
