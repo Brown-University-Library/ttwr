@@ -2,6 +2,7 @@
 .env
 .hg
 .svn
+.venv
 *.log*
 *.pyc
 *.sqlite3
