@@ -30,7 +30,6 @@ staging = [
 prod = [ 
     "mysqlclient==2.1.1", 
     ]
-
-
-
-
+ci_tests = [ 
+    "responses==0.10.1",
+    ]
