@@ -441,6 +441,9 @@ dependencies = [
 ]
 
 [package.dev-dependencies]
+ci-tests = [
+    { name = "responses" },
+]
 local = [
     { name = "responses" },
 ]
@@ -467,6 +470,7 @@ requires-dist = [
 ]
 
 [package.metadata.requires-dev]
+ci-tests = [{ name = "responses", specifier = "==0.10.1" }]
 local = [{ name = "responses", specifier = "==0.10.1" }]
 prod = [{ name = "mysqlclient", specifier = "==2.1.1" }]
 staging = [{ name = "mysqlclient", specifier = "==2.1.1" }]
