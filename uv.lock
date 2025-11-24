@@ -452,6 +452,7 @@ prod = [
 ]
 staging = [
     { name = "mysqlclient" },
+    { name = "responses" },
 ]
 
 [package.metadata]
@@ -473,7 +474,10 @@ requires-dist = [
 ci-tests = [{ name = "responses", specifier = "==0.10.1" }]
 local = [{ name = "responses", specifier = "==0.10.1" }]
 prod = [{ name = "mysqlclient", specifier = "==2.1.1" }]
-staging = [{ name = "mysqlclient", specifier = "==2.1.1" }]
+staging = [
+    { name = "mysqlclient", specifier = "==2.1.1" },
+    { name = "responses", specifier = "==0.10.1" },
+]
 
 [[package]]
 name = "trio"

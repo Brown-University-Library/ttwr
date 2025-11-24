@@ -26,6 +26,7 @@ local = [
     ]
 staging = [ 
     "mysqlclient==2.1.1",  
+    "responses==0.10.1",
     ]
 prod = [ 
     "mysqlclient==2.1.1", 
