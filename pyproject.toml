@@ -8,29 +8,29 @@ requires-python = ">=3.8,<3.9"
 ## will temporarily pin to specific versions during transition to pyproject.toml
 dependencies = [
     "bdrxml==1.4",
-    "django-crispy-forms==1.11.2",
-    "django-dotenv==1.4.2",
-    "django-markdown-deux==1.0.5",
-    "django-pagedown==2.2.0",
-    "django==3.2.18",
-    "lxml==4.7.1",
-    "pillow==10.4.0",
-    "requests==2.26.0",
-    "setuptools==75.3.0",  # required for eulxml, which is used by bdrxml
-    "trio==0.22.0",
+    "django-crispy-forms~=1.11.0",
+    "django-dotenv~=1.4.0",
+    "django-markdown-deux~=1.0.0",
+    "django-pagedown~=2.2.0",
+    "django~=3.2.0",
+    "lxml~=4.7.0",
+    "pillow~=10.4.0",
+    "requests~=2.26.0",
+    "setuptools~=75.3.0",  # required for eulxml, which is used by bdrxml
+    "trio~=0.22.0",
 ]
 
 [dependency-groups]
 local = [
-    "responses==0.10.1",
+    "responses~=0.10.0",
     ]
 staging = [ 
-    "mysqlclient==2.1.1",  
-    "responses==0.10.1",
+    "mysqlclient~=2.1.0",  
+    "responses~=0.10.0",
     ]
 prod = [ 
-    "mysqlclient==2.1.1", 
+    "mysqlclient~=2.1.0", 
     ]
 ci_tests = [ 
-    "responses==0.10.1",
+    "responses~=0.10.0",
     ]
