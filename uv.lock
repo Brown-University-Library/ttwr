@@ -448,9 +448,9 @@ requires-dist = [
 [package.metadata.requires-dev]
 ci-tests = [{ name = "responses", specifier = "~=0.10.0" }]
 local = [{ name = "responses", specifier = "~=0.10.0" }]
-prod = [{ name = "mysqlclient", specifier = "~=2.1.1" }]
+prod = [{ name = "mysqlclient", specifier = "~=2.1.0" }]
 staging = [
-    { name = "mysqlclient", specifier = "~=2.1.1" },
+    { name = "mysqlclient", specifier = "~=2.1.0" },
     { name = "responses", specifier = "~=0.10.0" },
 ]
 
