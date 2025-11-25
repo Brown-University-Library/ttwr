@@ -3,7 +3,7 @@ name = "Theater-That-Was-Rome-project"
 version = "0.0.0"
 description = "Presents early roman texts and images for scholarly study."
 readme = "https://github.com/Brown-University-Library/ttwr/blob/main/README.md"
-requires-python = ">=3.10,<3.11"
+requires-python = ">=3.12,<3.13"
 
 ## will temporarily pin to specific versions during transition to pyproject.toml
 dependencies = [
