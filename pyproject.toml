@@ -3,7 +3,7 @@ name = "Theater-That-Was-Rome-project"
 version = "0.0.0"
 description = "Presents early roman texts and images for scholarly study."
 readme = "https://github.com/Brown-University-Library/ttwr/blob/main/README.md"
-requires-python = ">=3.12,<3.13"
+requires-python = ">=3.10,<3.11"
 
 ## will temporarily pin to specific versions during transition to pyproject.toml
 dependencies = [
@@ -13,7 +13,7 @@ dependencies = [
     "django-markdown-deux~=1.0.0",
     "django-pagedown~=2.2.0",
     "django~=4.2.0",
-    "lxml~=4.9.0",
+    "lxml~=4.7.0",
     "pillow~=10.4.0",
     "requests~=2.26.0",
     "setuptools~=75.3.0",  # required for eulxml, which is used by bdrxml
