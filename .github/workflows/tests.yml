@@ -37,11 +37,11 @@ jobs:
           version: "0.8.0"
           enable-cache: true
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
+#      - name: Setup Python
+#        uses: actions/setup-python@v5
+#        with:
           # Use python-version declared in pyproject.toml
-          python-version-file: "pyproject.toml"
+#          python-version-file: "pyproject.toml"
 
       - name: Configure git identity (for merge)
         if: ${{ github.event_name != 'pull_request' && (github.event.inputs.run_merge_sim != 'false') }}
