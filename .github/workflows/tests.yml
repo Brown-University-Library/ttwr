@@ -22,9 +22,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          ## full history so we can merge main when simulating PRs
-          fetch-depth: 0
 
       - name: Install uv
         uses: astral-sh/setup-uv@v6
@@ -71,8 +68,8 @@ jobs:
 # steps:
 #   - Checkout code
 #     - "v4" is the version of the GitHub checkout action.
-#     - "fetch-depth: 0" ensures we get the full git history, which is needed
-#       for simulating PR merges.
+#     - We rely on the default shallow checkout (fetch-depth: 1). Full history
+#       is no longer required since we removed the manual PR-merge simulation.
 #
 #   - Install uv
 #     - "v6" is the version of the GitHub setup-uv action.
