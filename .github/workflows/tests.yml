@@ -9,7 +9,7 @@ on:
 
   ## enables manual run without a PR
   workflow_dispatch:
-`
+
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
