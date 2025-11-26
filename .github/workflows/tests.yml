@@ -7,13 +7,14 @@ on:
   pull_request:
     branches: [ main ]
 
-  # enables manual runs from any branch without a PR; minimal notifications.
+  # enables manual run without a PR
   workflow_dispatch:
-    inputs:
-      run_merge_sim:
-        description: 'Simulate PR by merging main before tests?'
-        type: boolean
-        default: true
+#   workflow_dispatch:
+#     inputs:
+#       run_merge_sim:
+#         description: 'Simulate PR by merging main before tests?'
+#         type: boolean
+#         default: true
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -37,17 +38,17 @@ jobs:
           version: "0.8.0"
           enable-cache: true
 
-      - name: Configure git identity (for merge)
-        if: ${{ github.event_name != 'pull_request' && (github.event.inputs.run_merge_sim != 'false') }}
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+    #   - name: Configure git identity (for merge)
+    #     if: ${{ github.event_name != 'pull_request' && (github.event.inputs.run_merge_sim != 'false') }}
+    #     run: |
+    #       git config user.name "github-actions[bot]"
+    #       git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Simulate PR merge with main (non-PR runs)
-        if: ${{ github.event_name != 'pull_request' && (github.event.inputs.run_merge_sim != 'false') }}
-        run: |
-          git fetch origin main
-          git merge --no-ff --no-edit origin/main
+    #   - name: Simulate PR merge with main (non-PR runs)
+    #     if: ${{ github.event_name != 'pull_request' && (github.event.inputs.run_merge_sim != 'false') }}
+    #     run: |
+    #       git fetch origin main
+    #       git merge --no-ff --no-edit origin/main
 
       - name: Install dependencies
         run: uv sync --locked --group ci_tests
