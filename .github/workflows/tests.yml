@@ -37,12 +37,6 @@ jobs:
           version: "0.8.0"
           enable-cache: true
 
-#      - name: Setup Python
-#        uses: actions/setup-python@v5
-#        with:
-          # Use python-version declared in pyproject.toml
-#          python-version-file: "pyproject.toml"
-
       - name: Configure git identity (for merge)
         if: ${{ github.event_name != 'pull_request' && (github.event.inputs.run_merge_sim != 'false') }}
         run: |
@@ -102,10 +96,6 @@ jobs:
 #     - "v6" is the version of the GitHub setup-uv action.
 #     - Installs uv (version 0.8.0) and enables caching to speed up installs.
 #
-#   - Setup Python
-#     - Selects the Python version declared in pyproject.toml via
-#       python-version-file, ensuring local and CI Python versions match.
-#
 #   - Configure git identity (for merge)
 #     - Ensures step only runs on non-PR runs and when run_merge_sim is not 
 #       'false'. Sets a bot identity required by git for creating merge 
@@ -117,8 +107,12 @@ jobs:
 #       after merging. Helps catch integration issues early.
 #
 #   - Install dependencies
-#       Uses 'uv sync --locked' to create a reproducible environment strictly
-#       from the lockfile.
+#       - Uses 'uv sync --locked' to create a reproducible environment
+#         strictly from the lockfile.
+#       - Note: we used to have a "Setup Python" step. There are some
+#         recommendations to use this because GitHub provides a cached version
+#         which `uv sync...` will use. Based on testing, though, the speedup
+#         was minimal, not worth an extra step of complexity.
 #
 #   - Run tests
 #       Runs the Django test suite via './run_tests.py' using uv:
