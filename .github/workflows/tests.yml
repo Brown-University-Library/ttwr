@@ -7,15 +7,9 @@ on:
   pull_request:
     branches: [ main ]
 
-  # enables manual run without a PR
+  ## enables manual run without a PR
   workflow_dispatch:
-#   workflow_dispatch:
-#     inputs:
-#       run_merge_sim:
-#         description: 'Simulate PR by merging main before tests?'
-#         type: boolean
-#         default: true
-
+`
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -29,7 +23,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          # full history so we can merge main when simulating PRs
+          ## full history so we can merge main when simulating PRs
           fetch-depth: 0
 
       - name: Install uv
@@ -37,18 +31,6 @@ jobs:
         with:
           version: "0.8.0"
           enable-cache: true
-
-    #   - name: Configure git identity (for merge)
-    #     if: ${{ github.event_name != 'pull_request' && (github.event.inputs.run_merge_sim != 'false') }}
-    #     run: |
-    #       git config user.name "github-actions[bot]"
-    #       git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-    #   - name: Simulate PR merge with main (non-PR runs)
-    #     if: ${{ github.event_name != 'pull_request' && (github.event.inputs.run_merge_sim != 'false') }}
-    #     run: |
-    #       git fetch origin main
-    #       git merge --no-ff --no-edit origin/main
 
       - name: Install dependencies
         run: uv sync --locked --group ci_tests
@@ -70,8 +52,7 @@ jobs:
 #       a temporary merge commit for PR runs, so we do NOT perform our manual
 #       merge simulation in this case.
 #   workflow_dispatch:
-#     - Allows manual runs from any branch. Includes an input, run_merge_sim,
-#       to control whether we simulate merging main before tests (default: true).
+#     - Allows manual runs without a pull-request.
 #
 # concurrency:
 #   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -97,16 +78,6 @@ jobs:
 #     - "v6" is the version of the GitHub setup-uv action.
 #     - Installs uv (version 0.8.0) and enables caching to speed up installs.
 #
-#   - Configure git identity (for merge)
-#     - Ensures step only runs on non-PR runs and when run_merge_sim is not 
-#       'false'. Sets a bot identity required by git for creating merge 
-#       commits.
-#
-#   - Simulate PR merge with main (non-PR runs)
-#     - When manually triggered (or other non-PR events), fetches and merges
-#       origin/main into the current branch to test the code as it would look
-#       after merging. Helps catch integration issues early.
-#
 #   - Install dependencies
 #       - Uses 'uv sync --locked' to create a reproducible environment
 #         strictly from the lockfile.
@@ -116,7 +87,7 @@ jobs:
 #         was minimal, not worth an extra step of complexity.
 #
 #   - Run tests
-#       Runs the Django test suite via './run_tests.py' using uv:
+#     - Runs the Django test suite via './run_tests.py' using uv:
 #       'uv run ./run_tests.py'. This repository's run_tests.py sets
 #       DJANGO_SETTINGS_MODULE=config.settings.unit_tests.
 # =============================================================================
