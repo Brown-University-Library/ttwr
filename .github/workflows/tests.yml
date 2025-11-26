@@ -68,20 +68,19 @@ jobs:
 # steps:
 #   - Checkout code
 #     - "v4" is the version of the GitHub checkout action.
-#     - We rely on the default shallow checkout (fetch-depth: 1). Full history
-#       is no longer required since we removed the manual PR-merge simulation.
+#     - We rely on the default shallow checkout (fetch-depth: 1).
 #
 #   - Install uv
 #     - "v6" is the version of the GitHub setup-uv action.
 #     - Installs uv (version 0.8.0) and enables caching to speed up installs.
 #
 #   - Install dependencies
-#       - Uses 'uv sync --locked' to create a reproducible environment
-#         strictly from the lockfile.
-#       - Note: we used to have a "Setup Python" step. There are some
-#         recommendations to use this because GitHub provides a cached version
-#         which `uv sync...` will use. Based on testing, though, the speedup
-#         was minimal, not worth an extra step of complexity.
+#     - Uses 'uv sync --locked' to create a reproducible environment
+#       strictly from the lockfile.
+#     - Note: we used to have a "Setup Python" step. There are some
+#       recommendations to use this because GitHub provides a cached version
+#       which `uv sync...` will use. Based on testing, though, the speedup
+#       was minimal, not worth an extra step of complexity.
 #
 #   - Run tests
 #     - Runs the Django test suite via './run_tests.py' using uv:
